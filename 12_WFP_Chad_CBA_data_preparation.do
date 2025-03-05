@@ -1980,17 +1980,22 @@ month_surv |          Type d'enquête
 We need to recode some month_survey to ajust with SURVEY timing
 */
 
-replace month_survey = 8 if (month_survey == 2 | month_survey == 4 | month_survey == 6) & SURVEY == "PDM"
+replace month_survey = 8 if (month_survey == 2 | month_survey == 4 | month_survey == 6 | month_survey == 9) & SURVEY == "PDM"
 replace month_survey = 11 if (month_survey == 1 | month_survey == 9 | month_survey == 10) & SURVEY == "Baseline"
 replace month_survey = 12 if (month_survey == 1 | month_survey == 2 | month_survey == 5 | month_survey == 10) & SURVEY == "Enquête annuelle"
 
 tab SURVEY month_survey
+
+tab YEAR month_survey
+
+
 gen exercise_code = 1
-replace exercise_code = 2 if month_survey >=10
+replace exercise_code = 2 if month_survey >= 10
 tab exercise_code
 
-gen newvar = string(YEAR) + string(exercise_code) + adm2_ocha
-tab newvar
+gen IP_var = string(YEAR) + string(exercise_code) + adm2_ocha if YEAR != 2018
+replace IP_var = "2017" + string(exercise_code) + adm2_ocha if YEAR == 2018
+tab IP_var
 drop exercise_code
 save "$output_data\WFP_Chad_2018-2023_20250305.dta",replace
 //////////////////////////////////////////////////
@@ -2038,27 +2043,29 @@ drop adm3_pcod2 adm0_pcod3
 compare exercise_code reference_code
 drop adm3_name
 save "$output_data\cadre_harmonise_caf_ipc_mar24_final.dta",replace
-gen newvar = string(exercise_year) + string(exercise_code) + adm2_pcod2
-tab newvar
+gen IP_var = string(exercise_year) + string(exercise_code) + adm2_pcod2
+tab IP_var
 
-merge 1:m newvar using "$output_data\WFP_Chad_2018-2023_20250305.dta"
+merge 1:m IP_var using "$output_data\WFP_Chad_2018-2023_20250305.dta"
 /*
 
     Result                      Number of obs
     -----------------------------------------
-    Not matched                           869
-        from master                       826  (_merge==1)
-        from using                         43  (_merge==2)
+    Not matched                           875
+        from master                       834  (_merge==1)
+        from using                         41  (_merge==2)
 
-    Matched                            17,210  (_merge==3)
+    Matched                            17,214  (_merge==3)
     -----------------------------------------
 
+
 */
+tab _m
 keep if _merge == 2 | _merge == 3
 drop _m
 sort YEAR SURVEY
-order ID SvyDatePDM YEAR SURVEY ADMIN0Name adm0_ocha ADMIN1Name adm1_ocha ADMIN2Name adm2_ocha village Longitude Latitude Longitude_precision Latitude_precision
-drop newvar
-drop p_p*
+order ID SvyDatePDM YEAR SURVEY ADMIN0Name adm0_ocha ADMIN1Name adm1_ocha ADMIN2Name adm2_ocha village Longitude Latitude Longitude_precision Latitude_precision IP_var exercise_year exercise_code exercise_code exercise_label
+//drop IP_var
+
 save "$output_data\WFP_Chad_2018-2023_20250305.dta",replace
 //////////////////////////////////////////////////
