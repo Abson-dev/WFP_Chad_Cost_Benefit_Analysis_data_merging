@@ -1,0 +1,27 @@
+{
+    "id": "F94A822C",
+    "path": "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/script/R/Chad/WFP_Chad_Cost_Benefit_Analysis_data_merging/07_WFP_Chad_ABI_data.Rmd",
+    "project_path": "07_WFP_Chad_ABI_data.Rmd",
+    "type": "r_markdown",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1741135314247.0,
+    "source_on_save": false,
+    "relative_order": 8,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "448,0",
+        "scrollLine": "441",
+        "docOutlineVisible": "1"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1741136378,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1741168089225,
+    "read_only": false,
+    "read_only_alternatives": []
+}

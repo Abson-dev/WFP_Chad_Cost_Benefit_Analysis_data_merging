@@ -1,0 +1,551 @@
+---
+title: "WFP datasets wrangling - Chad : Labels harmonization"
+author: "Aboubacar HEMA"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    keep_md: true
+---
+
+
+
+
+```{r 01 setup, include=FALSE, results = 'hide'}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+  results = "hide"
+)
+```
+
+
+
+```{r 01 packages needed}
+library(haven)
+library(labelled) # for general functions to work with labelled data
+library(tidyverse) # general wrangling
+library(dplyr)
+library(Hmisc)
+library(gtsummary) # to demonstrate automatic use of variable labels in summary tables
+library(readxl)
+library(foreign)
+library(sjPlot)
+library(sjmisc)
+library(sjlabelled) # for example efc data set with variable labels
+library(stringr)
+```
+
+
+
+```{r 01 remove environment variables}
+
+rm(list = ls())
+```
+
+```{r 01 environment settings}
+
+dir_input_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/input_data/Chad"
+dir_output_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/output_data/Chad"
+```
+
+```{r 01 read harmonization excel file}
+
+Chad_Harmonization_variables <- read_excel(paste0(dir_input_data,"/Chad_Harmonization.xlsx"), 
+    sheet = "variables_harmonization")
+#View(Chad_Harmonization_variables)
+
+Chad_Harmonization_description <- read_excel(paste0(dir_input_data,"/Chad_Harmonization.xlsx"), 
+    sheet = "description")
+#View(Chad_Harmonization_description)
+```
+
+```{r 01 data importation}
+
+lst_data = Chad_Harmonization_description$Data
+lst_test = Chad_Harmonization_description$Name
+
+for(i in 1:length(lst_data)) {                              # Head of for-loop
+  assign(lst_test[i],                                   # Read and store data frames
+         read_sav(paste0(dir_input_data,"/",lst_data[i])))
+}
+
+```
+
+
+```{r 01 select and rename columns needed}
+
+for (j in 1:length(lst_test)){
+         df=  get(lst_test[j], envir = .GlobalEnv)
+          for (i in 1:nrow(Chad_Harmonization_variables)){
+            df[,Chad_Harmonization_variables$NewVariable_Name[i]]=ifelse(is.na(Chad_Harmonization_variables[i,lst_test[j]]),NA,df[,Chad_Harmonization_variables[i,lst_test[j]][[1]]])
+          }
+    
+    df<-df %>% select(Chad_Harmonization_variables$NewVariable_Name)
+    assign(lst_test[j],                                   # Read and store data frames
+         df)
+#write_sav(df, paste0(dir_output_data,"/",lst_test[j],".sav"))
+#write_dta(df, paste0(dir_output_data,"/",lst_test[j],".dta"))
+    
+
+}
+
+
+
+```
+
+```{r}
+Chad_pdm_2022$ID = 1:nrow(Chad_pdm_2022)
+```
+
+
+
+
+
+# ASSET BENEFIT INDICATOR (ABI) 
+
+```{r}
+abi_variables = Chad_baseline_2018 %>% dplyr::select(gtsummary::starts_with("ABI")) %>% names()
+abi_variables <- c(abi_variables,"ActifCreationEmploi",
+"BeneficieEmploi",
+"TRavailMaintienActif")
+#
+abi_variables <- abi_variables[! abi_variables %in% c('ABISexparticipant')]
+```
+
+
+## EA 2019
+
+```{r}
+
+df_2019 = Chad_ea_2019 %>% 
+  dplyr::select(ID,abi_variables)
+
+all_missing_cols <- df_2019 %>%
+  select(where(~ all(is.na(.)))) %>% names()
+
+#all_missing_cols
+
+abi_variables_tmp <- abi_variables[! abi_variables %in% all_missing_cols]
+
+
+expss::val_lab(df_2019$ABIProteger)
+
+# Chad_ea_2019 <- Chad_ea_2019 %>%  
+#   dplyr::mutate(across(abi_variables,
+#                 ~recode(.,
+#                   "Non" = 0,
+#                   "Oui" = 1,
+#                   "NA" = 888
+#                  )
+#   )
+#   )
+df_2019 <- df_2019 %>%
+  dplyr::mutate(across(all_of(abi_variables_tmp), ~ as.character(.))) %>%
+  dplyr::mutate(across(all_of(abi_variables_tmp), ~ dplyr::recode(., "Non" = 0, "Oui" = 1,"NA" = 888)))
+
+
+df_2019 <- df_2019 %>% 
+  dplyr::mutate(across(abi_variables_tmp,
+                ~labelled(., labels = c(
+                  "Non" = 0,
+                  "Oui" = 1,
+                  "Ne sait pas" = 888
+                )
+                )
+  )
+  )
+expss::val_lab(df_2019$ABIProteger)
+# haven::write_dta(df_2019,paste0(dir_output_data,"/","df_2019.dta"))
+```
+
+
+## EA 2020
+
+```{r}
+
+df_2020 = Chad_ea_2020 %>% 
+  dplyr::select(ID,abi_variables)
+
+all_missing_cols <- df_2020 %>%
+  select(where(~ all(is.na(.)))) %>% names()
+
+#all_missing_cols
+
+abi_variables_tmp <- abi_variables[! abi_variables %in% all_missing_cols]
+
+
+expss::val_lab(df_2020$ABIProteger)
+
+df_2020 <- df_2020 %>%
+  dplyr::mutate(across(all_of(abi_variables_tmp), ~ as.character(.))) %>%
+  dplyr::mutate(across(all_of(abi_variables_tmp), ~ dplyr::recode(., "0" = 0, "1" = 1))) %>%
+  tidyr::replace_na(setNames(as.list(rep(888, length(abi_variables_tmp))), abi_variables_tmp))
+
+
+df_2020 <- df_2020 %>% 
+  dplyr::mutate(across(abi_variables_tmp,
+                       ~labelled(., labels = c(
+                         "Non" = 0,
+                         "Oui" = 1,
+                         "Ne sait pas" = 888
+                       )
+                       )
+  )
+  )
+expss::val_lab(df_2020$ABIProteger)
+# haven::write_dta(df_2020,paste0(dir_output_data,"/","df_2020.dta"))
+```
+
+
+
+## EA 2021
+
+```{r}
+df_2021 = Chad_ea_2021 %>% 
+  dplyr::select(ID,abi_variables)
+
+all_missing_cols <- df_2021 %>%
+  select(where(~ all(is.na(.)))) %>% names()
+
+#all_missing_cols
+
+abi_variables_tmp <- abi_variables[! abi_variables %in% all_missing_cols]
+
+expss::val_lab(df_2021$ABIProteger)
+df_2021 <- df_2021 %>% 
+  dplyr::mutate(across(abi_variables_tmp,
+                ~recode(.,
+                  "1" = 0,
+                  "2" = 1,
+                  "3" = 888
+                 )
+  )
+  )
+df_2021 <- df_2021 %>% 
+  dplyr::mutate(across(abi_variables_tmp,
+                ~labelled(., labels = c(
+                  "Non" = 0,
+                  "Oui" = 1,
+                  "Ne sait pas" = 888
+                )
+                )
+  )
+  )
+expss::val_lab(df_2021$ABIProteger)
+```
+
+
+## EA 2022
+
+```{r}
+df_2022 = Chad_ea_2022 %>% 
+  dplyr::select(ID,abi_variables)
+
+all_missing_cols <- df_2022 %>%
+  select(where(~ all(is.na(.)))) %>% names()
+
+#all_missing_cols
+
+abi_variables_tmp <- abi_variables[! abi_variables %in% all_missing_cols]
+
+expss::val_lab(df_2022$ABIProteger)
+df_2022 <- df_2022 %>% 
+  dplyr::mutate(across(abi_variables_tmp,
+                ~recode(.,
+                  "1" = 0,
+                  "2" = 1,
+                  "3" = 888
+                 )
+  )
+  )
+df_2022 <- df_2022 %>% 
+  dplyr::mutate(across(abi_variables_tmp,
+                ~labelled(., labels = c(
+                  "Non" = 0,
+                  "Oui" = 1,
+                  "Ne sait pas" = 888
+                )
+                )
+  )
+  )
+expss::val_lab(df_2022$ABIProteger)
+```
+
+
+## EA 2023
+
+```{r}
+df_2023 = Chad_ea_2023 %>% 
+  dplyr::select(ID,abi_variables)
+
+all_missing_cols <- df_2023 %>%
+  select(where(~ all(is.na(.)))) %>% names()
+
+#all_missing_cols
+
+abi_variables_tmp <- abi_variables[! abi_variables %in% all_missing_cols]
+
+expss::val_lab(df_2023$ABIProteger)
+# df_2023 <- df_2023 %>% 
+#   dplyr::mutate(across(abi_variables_tmp,
+#                        ~recode(.,
+#                                "1" = 0,
+#                                "2" = 1,
+#                                "3" = 888
+#                        )
+#   )
+#   )
+df_2023 <- df_2023 %>% 
+  dplyr::mutate(across(abi_variables_tmp,
+                       ~labelled(., labels = c(
+                         "Non" = 0,
+                         "Oui" = 1,
+                         "Ne sait pas" = 888
+                       )
+                       )
+  )
+  )
+expss::val_lab(df_2023$ABIProteger)
+```
+
+## PDM 2020
+
+```{r}
+df_pdm_2020 = Chad_pdm_2020 %>% 
+  dplyr::select(ID,abi_variables)
+
+all_missing_cols <- df_pdm_2020 %>%
+  select(where(~ all(is.na(.)))) %>% names()
+
+#all_missing_cols
+
+abi_variables_tmp <- abi_variables[! abi_variables %in% all_missing_cols]
+
+
+expss::val_lab(df_pdm_2020$ABIProteger)
+
+df_pdm_2020 <- df_pdm_2020 %>%
+  dplyr::mutate(across(all_of(abi_variables_tmp), ~ as.character(.))) %>%
+  dplyr::mutate(across(all_of(abi_variables_tmp), ~ dplyr::recode(., "0" = 0, "1" = 1)))
+df_pdm_2020 <- df_pdm_2020 %>% 
+  dplyr::mutate(across(abi_variables_tmp,
+                       ~labelled(., labels = c(
+                         "Non" = 0,
+                         "Oui" = 1,
+                         "Ne sait pas" = 888
+                       )
+                       )
+  )
+  )
+expss::val_lab(df_pdm_2020$ABIProteger)
+```
+
+
+## PDM 2021
+
+```{r}
+
+df_pdm_2021 = Chad_pdm_2021 %>% 
+  dplyr::select(ID,abi_variables)
+
+all_missing_cols <- df_pdm_2021 %>%
+  select(where(~ all(is.na(.)))) %>% names()
+
+#all_missing_cols
+
+abi_variables_tmp <- abi_variables[! abi_variables %in% all_missing_cols]
+
+
+expss::val_lab(df_pdm_2021$ABIProteger)
+
+df_pdm_2021 <- df_pdm_2021 %>%
+  dplyr::mutate(across(all_of(abi_variables_tmp), ~ as.character(.))) %>%
+  dplyr::mutate(across(all_of(abi_variables_tmp), ~ dplyr::recode(., "0" = 0, "1" = 1, "2" = 888)))
+df_pdm_2021 <- df_pdm_2021 %>% 
+  dplyr::mutate(across(abi_variables_tmp,
+                       ~labelled(., labels = c(
+                         "Non" = 0,
+                         "Oui" = 1,
+                         "Ne sait pas" = 888
+                       )
+                       )
+  )
+  )
+expss::val_lab(df_pdm_2021$ABIProteger)
+```
+
+
+## PDM 2022
+
+```{r}
+
+df_pdm_2022 = Chad_pdm_2022 %>% 
+  dplyr::select(ID,abi_variables)
+
+all_missing_cols <- df_pdm_2022 %>%
+  select(where(~ all(is.na(.)))) %>% names()
+
+#all_missing_cols
+
+abi_variables_tmp <- abi_variables[! abi_variables %in% all_missing_cols]
+
+
+expss::val_lab(df_pdm_2022$ABIProteger)
+
+df_pdm_2022 <- df_pdm_2022 %>%
+  dplyr::mutate(across(all_of(abi_variables_tmp), ~ as.character(.))) %>%
+  dplyr::mutate(across(all_of(abi_variables_tmp), ~ dplyr::recode(., "Non" = 0, "Oui" = 1, "Ne sait pas" = 888)))
+df_pdm_2022 <- df_pdm_2022 %>% 
+  dplyr::mutate(across(abi_variables_tmp,
+                       ~labelled(., labels = c(
+                         "Non" = 0,
+                         "Oui" = 1,
+                         "Ne sait pas" = 888
+                       )
+                       )
+  )
+  )
+expss::val_lab(df_pdm_2022$ABIProteger)
+```
+
+
+## PDM 2023
+
+```{r}
+df_pdm_2023 = Chad_pdm_2023 %>% 
+  dplyr::select(ID,abi_variables)
+
+all_missing_cols <- df_pdm_2023 %>%
+  select(where(~ all(is.na(.)))) %>% names()
+
+#all_missing_cols
+
+abi_variables_tmp <- abi_variables[! abi_variables %in% all_missing_cols]
+
+df_pdm_2023 <- df_pdm_2023 %>% 
+  dplyr::mutate(across(abi_variables_tmp,
+                       ~labelled(., labels = c(
+                         "Non" = 0,
+                         "Oui" = 1,
+                         "Ne sait pas" = 888
+                       )
+                       )
+  )
+  )
+expss::val_lab(df_pdm_2023$ABIProteger)
+
+
+
+```
+
+
+## Merging all data
+
+
+
+```{r}
+
+df_Chad<-plyr::rbind.fill(df_2019,
+                          df_2020,
+                          df_2021,
+                          df_2022,
+                          df_2023,
+                          df_pdm_2020,
+                          df_pdm_2021,
+                          df_pdm_2022,
+                          df_pdm_2023)
+
+```
+
+
+```{r}
+expss::val_lab(df_Chad$ABIProteger)
+not_ok = c("ABIParticipation","ABItransferts","ABITensions","ActifCreationEmploi","BeneficieEmploi","TRavailMaintienActif")
+
+df_Chad <- df_Chad %>% 
+  dplyr::mutate(across(not_ok,
+                       ~labelled(., labels = c(
+                         "Non" = 0,
+                         "Oui" = 1,
+                         "Ne sait pas" = 888
+                       )
+                       )
+  )
+  )
+expss::val_lab(df_Chad$ABIProteger)
+```
+
+
+```{r}
+df_Chad$HHFFAPart <- df_Chad$ABIParticipation
+df_Chad$HHAssetProtect <- df_Chad$ABIProteger
+df_Chad$HHAssetProduct <- df_Chad$ABIProduction
+df_Chad$HHAssetDecHardship <- df_Chad$ABIdifficultes
+df_Chad$HHAssetAccess <- df_Chad$ABIMarches
+df_Chad$HHTrainingAsset <- df_Chad$ABIGererActifs
+df_Chad$HHAssetEnv <- df_Chad$ABIEnvironnement
+df_Chad$HHWorkAsset <- df_Chad$ABIutiliseractifs
+```
+
+
+
+```{r}
+
+df_Chad <- df_Chad %>%
+  mutate(across(c(HHAssetProtect,HHAssetProduct,HHAssetDecHardship,HHAssetAccess,HHTrainingAsset,HHAssetEnv,HHWorkAsset), ~labelled(., labels = c(
+    "No" = 0,
+    "Yes" = 1,
+    "Don't know" = 888,
+    "Not applicable" = 999
+  ))))
+
+
+
+#recode 888/999 to 0
+df_Chad <- df_Chad %>%
+  mutate(across(HHAssetProtect:HHWorkAsset, ~ dplyr::recode(.x, "0" = 0, "1" = 1, "999" = 0, "888" = 0)))
+
+
+#sum ABI rows
+df_Chad <- df_Chad %>% 
+  mutate(ABIScore = rowSums(across(c(HHAssetProtect:HHWorkAsset)),na.rm = T))
+```
+
+```{r}
+#assign variable and value labels 
+var_label(df_Chad$HHFFAPart) <- "Have you or any of your household member participated in the asset creation activities and received a food assistance transfer?"
+var_label(df_Chad$HHAssetProtect) <- "Do you think that the assets that were built or rehabilitated in your community are better protecting your household, its belongings and its production capacities (fields, equipment, etc.) from floods / drought / landslides / mudslides?"
+var_label(df_Chad$HHAssetProduct) <- "Do you think that the assets that were built or rehabilitated in your community have allowed your household to increase or diversify its production (agriculture / livestock / other)?"
+var_label(df_Chad$HHAssetDecHardship) <- "Do you think that the assets that were built or rehabilitated in your community have decreased the day-to-day hardship and released time for any of your family members (including women and children)?"
+var_label(df_Chad$HHAssetAccess) <- "Do you think that the assets that were built or rehabilitated in your community have improved the ability of any of your household member to access markets and/or basic services (water, sanitation, health, education, etc)?"
+var_label(df_Chad$HHTrainingAsset) <- "Do you think that the trainings and other support provided in your community have improved your household’s ability to manage and maintain assets?"
+var_label(df_Chad$HHAssetEnv) <- "Do you think that the assets that were built or rehabilitated in your community have improved your natural environment (for example more vegetal cover, water table increased, less erosion, etc.)?"
+var_label(df_Chad$HHWorkAsset) <- "Do you think that the works undertaken in your community have restored your ability to access and/or use basic asset functionalities?"
+
+
+```
+
+
+```{r}
+
+
+var_label(df_Chad$ABIScore) <- "ASSET BENEFIT INDICATOR SCORE"
+```
+
+
+```{r}
+df_Chad = df_Chad %>% 
+  distinct()
+```
+
+```{r}
+haven::write_dta(df_Chad,paste0(dir_output_data,"/","WFP_Chad_ABI.dta"))
+```
+
+

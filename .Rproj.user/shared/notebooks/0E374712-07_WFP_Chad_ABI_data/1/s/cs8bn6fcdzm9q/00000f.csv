@@ -1,0 +1,6 @@
+"0","abi_variables = Chad_baseline_2018 %>% dplyr::select(gtsummary::starts_with(""ABI"")) %>% names()"
+"0","abi_variables <- c(abi_variables,""ActifCreationEmploi"","
+"0","""BeneficieEmploi"","
+"0","""TRavailMaintienActif"")"
+"0","#"
+"0","abi_variables <- abi_variables[! abi_variables %in% c('ABISexparticipant')]"

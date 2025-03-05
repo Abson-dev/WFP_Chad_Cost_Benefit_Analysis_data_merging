@@ -1,0 +1,8 @@
+"0",""
+"0","Chad_Harmonization_variables <- read_excel(paste0(dir_input_data,""/Chad_Harmonization.xlsx""), "
+"0","    sheet = ""variables_harmonization"")"
+"0","#View(Chad_Harmonization_variables)"
+"0",""
+"0","Chad_Harmonization_description <- read_excel(paste0(dir_input_data,""/Chad_Harmonization.xlsx""), "
+"0","    sheet = ""description"")"
+"0","#View(Chad_Harmonization_description)"

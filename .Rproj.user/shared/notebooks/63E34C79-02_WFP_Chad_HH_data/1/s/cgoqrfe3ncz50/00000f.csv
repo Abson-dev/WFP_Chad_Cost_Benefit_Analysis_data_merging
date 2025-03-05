@@ -1,0 +1,21 @@
+"0","# We need to recode gender label to:"
+"0","# 0 = Femme"
+"0","# 1 = Homme"
+"0",""
+"0",""
+"0","#View labels"
+"0","expss::val_lab(Chad_baseline_2018$HHHSex)"
+"2","Warning: Unknown or uninitialised column: `HHHSex`."
+"1","NULL
+"
+"0","Chad_baseline_2018 %>% "
+"0","  plot_frq(coord.flip =T,HHHSex)"
+"1","[1m[33mError[39m in `dplyr::select()`:[22m
+[33m![39m Can't select columns that don't exist.
+[31m✖[39m Column `HHHSex` doesn't exist.
+Backtrace:
+[90m 1. [39mChad_baseline_2018 %>% plot_frq(coord.flip = T, HHHSex)
+[90m 2. [39m[1msjPlot[22m::plot_frq(., coord.flip = T, HHHSex)
+[90m 3. [39msjPlot:::get_dplyr_dot_data(data, dplyr::quos(...))
+[90m 7. [39m[1m[94mdplyr:::select.data.frame([39m[22mx, !!!qs[1m[94m)[39m[22m
+"

@@ -1,0 +1,8 @@
+"0",""
+"0","lst_data = Chad_Harmonization_description$Data"
+"0","lst_test = Chad_Harmonization_description$Name"
+"0",""
+"0","for(i in 1:length(lst_data)) {                              # Head of for-loop"
+"0","  assign(lst_test[i],                                   # Read and store data frames"
+"0","         read_sav(paste0(dir_input_data,""/"",lst_data[i])))"
+"0","}"

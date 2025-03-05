@@ -1,0 +1,76 @@
+"0",""
+"0","df_2019 = Chad_ea_2019 %>% "
+"0","  dplyr::select(ID,abi_variables)"
+"2","Warning: Using an external vector in selections was deprecated in tidyselect 1.1.0.
+Please use `all_of()` or `any_of()` instead.
+# Was:
+data %>% select(abi_variables)
+
+# Now:
+data %>% select(all_of(abi_variables))
+
+See <https://tidyselect.r-lib.org/reference/faq-external-vector.html>."
+"0","all_missing_cols <- df_2019 %>%"
+"0","  select(where(~ all(is.na(.)))) %>% names()"
+"0",""
+"0","#all_missing_cols"
+"0",""
+"0","abi_variables_tmp <- abi_variables[! abi_variables %in% all_missing_cols]"
+"0",""
+"0",""
+"0","expss::val_lab(df_2019$ABIProteger)"
+"1","NULL
+"
+"0","# Chad_ea_2019 <- Chad_ea_2019 %>%  "
+"0","#   dplyr::mutate(across(abi_variables,"
+"0","#                 ~recode(.,"
+"0","#                   ""Non"" = 0,"
+"0","#                   ""Oui"" = 1,"
+"0","#                   ""NA"" = 888"
+"0","#                  )"
+"0","#   )"
+"0","#   )"
+"0","df_2019 <- df_2019 %>%"
+"0","  dplyr::mutate(across(all_of(abi_variables_tmp), ~ as.character(.))) %>%"
+"0","  dplyr::mutate(across(all_of(abi_variables_tmp), ~ dplyr::recode(., ""Non"" = 0, ""Oui"" = 1,""NA"" = 888)))"
+"0",""
+"0",""
+"0","df_2019 <- df_2019 %>% "
+"0","  dplyr::mutate(across(abi_variables_tmp,"
+"0","                ~labelled(., labels = c("
+"0","                  ""Non"" = 0,"
+"0","                  ""Oui"" = 1,"
+"0","                  ""Ne sait pas"" = 888"
+"0","                )"
+"0","                )"
+"0","  )"
+"0","  )"
+"2","Warning: [38;5;253mThere was 1 warning in `dplyr::mutate()`.[39m
+[38;5;253m[36mℹ[38;5;253m In argument: `across(...)`.[39m
+Caused by warning:
+[38;5;253m[33m![38;5;253m Using an external vector in selections was
+  deprecated in tidyselect 1.1.0.
+[36mℹ[38;5;253m Please use `all_of()` or `any_of()` instead.
+  # Was:
+  data %>% select(abi_variables_tmp)
+
+  # Now:
+  data %>% select(all_of(abi_variables_tmp))
+
+See
+<https://tidyselect.r-lib.org/reference/faq-external-vector.html>.
+[90mThis warning is displayed once every 8 hours.[38;5;253m
+[90mCall `lifecycle::last_lifecycle_warnings()` to see[38;5;253m
+[90mwhere this warning was generated.[38;5;253m[39m"
+"0","expss::val_lab(df_2019$ABIProteger)"
+"1","        Non "
+"1","        Oui "
+"1","Ne sait pas "
+"1","
+"
+"1","          0 "
+"1","          1 "
+"1","        888 "
+"1","
+"
+"0","# haven::write_dta(df_2019,paste0(dir_output_data,""/"",""df_2019.dta""))"
