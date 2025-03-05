@@ -32,6 +32,13 @@ global current_datetime = date("$S_DATE", "DMY")
 format current_datetime %td
 display "$current_datetime"
 */
+
+/*
+
+********************************************************************************
+*					  Duplicate rows and some inconsistencies
+*******************************************************************************/
+
 // Import WFP admin data
 use "$input_data\WFP_Chad_admin.dta",clear
 
@@ -67,6 +74,96 @@ drop if ID == "41057035"
 drop dup_flag
 // save 
 save "$output_data\WFP_Chad_admin.dta",replace
+
+
+
+/////////////
+// Import WFP_Chad_assistance data
+use "$input_data\WFP_Chad_assistance.dta",clear
+
+//Identify Duplicate Rows
+duplicates report
+
+//List Duplicate Rows
+duplicates list ID
+
+//create a new variable that flags duplicate rows
+duplicates tag, generate(dup_flag)
+/*
+- dup_flag will be 0 for unique rows.
+- It will be 1 or higher for duplicates.
+*/
+//list only the duplicate rows:
+list ID if dup_flag > 0
+
+//remove duplicate rows while keeping the first occurrence
+duplicates drop ID, force
+
+br if ID == "41057035"
+drop if ID == "41057035"
+drop dup_flag
+// save 
+save "$output_data\WFP_Chad_assistance.dta",replace
+
+
+/////////////
+// Import WFP_Chad_HH data
+use "$input_data\WFP_Chad_HH.dta",clear
+
+//Identify Duplicate Rows
+duplicates report
+
+//List Duplicate Rows
+duplicates list ID
+
+//create a new variable that flags duplicate rows
+duplicates tag, generate(dup_flag)
+/*
+- dup_flag will be 0 for unique rows.
+- It will be 1 or higher for duplicates.
+*/
+//list only the duplicate rows:
+list ID if dup_flag > 0
+
+//remove duplicate rows while keeping the first occurrence
+duplicates drop ID, force
+
+br if ID == "41057035"
+drop if ID == "41057035"
+drop dup_flag
+// save 
+save "$output_data\WFP_Chad_HH.dta",replace
+
+
+//////////////////////
+
+/////////////
+// Import WFP_Chad_FCS data
+use "$input_data\WFP_Chad_FCS.dta",clear
+
+//Identify Duplicate Rows
+duplicates report
+
+//List Duplicate Rows
+duplicates list ID
+
+//create a new variable that flags duplicate rows
+duplicates tag, generate(dup_flag)
+/*
+- dup_flag will be 0 for unique rows.
+- It will be 1 or higher for duplicates.
+*/
+//list only the duplicate rows:
+list ID if dup_flag > 0
+
+//remove duplicate rows while keeping the first occurrence
+duplicates drop ID, force
+
+br if ID == "41057035"
+drop if ID == "41057035"
+drop dup_flag
+// save 
+save "$output_data\WFP_Chad_FCS.dta",replace
  
 merge 1:1 ID using "$input_data\WFP_Chad_assistance.dta"
 drop _m

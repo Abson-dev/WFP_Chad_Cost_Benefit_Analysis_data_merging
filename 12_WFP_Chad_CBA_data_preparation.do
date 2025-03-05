@@ -32,6 +32,8 @@ global current_datetime = date("$S_DATE", "DMY")
 format current_datetime %td
 display "$current_datetime"
 */
+
+// #################################### Africa #########################################
 // Import WFP admin data
 use "$input_data\WFP_Chad_admin.dta",clear
 
