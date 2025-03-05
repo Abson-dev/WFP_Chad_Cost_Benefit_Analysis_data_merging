@@ -1373,8 +1373,35 @@ tab ADMIN2Name adm2_ocha  if village == "KEKEDINA"
 tab ADMIN2Name adm2_ocha  if village == "KEKEDINA CENTRE"
 replace village ="KEKEDINA"  if village == "KEKEDINA CENTRE"
 
+tab ADMIN2Name adm2_ocha  if village == "CAFOK"
+tab ADMIN2Name adm2_ocha  if village == "CHAFOK"
+replace village ="CHAFOK"  if village == "CAFOK"
+
+tab ADMIN2Name adm2_ocha  if village == "GOUM EST"
+tab ADMIN2Name adm2_ocha  if village == "GOUM OUEST"
+tab ADMIN2Name adm2_ocha  if village == "GOUMACHIROM"
+tab ADMIN1Name adm1_ocha  if village == "GOUM EST"
+tab ADMIN1Name adm1_ocha  if village == "GOUM OUEST"
+tab ADMIN1Name adm1_ocha  if village == "GOUMACHIROM"
+replace village ="GOUMACHIROM"  if village == "GOUM EST"
+replace village ="GOUMACHIROM"  if village == "GOUM OUEST"
+replace adm2_ocha ="TD0703"  if village == "GOUMACHIROM"
+replace ADMIN2Name ="Kaya"  if village == "GOUMACHIROM"
+
+tab ADMIN2Name adm2_ocha if village == "AMDJOUFOUR"
+tab ADMIN2Name adm2_ocha if village == "HONDJEFOUR"
+replace village ="AMDJOUFOUR"  if village == "HONDJEFOUR"
+
 tab village
 
+tab adm2_ocha,m
+
+table (village adm2_ocha)
+count if village == "UNKNOWN"
+count if village == "UNKNOWN" & missing(adm2_ocha)
+tab SURVEY YEAR if village == "UNKNOWN"
+replace village =""  if village == "UNKNOWN"
+tab village,m
 // save 
 save "$output_data\WFP_Chad_admin.dta",replace
 
@@ -1813,6 +1840,34 @@ order HHSize HHSize05M HHSize23M HHSize59M HHSize5114M HHSize1549M HHSize5064M H
 	label var FCS	"Food Consumption Score"	
 	label var FCSCondSRf	"Source: condiments or spices"	
 	
+** Clean and recode missing values
+	recode FCSStap FCSVeg FCSFruit FCSPr FCSPulse FCSDairy FCSFat FCSSugar (. = 0)
+drop FCS FCSCat21 FCSCat28
+** Create FCS 
+	gen FCS = (FCSStap * 2) + (FCSPulse * 3) + (FCSDairy * 4) + (FCSPr * 4) + 	///
+			  (FCSVeg  * 1) + (FCSFruit * 1) + (FCSFat * 0.5) + (FCSSugar * 0.5)	  
+
+	label var FCS "Food Consumption Score"
+
+** Create FCG groups based on 21/35 or 28/42 thresholds
+*** Use this when analyzing a country with low consumption of sugar and oil
+
+*** thresholds 21-35
+	gen FCSCat21 = cond(FCS <= 21, 1, cond(FCS <= 35, 2, 3))
+	label var FCSCat21 "FCS Categories, thresholds 21-35"
+
+*** thresholds 28-42
+	gen FCSCat28 = cond(FCS <= 28, 1, cond(FCS <= 42, 2, 3))
+	label var FCSCat28 "FCS Categories, thresholds 28-42"
+
+
+*** define variables labels and properties for "FCS Categories"
+	label def FCSCat 1 "Poor" 2 "Borderline" 3 "Acceptable"
+	label val FCSCat21 FCSCat28 FCSCat
+	
+* ---------
+	
+	
 *Values labels: 
 //Food acquisition codes
 lab def food_acquisition 1"Own production (crops, animal)" 2"Fishing / Hunting " 3"Gathering" 4"Loan" 5"market (purchase with cash)" 6"market (purchase on credit)" 7"begging for food" 8"exchange labor or items for food" 9"gift (food) from family relatives or friends" 10"food aid from civil society, NGOs, government, WFP etc"
@@ -1821,7 +1876,7 @@ foreach var of varlist FCSStapSRf FCSPulseSRf FCSDairySRf FCSPrSRf FCSVegSRf FCS
     label values `var' food_acquisition
 }
  	
-order SCA FCS FCS_hema FCSCat21 FCSCat28  FCSStap FCSStapSRf FCSPulse FCSPulseSRf FCSDairy FCSDairySRf FCSPr FCSPrSRf FCSPrMeatF FCSPrMeatO FCSPrFish FCSPrEgg FCSVeg FCSVegSRf FCSVegOrg FCSVegGre FCSFruit FCSFruitSRf FCSFruitOrg FCSFat FCSFatSRf FCSSugar FCSSugarSRf FCSCond FCSCondSRf	
+order SCA FCS FCSCat21 FCSCat28  FCSStap FCSStapSRf FCSPulse FCSPulseSRf FCSDairy FCSDairySRf FCSPr FCSPrSRf FCSPrMeatF FCSPrMeatO FCSPrFish FCSPrEgg FCSVeg FCSVegSRf FCSVegOrg FCSVegGre FCSFruit FCSFruitSRf FCSFruitOrg FCSFat FCSFatSRf FCSSugar FCSSugarSRf FCSCond FCSCondSRf	
 
 
 *------------------------------------------------------------------------------*
@@ -1830,8 +1885,22 @@ order SCA FCS FCS_hema FCSCat21 FCSCat28  FCSStap FCSStapSRf FCSPulse FCSPulseSR
 *                     reduced Coping Strategy Index (rCSI)
 
 *-----------------------------------------------------------------------------
-order rCSI rCSILessQlty rCSIBorrow rCSIMealSize rCSIMealAdult rCSIMealNb	
+order rCSI rCSILessQlty rCSIBorrow rCSIMealSize rCSIMealAdult rCSIMealNb
+drop rCSI	
+** Check and recode missing values as 0
+	sum rCSI*
+	
+** Label rCSI relevant variables
+	lab var rCSILessQlty 	"Relied on less preferred, less expensive food"
+	lab var rCSIBorrow 		"Borrowed food or relied on help from friends or relatives"
+	lab var rCSIMealNb 		"Reduced the number of meals eaten per day"
+	lab var rCSIMealSize 	"Reduced portion size of meals at meals time"
+	lab var rCSIMealAdult 	"Restricted consumption by adults in order for young children to eat"
 
+** Calculate rCSI
+	gen rCSI = (rCSILessQlty * 1) + (rCSIBorrow * 2) + (rCSIMealNb * 1) + ///
+			   (rCSIMealSize * 1) + (rCSIMealAdult * 3)	
+	lab var rCSI "Reduced Consumption Strategies Index"
 
 *------------------------------------------------------------------------------*
 
@@ -1859,9 +1928,82 @@ foreach var of varlist LhCSIStress1 LhCSIStress2 LhCSIStress3 LhCSIStress4 LhCSI
 	label var LhCSIEmergency2 "Begged and/or scavenged (asked strangers for money/food) due to lack of food"
 	label var LhCSIEmergency3 "Engaged in illegal income activities (theft, prostitution) due to lack of food"
  
-/*
+ 
+*----------------------------------------------------------------------------------------------------------------------------------------------------------------* 
+
+* TREATMENT OF MISSING VALUES
+*----------------------------------------------------------------------------------------------------------------------------------------------------------------* 	
+tab1 LhCSIStress1 LhCSIStress2 LhCSIStress3 LhCSIStress4 LhCSICrisis1 LhCSICrisis2 LhCSICrisis3 LhCSIEmergency1 LhCSIEmergency2 LhCSIEmergency3
+tab1 LhCSIStress1 LhCSIStress2 LhCSIStress3 LhCSIStress4 LhCSICrisis1 LhCSICrisis2 LhCSICrisis3 LhCSIEmergency1 LhCSIEmergency2 LhCSIEmergency3,nolab
+* The LCS-FS standard module does not allow for skipping questions, so there should not be missing values. Check that indeed this is the case.
+foreach var of varlist LhCSIStress1 LhCSIStress2 LhCSIStress3 LhCSIStress4 LhCSICrisis1 LhCSICrisis2 LhCSICrisis3 LhCSIEmergency1 LhCSIEmergency2 LhCSIEmergency3 {
+tab `var' , missing	
+}
+
+* If there are no missings, you can just go ahead. If there are missing values, then you will need to understand why and, based on that, treat these missing values.
+
+
+
+* STRESS STRATEGIES
+
+*% of household who adopted one or more stress coping strategies 
+
+gen stress_coping_FS=(LhCSIStress1==2 | LhCSIStress1==3) | (LhCSIStress2==2 | LhCSIStress2==3) | (LhCSIStress3==2 | LhCSIStress3==3) | (LhCSIStress4==2 | LhCSIStress4==3) 
+
+ 
+lab var stress_coping_FS "Did the HH engage in stress coping strategies?" 
+
+tab stress_coping_FS
+
+* CRISIS STRATEGIES
+
+*% of household who adopted one or more crisis coping strategies 
+
+gen crisis_coping_FS=(LhCSICrisis1==2 | LhCSICrisis1==3) | (LhCSICrisis2==2 | LhCSICrisis2==3) | (LhCSICrisis3==2 | LhCSICrisis3==3) 
+
+
+lab var crisis_coping_FS "Did HH engage in crisis coping strategies?" 
+
+tab crisis_coping_FS
+
+* EMERGENCY STRATEGIES:
+
+
+*% of household who adopted one or more emergency coping strategies 
+
+gen emergency_coping_FS=(LhCSIEmergency1==2 | LhCSIEmergency1==3) | (LhCSIEmergency2==2 | LhCSIEmergency2==3) | (LhCSIEmergency3==2 | LhCSIEmergency3==3) 
+
+ lab var emergency_coping_FS "Did the HH engage in emergency coping strategies?" 
+
+
+* COPING BEHAVIOR 
+
+
+egen temp_nonmiss_number = rownonmiss(LhCSIStress1 LhCSIStress2 LhCSIStress3 LhCSIStress4 LhCSICrisis1 LhCSICrisis2 LhCSICrisis3 LhCSIEmergency1 LhCSIEmergency2 LhCSIEmergency3)  //this variable counts the strategies with valid (i.e. non missing) values - normally it should be equal to 10 for all respondents
+label var temp_nonmiss_number "Number of strategies with non missing values"
+ 
+gen 	Max_coping_behaviourFS=1 if temp_nonmiss_number>0 // the Max_coping_behaviourFS variable will be missing for an observation if answers to strategies are all missing
+
+replace Max_coping_behaviourFS=2 if stress_coping_FS==1 
+
+replace Max_coping_behaviourFS=3 if crisis_coping_FS==1 
+
+replace Max_coping_behaviourFS=4 if emergency_coping_FS==1 
+
+ 
+lab var Max_coping_behaviourFS "Summary of asset depletion" 
+
+lab def Max_coping_behaviourFS_label 1"HH not adopting coping strategies" 2"Stress coping strategies" 3"Crisis coping strategies" 4"Emergency coping strategies" 
+
+lab val Max_coping_behaviourFS Max_coping_behaviourFS_label 
+
+drop temp_nonmiss_number
+
+* tabulate results
+tab Max_coping_behaviourFS, missing 
+
 order LhCSIStress1 LhCSIStress2 LhCSIStress3 LhCSIStress4 LhCSICrisis1 LhCSICrisis2 LhCSICrisis3 LhCSIEmergency1 LhCSIEmergency2 LhCSIEmergency3 stress_coping_FS crisis_coping_FS emergency_coping_FS Max_coping_behaviourFS	
-*/	
+	
 
 *------------------------------------------------------------------------------*
 

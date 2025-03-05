@@ -1,5 +1,5 @@
 ---
-title: "WFP datasets wrangling - Chad : Labels harmonization"
+title: "WFP datasets wrangling - Chad : ASSET BENEFIT INDICATOR"
 author: "Aboubacar HEMA"
 date: "2025-03-05"
 output: 
@@ -98,7 +98,7 @@ Chad_pdm_2022$ID = 1:nrow(Chad_pdm_2022)
 
 
 
-# ASSET BENEFIT INDICATOR (ABI) 
+## ASSET BENEFIT INDICATOR (ABI) 
 
 
 ```r
@@ -381,7 +381,7 @@ expss::val_lab(df_pdm_2021$ABIProteger)
 
 
 ```r
-df_pdm_2022 = Chad_pdm_2022 %>% 
+df_pdm_2022 = Chad_pdm_2022 %>% labelled::to_factor() %>%
   dplyr::select(ID,abi_variables)
 
 all_missing_cols <- df_pdm_2022 %>%
@@ -415,7 +415,7 @@ expss::val_lab(df_pdm_2022$ABIProteger)
 
 
 ```r
-df_pdm_2023 = Chad_pdm_2023 %>% 
+df_pdm_2023 = Chad_pdm_2023 %>%  
   dplyr::select(ID,abi_variables)
 
 all_missing_cols <- df_pdm_2023 %>%

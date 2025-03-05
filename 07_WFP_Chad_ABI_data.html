@@ -13,7 +13,7 @@
 
 <meta name="date" content="2025-03-05" />
 
-<title>WFP datasets wrangling - Chad : Labels harmonization</title>
+<title>WFP datasets wrangling - Chad : ASSET BENEFIT INDICATOR</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -1567,8 +1567,8 @@ border-radius: 0px;
 
 
 
-<h1 class="title toc-ignore">WFP datasets wrangling - Chad : Labels
-harmonization</h1>
+<h1 class="title toc-ignore">WFP datasets wrangling - Chad : ASSET
+BENEFIT INDICATOR</h1>
 <h4 class="author">Aboubacar HEMA</h4>
 <h4 class="date">2025-03-05</h4>
 
@@ -1619,17 +1619,18 @@ for(i in 1:length(lst_data)) {                              # Head of for-loop
 
 }</code></pre>
 <pre class="r"><code>Chad_pdm_2022$ID = 1:nrow(Chad_pdm_2022)</code></pre>
-<div id="asset-benefit-indicator-abi" class="section level1" number="1">
-<h1><span class="header-section-number">1</span> ASSET BENEFIT INDICATOR
-(ABI)</h1>
+<div id="asset-benefit-indicator-abi" class="section level2" number="0.1">
+<h2><span class="header-section-number">0.1</span> ASSET BENEFIT
+INDICATOR (ABI)</h2>
 <pre class="r"><code>abi_variables = Chad_baseline_2018 %&gt;% dplyr::select(gtsummary::starts_with(&quot;ABI&quot;)) %&gt;% names()
 abi_variables &lt;- c(abi_variables,&quot;ActifCreationEmploi&quot;,
 &quot;BeneficieEmploi&quot;,
 &quot;TRavailMaintienActif&quot;)
 #
 abi_variables &lt;- abi_variables[! abi_variables %in% c(&#39;ABISexparticipant&#39;)]</code></pre>
-<div id="ea-2019" class="section level2" number="1.1">
-<h2><span class="header-section-number">1.1</span> EA 2019</h2>
+</div>
+<div id="ea-2019" class="section level2" number="0.2">
+<h2><span class="header-section-number">0.2</span> EA 2019</h2>
 <pre class="r"><code>df_2019 = Chad_ea_2019 %&gt;% 
   dplyr::select(ID,abi_variables)
 
@@ -1670,8 +1671,8 @@ df_2019 &lt;- df_2019 %&gt;%
 expss::val_lab(df_2019$ABIProteger)
 # haven::write_dta(df_2019,paste0(dir_output_data,&quot;/&quot;,&quot;df_2019.dta&quot;))</code></pre>
 </div>
-<div id="ea-2020" class="section level2" number="1.2">
-<h2><span class="header-section-number">1.2</span> EA 2020</h2>
+<div id="ea-2020" class="section level2" number="0.3">
+<h2><span class="header-section-number">0.3</span> EA 2020</h2>
 <pre class="r"><code>df_2020 = Chad_ea_2020 %&gt;% 
   dplyr::select(ID,abi_variables)
 
@@ -1704,8 +1705,8 @@ df_2020 &lt;- df_2020 %&gt;%
 expss::val_lab(df_2020$ABIProteger)
 # haven::write_dta(df_2020,paste0(dir_output_data,&quot;/&quot;,&quot;df_2020.dta&quot;))</code></pre>
 </div>
-<div id="ea-2021" class="section level2" number="1.3">
-<h2><span class="header-section-number">1.3</span> EA 2021</h2>
+<div id="ea-2021" class="section level2" number="0.4">
+<h2><span class="header-section-number">0.4</span> EA 2021</h2>
 <pre class="r"><code>df_2021 = Chad_ea_2021 %&gt;% 
   dplyr::select(ID,abi_variables)
 
@@ -1738,8 +1739,8 @@ df_2021 &lt;- df_2021 %&gt;%
   )
 expss::val_lab(df_2021$ABIProteger)</code></pre>
 </div>
-<div id="ea-2022" class="section level2" number="1.4">
-<h2><span class="header-section-number">1.4</span> EA 2022</h2>
+<div id="ea-2022" class="section level2" number="0.5">
+<h2><span class="header-section-number">0.5</span> EA 2022</h2>
 <pre class="r"><code>df_2022 = Chad_ea_2022 %&gt;% 
   dplyr::select(ID,abi_variables)
 
@@ -1772,8 +1773,8 @@ df_2022 &lt;- df_2022 %&gt;%
   )
 expss::val_lab(df_2022$ABIProteger)</code></pre>
 </div>
-<div id="ea-2023" class="section level2" number="1.5">
-<h2><span class="header-section-number">1.5</span> EA 2023</h2>
+<div id="ea-2023" class="section level2" number="0.6">
+<h2><span class="header-section-number">0.6</span> EA 2023</h2>
 <pre class="r"><code>df_2023 = Chad_ea_2023 %&gt;% 
   dplyr::select(ID,abi_variables)
 
@@ -1806,8 +1807,8 @@ df_2023 &lt;- df_2023 %&gt;%
   )
 expss::val_lab(df_2023$ABIProteger)</code></pre>
 </div>
-<div id="pdm-2020" class="section level2" number="1.6">
-<h2><span class="header-section-number">1.6</span> PDM 2020</h2>
+<div id="pdm-2020" class="section level2" number="0.7">
+<h2><span class="header-section-number">0.7</span> PDM 2020</h2>
 <pre class="r"><code>df_pdm_2020 = Chad_pdm_2020 %&gt;% 
   dplyr::select(ID,abi_variables)
 
@@ -1836,8 +1837,8 @@ df_pdm_2020 &lt;- df_pdm_2020 %&gt;%
   )
 expss::val_lab(df_pdm_2020$ABIProteger)</code></pre>
 </div>
-<div id="pdm-2021" class="section level2" number="1.7">
-<h2><span class="header-section-number">1.7</span> PDM 2021</h2>
+<div id="pdm-2021" class="section level2" number="0.8">
+<h2><span class="header-section-number">0.8</span> PDM 2021</h2>
 <pre class="r"><code>df_pdm_2021 = Chad_pdm_2021 %&gt;% 
   dplyr::select(ID,abi_variables)
 
@@ -1866,9 +1867,9 @@ df_pdm_2021 &lt;- df_pdm_2021 %&gt;%
   )
 expss::val_lab(df_pdm_2021$ABIProteger)</code></pre>
 </div>
-<div id="pdm-2022" class="section level2" number="1.8">
-<h2><span class="header-section-number">1.8</span> PDM 2022</h2>
-<pre class="r"><code>df_pdm_2022 = Chad_pdm_2022 %&gt;% 
+<div id="pdm-2022" class="section level2" number="0.9">
+<h2><span class="header-section-number">0.9</span> PDM 2022</h2>
+<pre class="r"><code>df_pdm_2022 = Chad_pdm_2022 %&gt;% labelled::to_factor() %&gt;%
   dplyr::select(ID,abi_variables)
 
 all_missing_cols &lt;- df_pdm_2022 %&gt;%
@@ -1896,9 +1897,9 @@ df_pdm_2022 &lt;- df_pdm_2022 %&gt;%
   )
 expss::val_lab(df_pdm_2022$ABIProteger)</code></pre>
 </div>
-<div id="pdm-2023" class="section level2" number="1.9">
-<h2><span class="header-section-number">1.9</span> PDM 2023</h2>
-<pre class="r"><code>df_pdm_2023 = Chad_pdm_2023 %&gt;% 
+<div id="pdm-2023" class="section level2" number="0.10">
+<h2><span class="header-section-number">0.10</span> PDM 2023</h2>
+<pre class="r"><code>df_pdm_2023 = Chad_pdm_2023 %&gt;%  
   dplyr::select(ID,abi_variables)
 
 all_missing_cols &lt;- df_pdm_2023 %&gt;%
@@ -1920,8 +1921,8 @@ df_pdm_2023 &lt;- df_pdm_2023 %&gt;%
   )
 expss::val_lab(df_pdm_2023$ABIProteger)</code></pre>
 </div>
-<div id="merging-all-data" class="section level2" number="1.10">
-<h2><span class="header-section-number">1.10</span> Merging all
+<div id="merging-all-data" class="section level2" number="0.11">
+<h2><span class="header-section-number">0.11</span> Merging all
 data</h2>
 <pre class="r"><code>df_Chad&lt;-plyr::rbind.fill(df_2019,
                           df_2020,
@@ -1985,7 +1986,6 @@ var_label(df_Chad$HHWorkAsset) &lt;- &quot;Do you think that the works undertake
 <pre class="r"><code>df_Chad = df_Chad %&gt;% 
   distinct()</code></pre>
 <pre class="r"><code>haven::write_dta(df_Chad,paste0(dir_output_data,&quot;/&quot;,&quot;WFP_Chad_ABI.dta&quot;))</code></pre>
-</div>
 </div>
 
 
