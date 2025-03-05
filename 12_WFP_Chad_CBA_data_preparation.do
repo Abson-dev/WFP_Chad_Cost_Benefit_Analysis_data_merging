@@ -1262,7 +1262,7 @@ replace village ="N'GUISKA"  if village == "GUISKA"
 
 //
 tab ADMIN2Name adm2_ocha  if village == "TOBO"
-tab ADMIN2Name adm2_ocha  if village == "ZOBO"
+tab ADMIN2Name adm2_ocha  if village == "ZOBO" // not the same
 
 tab ADMIN2Name adm2_ocha  if village == "MOUN KOURA"
 tab ADMIN2Name adm2_ocha  if village == "MOUNKOURA"
@@ -1282,7 +1282,7 @@ tab ADMIN2Name adm2_ocha  if village == "TCHIRI OUADACHARI"
 tab ADMIN2Name adm2_ocha  if village == "TCHIRI OUDACHARI"
 replace village ="TCHIRI OUDACHARI"  if village == "TCHIRI OUADACHARI"
 replace adm1_ocha ="TD06"  if village == "TCHIRI OUDACHARI"
-replace adm1_ocha ="TD0601"  if village == "TCHIRI OUDACHARI"
+replace adm2_ocha ="TD0601"  if village == "TCHIRI OUDACHARI"
 replace ADMIN1Name ="Kanem"  if village == "TCHIRI OUDACHARI"
 
 
@@ -1337,21 +1337,31 @@ replace village ="MALIAROM"  if village == "MALIA BAGA"
 replace village ="MALIAROM"  if village == "MALIA DOUMOU"
 replace village ="MALIAROM"  if village == "MALIA KOUFOUMI"
 
+tab ADMIN2Name adm2_ocha  if village == "GORMOLO DOUNGOUS"
+tab ADMIN2Name adm2_ocha  if village == "GORMOLO GOUWEY"
+replace village ="GORMOLO"  if village == "GORMOLO DOUNGOUS"
+replace village ="GORMOLO"  if village == "GORMOLO GOUWEY"
 
-GORMOLO DOUNGOUS
-GORMOLO GOUWEY
+tab ADMIN2Name adm2_ocha  if village == "ARADID"
+tab ADMIN2Name adm2_ocha  if village == "ARADIP" // not the same
 
-ARADID
-ARADIP
 
-AMSAWASSIL HARAZAYE
-AMSAWASSIL NIMAYE
+tab ADMIN2Name adm2_ocha  if village == "AMSAWASSIL HARAZAYE"
+tab ADMIN2Name adm2_ocha  if village == "AMSAWASSIL NIMAYE"
+replace village ="AMSAWASSIL"  if village == "AMSAWASSIL HARAZAYE"
+replace village ="AMSAWASSIL"  if village == "AMSAWASSIL NIMAYE"
 
-AMDADAYE
-AMBADAYE
+tab ADMIN2Name adm2_ocha  if village == "AMDADAYE"
+tab ADMIN2Name adm2_ocha  if village == "AMBADAYE"
+replace village ="AMBADAYE"  if village == "AMDADAYE"
+replace adm2_ocha ="TD0101"  if village == "AMBADAYE"
+replace ADMIN1Name ="Batha Ouest"  if village == "AMBADAYE"
 
-AFFANINE AMBOUS
-AFFANINE GIÈRE
+
+tab ADMIN2Name adm2_ocha  if village == "AFFANINE AMBOUS"
+tab ADMIN2Name adm2_ocha  if village == "AFFANINE GIÈRE"
+replace village ="AFFANINE"  if village == "AFFANINE AMBOUS"
+replace village ="AFFANINE"  if village == "AFFANINE GIÈRE"
 tab village
 
 // save 
