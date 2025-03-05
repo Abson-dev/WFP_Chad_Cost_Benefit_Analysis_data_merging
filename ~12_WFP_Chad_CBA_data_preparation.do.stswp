@@ -1362,6 +1362,17 @@ tab ADMIN2Name adm2_ocha  if village == "AFFANINE AMBOUS"
 tab ADMIN2Name adm2_ocha  if village == "AFFANINE GIÈRE"
 replace village ="AFFANINE"  if village == "AFFANINE AMBOUS"
 replace village ="AFFANINE"  if village == "AFFANINE GIÈRE"
+
+
+tab ADMIN2Name adm2_ocha  if village == "KOUNOUNGOU  KEBIR"
+tab ADMIN2Name adm2_ocha  if village == "CAMP DE KOUNOUNGOU"
+replace village ="KOUNOUNGOU"  if village == "KOUNOUNGOU  KEBIR"
+replace village ="KOUNOUNGOU"  if village == "CAMP DE KOUNOUNGOU"
+
+tab ADMIN2Name adm2_ocha  if village == "KEKEDINA"
+tab ADMIN2Name adm2_ocha  if village == "KEKEDINA CENTRE"
+replace village ="KEKEDINA"  if village == "KEKEDINA CENTRE"
+
 tab village
 
 // save 
