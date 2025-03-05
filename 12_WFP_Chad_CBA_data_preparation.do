@@ -1253,6 +1253,106 @@ household is located |      Freq.     Percent        Cum.
                Total |         41      100.00
 
 */
+tab ADMIN2Name adm2_ocha  if village == "NGUISKA"
+tab ADMIN2Name adm2_ocha  if village == "N'GUISKA"
+replace village ="N'GUISKA"  if village == "NGUISKA"
+tab ADMIN2Name adm2_ocha  if village == "GUISKA"
+replace village ="N'GUISKA"  if village == "GUISKA"
+
+
+//
+tab ADMIN2Name adm2_ocha  if village == "TOBO"
+tab ADMIN2Name adm2_ocha  if village == "ZOBO"
+
+tab ADMIN2Name adm2_ocha  if village == "MOUN KOURA"
+tab ADMIN2Name adm2_ocha  if village == "MOUNKOURA"
+replace village ="MOUN KOURA"  if village == "MOUNKOURA"
+//
+tab ADMIN2Name adm2_ocha  if village == "NGOUIGA NORD"
+tab ADMIN2Name adm2_ocha  if village == "NGOUIGA SUD"
+replace village ="NGOUIGA"  if village == "NGOUIGA NORD"
+replace village ="NGOUIGA"  if village == "NGOUIGA SUD"
+
+tab ADMIN2Name adm2_ocha  if village == "TCHOUKOU"
+tab ADMIN2Name adm2_ocha  if village == "TCHOUKOUDOUM"
+replace village ="TCHOUKOUDOUM"  if village == "TCHOUKOU"
+
+
+tab ADMIN2Name adm2_ocha  if village == "TCHIRI OUADACHARI"
+tab ADMIN2Name adm2_ocha  if village == "TCHIRI OUDACHARI"
+replace village ="TCHIRI OUDACHARI"  if village == "TCHIRI OUADACHARI"
+replace adm1_ocha ="TD06"  if village == "TCHIRI OUDACHARI"
+replace adm1_ocha ="TD0601"  if village == "TCHIRI OUDACHARI"
+replace ADMIN1Name ="Kanem"  if village == "TCHIRI OUDACHARI"
+
+
+
+
+tab ADMIN2Name adm2_ocha  if village == "CAMP DE DJABAL"
+tab ADMIN2Name adm2_ocha  if village == "DJABALE"
+replace village ="DJABALE"  if village == "CAMP DE DJABAL"
+
+
+tab ADMIN2Name adm2_ocha  if village == "BORORID"
+tab ADMIN2Name adm2_ocha  if village == "BRORICK"
+replace village ="BRORICK"  if village == "BORORID"
+tab ADMIN2Name adm2_ocha  if village == "BRERID"
+replace village ="BRORICK"  if village == "BRERID"
+
+
+tab ADMIN2Name adm2_ocha  if village == "OGUIDÉ GOURANE"
+tab ADMIN2Name adm2_ocha  if village == "OGUIDÉ TAMA"
+replace village ="OGUIDÉ"  if village == "OGUIDÉ GOURANE"
+replace village ="OGUIDÉ"  if village == "OGUIDÉ TAMA"
+
+
+tab ADMIN2Name adm2_ocha  if village == "MOUN DOSSOULOUM"
+tab ADMIN2Name adm2_ocha  if village == "MOUN KOURA"
+replace village ="MOUN"  if village == "MOUN DOSSOULOUM"
+replace village ="MOUN"  if village == "MOUN KOURA"
+
+
+tab ADMIN2Name adm2_ocha  if village == "MILE DOURNE"
+tab ADMIN2Name adm2_ocha  if village == "MILE KORGNÉ"
+tab ADMIN2Name adm2_ocha  if village == "CAMP DE MILÉ"
+replace village ="MILÉ"  if village == "MILE DOURNE"
+replace village ="MILÉ"  if village == "MILE KORGNÉ"
+replace village ="MILÉ"  if village == "CAMP DE MILÉ"
+
+
+tab ADMIN2Name adm2_ocha  if village == "MASSILALA BIDILA"
+tab ADMIN2Name adm2_ocha  if village == "MASSILALA KIDRI"
+tab ADMIN2Name adm2_ocha  if village == "MASSILALA KOLOGO"
+replace village ="MASSILALA"  if village == "MASSILALA BIDILA"
+replace village ="MASSILALA"  if village == "MASSILALA KIDRI"
+replace village ="MASSILALA"  if village == "MASSILALA KOLOGO"
+
+
+tab ADMIN2Name adm2_ocha  if village == "MALIA BAGA"
+tab ADMIN2Name adm2_ocha  if village == "MALIA DOUMOU"
+tab ADMIN2Name adm2_ocha  if village == "MALIA KOUFOUMI"
+tab ADMIN2Name adm2_ocha  if village == "MALIA YALA"
+tab ADMIN2Name adm2_ocha  if village == "MALIAROM"
+replace village ="MALIAROM"  if village == "MALIA BAGA"
+replace village ="MALIAROM"  if village == "MALIA DOUMOU"
+replace village ="MALIAROM"  if village == "MALIA KOUFOUMI"
+
+
+GORMOLO DOUNGOUS
+GORMOLO GOUWEY
+
+ARADID
+ARADIP
+
+AMSAWASSIL HARAZAYE
+AMSAWASSIL NIMAYE
+
+AMDADAYE
+AMBADAYE
+
+AFFANINE AMBOUS
+AFFANINE GIÈRE
+tab village
 
 // save 
 save "$output_data\WFP_Chad_admin.dta",replace
