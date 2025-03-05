@@ -1,7 +1,7 @@
 ---
 title: "WFP datasets wrangling - Chad : HDDS"
 author: "Aboubacar HEMA"
-date: "`r Sys.Date()`"
+date: "2025-03-05"
 output: 
   html_document:
     toc: true
@@ -14,17 +14,11 @@ output:
 
 
 
-```{r setup, include=FALSE, results = 'hide'}
-knitr::opts_chunk$set(
-	echo = TRUE,
-	message = FALSE,
-	warning = FALSE,
-  results = "hide"
-)
-```
 
 
-```{r packages needed}
+
+
+```r
 library(haven)
 library(labelled) # for general functions to work with labelled data
 library(tidyverse) # general wrangling
@@ -41,18 +35,19 @@ library(stringr)
 
 
 
-```{r}
+
+```r
 rm(list = ls())
 ```
 
-```{r environment settings}
 
+```r
 dir_input_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/input_data/Chad"
 dir_output_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/output_data/Chad"
 ```
 
-```{r read harmonization excel file}
 
+```r
 Chad_Harmonization_variables <- read_excel(paste0(dir_input_data,"/Chad_Harmonization.xlsx"), 
     sheet = "variables_harmonization")
 #View(Chad_Harmonization_variables)
@@ -62,8 +57,8 @@ Chad_Harmonization_description <- read_excel(paste0(dir_input_data,"/Chad_Harmon
 #View(Chad_Harmonization_description)
 ```
 
-```{r data importation}
 
+```r
 lst_data = Chad_Harmonization_description$Data
 lst_test = Chad_Harmonization_description$Name
 
@@ -71,12 +66,12 @@ for(i in 1:length(lst_data)) {                              # Head of for-loop
   assign(lst_test[i],                                   # Read and store data frames
          read_sav(paste0(dir_input_data,"/",lst_data[i])))
 }
-
 ```
 
 # Data consistency  Check
 
-```{r}
+
+```r
 Chad_baseline_2018$ID <- Chad_baseline_2018$`@_id`
 Chad_ea_2019$ID <- Chad_ea_2019$`@_id`
 Chad_ea_2020$ID <- Chad_ea_2020$Identifiant
@@ -117,55 +112,15 @@ Chad_ea_2023$ADMIN1Name <- Chad_ea_2023$ADMIN1Name
 
 ## Drop duplicated observations
 
-```{r eval=FALSE, include=FALSE}
-Chad_baseline_2018 <- Chad_baseline_2018 %>% dplyr::distinct() %>% dplyr::filter(!is.na(ADMIN1Name))
-Chad_ea_2019 <- Chad_ea_2019 %>% dplyr::distinct() %>% dplyr::filter(!is.na(ADMIN1Name))
-Chad_ea_2020 <- Chad_ea_2020 %>% dplyr::distinct() %>% dplyr::filter(!is.na(ADMIN1Name))
-Chad_ea_2021 <- Chad_ea_2021 %>% dplyr::distinct() %>% dplyr::filter(!is.na(ADMIN1Name))
-Chad_ea_2022 <- Chad_ea_2022 %>% dplyr::distinct() %>% dplyr::filter(!is.na(ADMIN1Name))
-Chad_ea_2023 <- Chad_ea_2023 %>% dplyr::distinct() %>% dplyr::filter(!is.na(ADMIN1Name))
-Chad_pdm_2020 <- Chad_pdm_2020 %>% dplyr::distinct() %>% dplyr::filter(!is.na(ADMIN1Name))
-Chad_pdm_2021 <- Chad_pdm_2021 %>% dplyr::distinct() %>% dplyr::filter(!is.na(ADMIN1Name))
-Chad_pdm_2022 <- Chad_pdm_2022 %>% dplyr::distinct() %>% dplyr::filter(!is.na(ADMIN1Name))
 
-Chad_pdm_2023 <- Chad_pdm_2023 %>% dplyr::distinct() %>% dplyr::filter(!is.na(ADMIN1Name))
-```
 
 ## Consent check
 
-```{r eval=FALSE, include=FALSE}
-Chad_baseline_2018 <- Chad_baseline_2018  %>% filter(RESPConsent == 1)
-#Chad_ea_2019 <- Chad_ea_2019  %>% filter(RESPConsent == "Oui")
-Chad_ea_2020 <- Chad_ea_2020  %>% filter(RESPConsent == 1)
-#Chad_ea_2021 <- Chad_ea_2021  %>% filter(RESPConsent =="")
-Chad_ea_2022 <- Chad_ea_2022 %>% filter(RESPConsent == 2)
-Chad_ea_2023 <- Chad_ea_2023 %>% filter(RESPConsent == 1)
-#Chad_pdm_2020 <- Chad_pdm_2020  %>% filter(RESPConsent =="")
-Chad_pdm_2021 <- Chad_pdm_2021  %>% filter(RESPConsent == 1)
-Chad_pdm_2022 <- Chad_pdm_2022  %>% filter(RESPConsent == 2)
-Chad_pdm_2023 <- Chad_pdm_2023  %>% filter(RESPConsent == 1)
-```
+
 
 ## ID Check 
 
-```{r eval=FALSE, include=FALSE}
-Chad_baseline_2018 <- Chad_baseline_2018 %>% dplyr::distinct(ID,.keep_all = TRUE) %>% dplyr::filter(!is.na(ID))
-Chad_ea_2019 <- Chad_ea_2019 %>% dplyr::distinct(ID,.keep_all = TRUE) %>% dplyr::filter(!is.na(ID))
-Chad_ea_2020 <- Chad_ea_2020 %>% dplyr::distinct(ID,.keep_all = TRUE) %>% dplyr::filter(!is.na(ID))
-Chad_ea_2021 <- Chad_ea_2021 %>% dplyr::distinct(ID,.keep_all = TRUE) %>% dplyr::filter(!is.na(ID))
-Chad_ea_2022 <- Chad_ea_2022 %>% dplyr::distinct(ID,.keep_all = TRUE) %>% dplyr::filter(!is.na(ID)) 
 
-Chad_ea_2023 <- Chad_ea_2023 %>% dplyr::distinct(ID,.keep_all = TRUE) %>% dplyr::filter(!is.na(ID)) 
-
-Chad_pdm_2020 <- Chad_pdm_2020 %>% dplyr::distinct(ID,.keep_all = TRUE) %>% dplyr::filter(!is.na(ID)) 
-Chad_pdm_2021 <- Chad_pdm_2021 %>% dplyr::distinct(ID,.keep_all = TRUE) %>% dplyr::filter(!is.na(ID)) 
-#Chad_pdm_2022 <- Chad_pdm_2022 %>% dplyr::distinct(ID,.keep_all = TRUE) %>% dplyr::filter(!is.na(ID)) 
-
-Chad_pdm_2023 <- Chad_pdm_2023 %>% dplyr::distinct(ID,.keep_all = TRUE) %>% dplyr::filter(!is.na(ID))
-Chad_pdm_2022$ID <- 1:nrow(Chad_pdm_2022)
-Chad_pdm_2022 <- labelled::to_factor(Chad_pdm_2022)
-
-```
 
 
 
@@ -174,9 +129,8 @@ Chad_pdm_2022 <- labelled::to_factor(Chad_pdm_2022)
 ## HDDS Check
 
 
-```{r}
 
-
+```r
 df_Chad_pdm_2023=Chad_pdm_2023 %>%
  dplyr::select("ID",starts_with("HDDS"))
 
@@ -208,7 +162,8 @@ df_Chad_ea_2022=Chad_ea_2022 %>%
 ```
 
 
-```{r}
+
+```r
 hdds_var = df_Chad_ea_2022 %>% 
   dplyr::select(starts_with("HDDS")) %>% names()
 
@@ -228,8 +183,8 @@ df_Chad_pdm_2023 <- df_Chad_pdm_2023 %>%
 ```
 
 
-```{r}
 
+```r
 selected_var <- df_Chad_ea_2022 %>%
   select_if(~ any(. == 2)) %>% names()
 
@@ -263,7 +218,8 @@ df_Chad_pdm_2022 <- df_Chad_pdm_2022 %>%
 
 
 
-```{r}
+
+```r
 WFP_Chad_HDDS<-plyr::rbind.fill(df_Chad_ea_2022,
                                 df_Chad_ea_2023,
                                 df_Chad_pdm_2022,
@@ -279,7 +235,8 @@ WFP_Chad_HDDS$HDDS <- as.numeric(WFP_Chad_HDDS$HDDS)
 ```
 
 
-```{r}
+
+```r
 #calculate HDDS first by creating the 12 groups based on the 16 questions
 WFP_Chad_HDDS <- WFP_Chad_HDDS %>% mutate(
   HDDSStapCer_calc = case_when(HDDSStapCer == 1 ~ 1, TRUE ~ 0),
@@ -304,9 +261,8 @@ var_label(WFP_Chad_HDDS$HDDS_hema) <- "Hosehold Dietary Diversity Score"
 
 ## Export all data
 
-```{r}
 
-
+```r
 write_sav(WFP_Chad_HDDS, paste0(dir_output_data,"/WFP_Chad_HDDS.sav"))
 write_dta(WFP_Chad_HDDS, paste0(dir_output_data,"/WFP_Chad_HDDS.dta"))
 ```

@@ -8,7 +8,7 @@
 # Version of code : 2.0.0
 # Description:
 # Last edited by : Aboubacar Hema
-# Data used:
+# Imput data used:
 
 				WFP_Chad_admin.dta
 				WFP_Chad_assistance.dta
@@ -19,6 +19,19 @@
 				WFP_Chad_SERS.dta
 				WFP_Chad_ABI.dta
 				WFP_Chad_HDDS.dta
+				
+# Output data produced:
+
+				WFP_Chad_admin.dta
+				WFP_Chad_assistance.dta
+				WFP_Chad_FCS.dta
+				WFP_Chad_HH.dta
+				WFP_Chad_LhCSI.dta
+				WFP_Chad_rCSI.dta
+				WFP_Chad_SERS.dta
+				WFP_Chad_ABI.dta
+				WFP_Chad_HDDS.dta	
+				WFP_Chad_2018-2023_20250305
 #################################### Africa #########################################
 */
 
@@ -33,7 +46,12 @@ format current_datetime %td
 display "$current_datetime"
 */
 
-// #################################### Africa #########################################
+/*
+
+********************************************************************************
+*					  Duplicate rows and some inconsistencies
+*******************************************************************************/
+
 // Import WFP admin data
 use "$input_data\WFP_Chad_admin.dta",clear
 
@@ -67,27 +85,17 @@ drop if adm1_ocha == ""
 //or
 drop if ID == "41057035"
 drop dup_flag
-// save 
-save "$output_data\WFP_Chad_admin.dta",replace
- 
-merge 1:1 ID using "$input_data\WFP_Chad_assistance.dta"
-drop _m
-merge 1:m ID using "C:\Users\AHema\OneDrive - CGIAR\Desktop\WFP Resilience dataset\data\output_data\Chad\Common labels data\WFP_Chad_SERS.dta"
-drop _m
 
-merge 1:1 ID using "C:\Users\AHema\OneDrive - CGIAR\Desktop\WFP Resilience dataset\data\output_data\Chad\Common labels data\WFP_Chad_ABI.dta"
-drop _m
-
-order ID SvyDatePDM YEAR SURVEY ADMIN0Name adm0_ocha ADMIN1Name adm1_ocha ADMIN2Name adm2_ocha village Longitude Latitude Longitude_precision Latitude_precision
-br
-
+//convert the variable YEAR from string to numeric while replacing the original variable
 destring YEAR, replace
-//// Admin
-	label var ID "ID"
-	label var SvyDatePDM "Interview date"
-	label var ADMIN1Name "In which ADMIN1Name is the household located?"
-	label var ADMIN2Name "In which ADMIN2Name is the household located?"
-	label var village "In which village is the household located?"
+
+//assign labels
+label var ID "Household ID"
+label var SvyDatePDM "Interview Date"
+label var ADMIN1Name "Region (ADMIN1) where the household is located"
+label var ADMIN2Name "District (ADMIN2) where the household is located"
+label var village "Village where the household is located"
+
 	
 /*
 Barh El Gazel Sud	TCD1901
@@ -96,21 +104,29 @@ Barh El Gazel Ouest	TCD1903
 
 */	
 ********************************************************************************
-*					  Village
+*					  Correct inconsistencies in Village and Admin 2 variables
 *******************************************************************************/
 tab village
-replace village = "MANDABA" if village == "0" & YEAR == 2021 & SURVEY=="Enquête annuelle" // 1 observation, I found the village name in other variable in the original dataset.
-replace village = "UNKNOWN" if village==""
+
+//Replaces missing values with "UNKNOWN"
+replace village = "UNKNOWN" if missing(village)
 tab village
-replace village = regexr(village, "[0-9]", "")
+
+//remove any numeric digits (0-9) from the village variable using regular expressions
+replace village = ustrregexra(village, "[0-9]", "")
 tab village
+
+//Replaces missing values with "UNKNOWN"
+replace village = "UNKNOWN" if missing(village)
+tab village
+
+//remove leading and trailing spaces from the village variable
 replace village = trim(village)
 tab village
-/*
-replace village = subinstr(village, " ", "", .)
-tab village
-*/
-tab YEAR SURVEY if village=="" | village=="UNKNOWN"
+
+//generate a cross-tabulation of YEAR and SURVEY, but with a condition filtering cases where village is either empty ("") or "UNKNOWN"
+tab YEAR SURVEY if missing(village) | village == "UNKNOWN"
+
 /*
           |    Type d'enquête
      Annee | Enquête..        PDM |     Total
@@ -122,65 +138,21 @@ tab YEAR SURVEY if village=="" | village=="UNKNOWN"
      Total |       118         36 |       154 
 */
 
+
+
+//Sort the dataset by YEAR and SURVEY
 sort YEAR SURVEY
+
+//Reorder the variables
 order ID SvyDatePDM YEAR SURVEY ADMIN0Name adm0_ocha ADMIN1Name adm1_ocha ADMIN2Name adm2_ocha village Longitude Latitude Longitude_precision Latitude_precision
 
-
+//relationship between adm1_ocha and adm2_ocha to display counts of how often each combination of values in adm1_ocha and adm2_ocha occurs
 table (adm1_ocha adm2_ocha)
 
 
-//PDM 2020
-tab village if 	adm2_ocha == ""
-/*
+tab village if missing(adm2_ocha)
 
- In which village is |
-       the household |
-            located? |      Freq.     Percent        Cum.
----------------------+-----------------------------------
-              ABGARA |          2        0.74        0.74
-         AMCHALAKHAT |          2        0.74        1.48
-            AMCHARMA |          1        0.37        1.85
-             AMCHOKA |          2        0.74        2.58
-            AMDAKOUR |          5        1.85        4.43
-          AMDJOUFOUR |          1        0.37        4.80
-             ANGOULO |          7        2.58        7.38
-               ATILO |         11        4.06       11.44
-               BARDE |          1        0.37       11.81
-        BIBI BARRAGE |          2        0.74       12.55
-          BOULOUNGOU |         12        4.43       16.97
-      BRÉGUÉ BIRGUIT |          4        1.48       18.45
-             CHAOUIR |          5        1.85       20.30
-          DANKOUTCHE |          4        1.48       21.77
-            DOURBANE |          3        1.11       22.88
-           FORKOULOM |         10        3.69       26.57
-                GAMÉ |         10        3.69       30.26
-            GOUM EST |          3        1.11       31.37
-          GOUM OUEST |          3        1.11       32.47
-             KADJALA |          7        2.58       35.06
-           KAMKALAGA |          9        3.32       38.38
-           KOKORDEYE |          3        1.11       39.48
-             KONDOKO |         24        8.86       48.34
-            KOULKIME |          5        1.85       50.18
-           KOURSIGUE |         12        4.43       54.61
-              MALLAH |          5        1.85       56.46
-             MANDABA |          9        3.32       59.78
-            NGOUBOUA |          8        2.95       62.73
-                TABO |         15        5.54       68.27
-             TARKAMA |          2        0.74       69.00
-             TCHALLA |         13        4.80       73.80
-       TCHARIKOURATI |          2        0.74       74.54
-             TONGOLI |          1        0.37       74.91
-             UNKNOWN |         35       12.92       87.82
-         WADICHAGARA |         15        5.54       93.36
-          WALDALMARA |          8        2.95       96.31
-             WOLEROM |          6        2.21       98.52
-                ZOBO |          4        1.48      100.00
----------------------+-----------------------------------
-               Total |        271      100.00
-
-*/
-
-tab YEAR SURVEY if 	adm2_ocha == ""
+tab YEAR SURVEY if 	missing(adm2_ocha)
 /*
 
            |    Type
@@ -193,6 +165,12 @@ tab YEAR SURVEY if 	adm2_ocha == ""
 
 
 */
+count if missing(adm2_ocha) & YEAR == 2020 & SURVEY == "PDM"
+
+tab village if missing(adm2_ocha) & YEAR == 2020 & SURVEY == "PDM"
+
+// We will fill Admin 2 information using village name
+
 tab ADMIN2Name adm2_ocha  if village == "ABGARA"
 /*
 
@@ -779,7 +757,7 @@ tab adm2_ocha if village == "TCHIRI OUDACHERI",m
 replace adm2_ocha ="TD0601"  if village == "TCHIRI OUDACHARI"
 tab ADMIN2Name if village == "TCHIRI OUDACHERI",m
 replace ADMIN2Name ="Kanem"  if village == "TCHIRI OUDACHERI"
-replace village ="TCHIRI OUDACHARI"  if village == "TCHIRI OUADACHARI"
+replace village ="TCHIRI OUDACHARI"  if village == "TCHIRI OUDACHERI"
 replace ADMIN2Name ="Kanem"  if village == "TCHIRI OUDACHARI"
 replace adm2_ocha ="TD0601"  if village == "TCHIRI OUDACHARI"
 
@@ -891,7 +869,10 @@ replace ADMIN2Name ="Guera"  if adm2_ocha =="TD0401"  & village == "GAMÉ"
 
 tab village
 tab ADMIN2Name,m
-tab village if ADMIN2Name ==""
+tab village if missing(adm2_ocha) & YEAR == 2020 & SURVEY == "PDM"
+replace village ="TCHIRI OUDACHARI"  if village == "TCHIRI OUDACHERI" & missing(adm2_ocha) & YEAR == 2020 & SURVEY == "PDM"
+replace ADMIN2Name ="Kanem"  if village == "TCHIRI OUDACHARI" &  missing(adm2_ocha) & YEAR == 2020 & SURVEY == "PDM"
+replace adm2_ocha ="TD0601"  if village == "TTCHIRI OUDACHARI" &  missing(adm2_ocha) & YEAR == 2020 & SURVEY == "PDM"
 
 
 
@@ -1257,32 +1238,341 @@ tab ADMIN2Name adm2_ocha  if village == "YABARKA"
 //
 tab ID if village == "UNKNOWN" & SURVEY == "PDM" & YEAR == 2020
 
-/// Assistency
+tab village if missing(adm2_ocha) & YEAR == 2020 & SURVEY == "PDM"
+
+tab village if missing(adm2_ocha)
 /*
 
-//keep if YEAR == 2023
-
-tab1 TransfBenef BanqueCerealiere VivreContreTravail ArgentContreTravail DistribVivresSoudure DistribArgentSoudure BoursesAdo BlanketFeedingChildren BlanketFeedingWomen MAMChildren MASChildren MAMPLWomen FARNcommunaut FormationRenfCapacite CashTransfert CantineScolaire AutreTransferts
-
-
-
-tab1 TransfBenef BanqueCerealiere VivreContreTravail ArgentContreTravail DistribVivresSoudure DistribArgentSoudure BoursesAdo BlanketFeedingChildren BlanketFeedingWomen MAMChildren MASChildren MAMPLWomen FARNcommunaut FormationRenfCapacite CashTransfert CantineScolaire AutreTransferts,nolab
+   Village where the |
+household is located |      Freq.     Percent        Cum.
+---------------------+-----------------------------------
+            GOUM EST |          3        7.32        7.32
+          GOUM OUEST |          3        7.32       14.63
+             UNKNOWN |         35       85.37      100.00
+---------------------+-----------------------------------
+               Total |         41      100.00
 
 */
 
+// save 
+save "$output_data\WFP_Chad_admin.dta",replace
+
+/////////////
+// Import WFP_Chad_assistance data
+use "$input_data\WFP_Chad_assistance.dta",clear
+
+//Identify Duplicate Rows
+duplicates report
+
+//List Duplicate Rows
+duplicates list ID
+
+//create a new variable that flags duplicate rows
+duplicates tag, generate(dup_flag)
+/*
+- dup_flag will be 0 for unique rows.
+- It will be 1 or higher for duplicates.
+*/
+//list only the duplicate rows:
+list ID if dup_flag > 0
+
+//remove duplicate rows while keeping the first occurrence
+duplicates drop ID, force
+
+br if ID == "41057035"
+drop if ID == "41057035"
+drop dup_flag
+// save 
+save "$output_data\WFP_Chad_assistance.dta",replace
+
+
+/////////////
+// Import WFP_Chad_HH data
+use "$input_data\WFP_Chad_HH.dta",clear
+
+//Identify Duplicate Rows
+duplicates report
+
+//List Duplicate Rows
+duplicates list ID
+
+//create a new variable that flags duplicate rows
+duplicates tag, generate(dup_flag)
+/*
+- dup_flag will be 0 for unique rows.
+- It will be 1 or higher for duplicates.
+*/
+//list only the duplicate rows:
+list ID if dup_flag > 0
+
+//remove duplicate rows while keeping the first occurrence
+duplicates drop ID, force
+
+br if ID == "41057035"
+drop if ID == "41057035"
+drop dup_flag
+// save 
+save "$output_data\WFP_Chad_HH.dta",replace
+
+
+//////////////////////
+
+/////////////
+// Import WFP_Chad_FCS data
+use "$input_data\WFP_Chad_FCS.dta",clear
+
+//Identify Duplicate Rows
+duplicates report
+
+//List Duplicate Rows
+duplicates list ID
+
+//create a new variable that flags duplicate rows
+duplicates tag, generate(dup_flag)
+/*
+- dup_flag will be 0 for unique rows.
+- It will be 1 or higher for duplicates.
+*/
+//list only the duplicate rows:
+list ID if dup_flag > 0
+
+//remove duplicate rows while keeping the first occurrence
+duplicates drop ID, force
+
+br if ID == "41057035"
+drop if ID == "41057035"
+drop dup_flag
+// save 
+save "$output_data\WFP_Chad_FCS.dta",replace
+
+
+/////////////
+// Import WFP_Chad_LhCSI data
+use "$input_data\WFP_Chad_LhCSI.dta",clear
+
+//Identify Duplicate Rows
+duplicates report
+
+//List Duplicate Rows
+duplicates list ID
+
+//create a new variable that flags duplicate rows
+duplicates tag, generate(dup_flag)
+/*
+- dup_flag will be 0 for unique rows.
+- It will be 1 or higher for duplicates.
+*/
+//list only the duplicate rows:
+list ID if dup_flag > 0
+
+//remove duplicate rows while keeping the first occurrence
+duplicates drop ID, force
+
+br if ID == "41057035" // here he answered for this section
+drop if ID == "41057035"
+drop dup_flag
+// save 
+save "$output_data\WFP_Chad_LhCSI.dta",replace
+
+
+/////////////
+// Import WFP_Chad_rCSI data
+use "$input_data\WFP_Chad_rCSI.dta",clear
+
+//Identify Duplicate Rows
+duplicates report
+
+//List Duplicate Rows
+duplicates list ID
+
+//create a new variable that flags duplicate rows
+duplicates tag, generate(dup_flag)
+/*
+- dup_flag will be 0 for unique rows.
+- It will be 1 or higher for duplicates.
+*/
+//list only the duplicate rows:
+list ID if dup_flag > 0
+
+//remove duplicate rows while keeping the first occurrence
+duplicates drop ID, force
+
+br if ID == "41057035"
+drop if ID == "41057035"
+drop dup_flag
+// save 
+save "$output_data\WFP_Chad_rCSI.dta",replace
+
+
+/////////////
+// Import WFP_Chad_ABI data
+use "$input_data\WFP_Chad_ABI.dta",clear
+
+//Identify Duplicate Rows
+duplicates report
+
+//List Duplicate Rows
+duplicates list ID
+
+//create a new variable that flags duplicate rows
+duplicates tag, generate(dup_flag)
+/*
+- dup_flag will be 0 for unique rows.
+- It will be 1 or higher for duplicates.
+*/
+//list only the duplicate rows:
+list ID if dup_flag > 0
+
+//remove duplicate rows while keeping the first occurrence
+duplicates drop ID, force
+
+br if ID == "41057035"
+drop if ID == "41057035"
+drop dup_flag
+// save 
+save "$output_data\WFP_Chad_ABI.dta",replace
+
+
+/////////////
+// Import WFP_Chad_SERS data
+use "$input_data\WFP_Chad_SERS.dta",clear
+
+//Identify Duplicate Rows
+duplicates report
+
+//List Duplicate Rows
+duplicates list ID
+
+//create a new variable that flags duplicate rows
+duplicates tag, generate(dup_flag)
+/*
+- dup_flag will be 0 for unique rows.
+- It will be 1 or higher for duplicates.
+*/
+//list only the duplicate rows:
+list ID if dup_flag > 0
+
+//remove duplicate rows while keeping the first occurrence
+duplicates drop ID, force
+
+br if ID == "41057035"
+drop if ID == "41057035"
+drop dup_flag
+// save 
+save "$output_data\WFP_Chad_SERS.dta",replace
+
+/////////////
+// Import WFP_Chad_HDDS data
+use "$input_data\WFP_Chad_HDDS.dta",clear
+
+//Identify Duplicate Rows
+duplicates report
+
+//List Duplicate Rows
+duplicates list ID
+
+//create a new variable that flags duplicate rows
+duplicates tag, generate(dup_flag)
+/*
+- dup_flag will be 0 for unique rows.
+- It will be 1 or higher for duplicates.
+*/
+//list only the duplicate rows:
+list ID if dup_flag > 0
+
+//remove duplicate rows while keeping the first occurrence
+duplicates drop ID, force
+
+br if ID == "41057035"
+drop if ID == "41057035"
+drop dup_flag
+// save 
+save "$output_data\WFP_Chad_HDDS.dta",replace
+
+/////////////////////////////////////////////////////////////
+
+
+
+
+
+
+////////////////////////////////////////////////////////////
+//loads  WFP_Chad_admin dataset
+use "$output_data\WFP_Chad_admin.dta",clear
+merge 1:1 ID using "$output_data\WFP_Chad_assistance.dta"
+tab _merge
+drop _m
+
+//
+merge 1:1 ID using "$output_data\WFP_Chad_FCS.dta"
+tab _merge
+drop _m
+
+//
+merge 1:1 ID using "$output_data\WFP_Chad_HH.dta"
+tab _merge
+drop _m
+
+//
+merge 1:1 ID using "$output_data\WFP_Chad_LhCSI.dta"
+tab _merge
+drop _m
+
+
+//
+merge 1:1 ID using "$output_data\WFP_Chad_rCSI.dta"
+tab _merge
+drop _m
+
+
+
+//
+merge 1:1 ID using "$output_data\WFP_Chad_SERS.dta"
+tab _merge
+drop _m
+
+
+//
+merge 1:1 ID using "$output_data\WFP_Chad_ABI.dta"
+tab _merge
+drop _m
+
+//
+merge 1:1 ID using "$output_data\WFP_Chad_HDDS.dta"
+tab _merge
+drop _m
+
+
+
+//Sort the dataset by YEAR and SURVEY
+sort YEAR SURVEY
+
+//Reorder the variables
+order ID SvyDatePDM YEAR SURVEY ADMIN0Name adm0_ocha ADMIN1Name adm1_ocha ADMIN2Name adm2_ocha village Longitude Latitude Longitude_precision Latitude_precision
+
+
+
+*------------------------------------------------------------------------------*
+
+*	                        
+*                     WFP Assistencies
+
+*------------------------------------------------------------------------------
+
+// Correct WFP 2023 intervention labels values
 foreach var of varlist TransfBenef BanqueCerealiere VivreContreTravail ArgentContreTravail DistribVivresSoudure DistribArgentSoudure BoursesAdo BlanketFeedingChildren BlanketFeedingWomen MAMChildren MASChildren MAMPLWomen FARNcommunaut FormationRenfCapacite CashTransfert CantineScolaire AutreTransferts { 
-
-recode `var' (1=1) (2=3) (3=4) if YEAR == 2023
-
+    recode `var' (1 = 1) (2 = 3) (3 = 4) if YEAR == 2023
 }
 
 
+//creates a label definition
 lab def assistency 1"Oui PAM" 2"Oui Autre" 3"Non" 4"Ne Sait Pas"
+
+//apply the label definition
 foreach var of varlist TransfBenef BanqueCerealiere VivreContreTravail ArgentContreTravail DistribVivresSoudure DistribArgentSoudure BoursesAdo BlanketFeedingChildren BlanketFeedingWomen MAMChildren MASChildren MAMPLWomen FARNcommunaut FormationRenfCapacite CashTransfert CantineScolaire AutreTransferts { 
-
-lab val `var' assistency 
-
+    label values `var' assistency
 }
+
 order DateDerniereAssist DateDerniereAssist_other Montant TransfBenef BanqueCerealiere VivreContreTravail ArgentContreTravail DistribVivresSoudure DistribArgentSoudure BoursesAdo BlanketFeedingChildren BlanketFeedingWomen MAMChildren MASChildren MAMPLWomen FARNcommunaut FormationRenfCapacite CashTransfert CantineScolaire AutreTransferts
 
 
@@ -1322,24 +1612,24 @@ tab WFP_beneciary
 tab DateDerniereAssist_other WFP_beneciary	if WFP_beneciary == 0
 
 foreach var of varlist TransfBenef BanqueCerealiere VivreContreTravail ArgentContreTravail DistribVivresSoudure DistribArgentSoudure BoursesAdo BlanketFeedingChildren BlanketFeedingWomen MAMChildren MASChildren MAMPLWomen FARNcommunaut FormationRenfCapacite CashTransfert CantineScolaire AutreTransferts { 
-
-recode `var' (1=3) (2=3) (4=3) if WFP_beneciary == 0
-
+    recode `var' (1 = 3) (2 = 3) (4 = 3) if WFP_beneciary == 0
 }
 
-/*
-keep if WFP_beneciary == 0
-tab1 TransfBenef - AutreTransferts
-*/
-//lab def assistency 1"Oui PAM" 2"Oui Autre" 3"Non" 4"Ne Sait Pas"
+
 foreach var of varlist TransfBenef BanqueCerealiere VivreContreTravail ArgentContreTravail DistribVivresSoudure DistribArgentSoudure BoursesAdo BlanketFeedingChildren BlanketFeedingWomen MAMChildren MASChildren MAMPLWomen FARNcommunaut FormationRenfCapacite CashTransfert CantineScolaire AutreTransferts { 
-
-lab val `var' assistency 
-
+    label values `var' assistency
 }
 
-//drop WFP_beneciary
-/// HH
+
+drop WFP_beneciary
+
+
+*------------------------------------------------------------------------------*
+
+*	                        
+*                     Household information
+
+*------------------------------------------------------------------------------
 
 order HHHSex HHHAge HHHEdu HHHMainActivity HHHMatrimonial HHSourceIncome
 	label var HHSize "household size"
@@ -1368,71 +1658,14 @@ order HHSize HHSize05M HHSize23M HHSize59M HHSize5114M HHSize1549M HHSize5064M H
 	label var HHSize5064F "Women aged 50 to 64"
 	label var HHSize65AboveF "Women aged 65 and over"
 
-///WFP_Chad_key_indicators*
-/*
-
-*------------------------------------------------------------------------------*
-
-*	                        
-*                     Calculating Food Consumption Score (FCS)
-
-*-----------------------------------------------------------------------------
-
-** Load data
-* ---------
-use "C:\Users\AHema\OneDrive - CGIAR\Desktop\WFP Resilience dataset\data\output_data\Chad\Common labels data\WFP_Chad_key_indicators.dta" , clear
-tab1 FCSStap-LhCSIEmergency3
-
-tab1 FCSStap-LhCSIEmergency3,nola
-
-tab1 FCSStap FCSPulse FCSDairy FCSPr FCSVeg FCSFruit  FCSFat FCSSugar FCSCond
-
-** Label FCS relevant variables
-	label var FCSStap		"Consumption over the past 7 days: cereals, grains and tubers"
-	label var FCSPulse		"Consumption over the past 7 days: pulses"
-	label var FCSDairy		"Consumption over the past 7 days: dairy products"
-	label var FCSPr			"Consumption over the past 7 days: meat, fish and eggs"
-	label var FCSVeg		"Consumption over the past 7 days: vegetables"
-	label var FCSFruit		"Consumption over the past 7 days: fruit"
-	label var FCSFat		"Consumption over the past 7 days: fat and oil"
-	label var FCSSugar		"Consumption over the past 7 days: sugaror sweets"
-	label var FCSCond		"Consumption over the past 7 days: condiments or spices"
-
-** Clean and recode missing values
-	recode FCSStap FCSVeg FCSFruit FCSPr FCSPulse FCSDairy FCSFat FCSSugar (. = 0)
-
-** Create FCS 
-	gen FCS_hema = (FCSStap * 2) + (FCSPulse * 3) + (FCSDairy * 4) + (FCSPr * 4) + 	///
-			  (FCSVeg  * 1) + (FCSFruit * 1) + (FCSFat * 0.5) + (FCSSugar * 0.5)	  
-
-	label var FCS_hema "Food Consumption Score"
-
-** Create FCG groups based on 21/35 or 28/42 thresholds
-*** Use this when analyzing a country with low consumption of sugar and oil
-
-*** thresholds 21-35
-	gen FCSCat21 = cond(FCS_hema <= 21, 1, cond(FCS_hema <= 35, 2, 3))
-	label var FCSCat21 "FCS Categories, thresholds 21-35"
-
-*** thresholds 28-42
-	gen FCSCat28 = cond(FCS_hema <= 28, 1, cond(FCS_hema <= 42, 2, 3))
-	label var FCSCat28 "FCS Categories, thresholds 28-42"
-
-
-*** define variables labels and properties for "FCS Categories"
-	label def FCSCat 1 "Poor" 2 "Borderline" 3 "Acceptable"
-	label val FCSCat21 FCSCat28 FCSCat
-	
-* ---------
-** End of Scripts
-*/
-
 *------------------------------------------------------------------------------*
 
 *	                        
 *                     Food Consumption Score (FCS)
 
 *-----------------------------------------------------------------------------
+
+
 ** Label FCS relevant variables
 	label var FCSStap		"Consumption over the past 7 days: cereals, grains and tubers"
 	label var FCSPulse		"Consumption over the past 7 days: pulses"
@@ -1458,40 +1691,40 @@ tab1 FCSStap FCSPulse FCSDairy FCSPr FCSVeg FCSFruit  FCSFat FCSSugar FCSCond
 	label var SCA	"Food Consumption Score"
 	label var FCS	"Food Consumption Score"	
 	label var FCSCondSRf	"Source: condiments or spices"	
+	
 *Values labels: 
 //Food acquisition codes
 lab def food_acquisition 1"Own production (crops, animal)" 2"Fishing / Hunting " 3"Gathering" 4"Loan" 5"market (purchase with cash)" 6"market (purchase on credit)" 7"begging for food" 8"exchange labor or items for food" 9"gift (food) from family relatives or friends" 10"food aid from civil society, NGOs, government, WFP etc"
+
 foreach var of varlist FCSStapSRf FCSPulseSRf FCSDairySRf FCSPrSRf FCSVegSRf FCSFruitSRf FCSFatSRf FCSSugarSRf FCSCondSRf { 
-
-lab val `var' food_acquisition 
-
-} 	
-order SCA FCS FCS_hema FCSCat21 FCSCat28  FCSStap FCSStapSRf FCSPulse FCSPulseSRf FCSDairy FCSDairySRf FCSPr FCSPrSRf FCSPrMeatF FCSPrMeatO FCSPrFish FCSPrEgg FCSVeg FCSVegSRf FCSVegOrg FCSVegGre FCSFruit FCSFruitSRf FCSFruitOrg FCSFat FCSFatSRf FCSSugar FCSSugarSRf FCSCond FCSCondSRf
-
-
-tab1 FCSStapSRf
-
-tab1 FCSStapSRf,nolab
-********************************************************************************
-*						reduced Coping Strategy Index (rCSI)
-*******************************************************************************/
-order rCSI_hema rCSI rCSILessQlty rCSIBorrow rCSIMealSize rCSIMealAdult rCSIMealNb
+    label values `var' food_acquisition
+}
+ 	
+order SCA FCS FCS_hema FCSCat21 FCSCat28  FCSStap FCSStapSRf FCSPulse FCSPulseSRf FCSDairy FCSDairySRf FCSPr FCSPrSRf FCSPrMeatF FCSPrMeatO FCSPrFish FCSPrEgg FCSVeg FCSVegSRf FCSVegOrg FCSVegGre FCSFruit FCSFruitSRf FCSFruitOrg FCSFat FCSFatSRf FCSSugar FCSSugarSRf FCSCond FCSCondSRf	
 
 
+*------------------------------------------------------------------------------*
 
-********************************************************************************
- *        Livelihood Coping Strategy for Food Security (LCS-FS) indicator
- *******************************************************************************
- 
+*	                        
+*                     reduced Coping Strategy Index (rCSI)
 
+*-----------------------------------------------------------------------------
+order rCSI rCSILessQlty rCSIBorrow rCSIMealSize rCSIMealAdult rCSIMealNb	
+
+
+*------------------------------------------------------------------------------*
+
+*	                        
+*           Livelihood Coping Strategy for Food Security (LCS-FS) indicator
+
+*-----------------------------------------------------------------------------	
 *Values labels: 
 
 lab def LcsEN_label 1"No, because I did not need to" 2"No, because I already sold those assets or have engaged in this activity within the last 12 months and cannot continue to do it" 3"Yes" 4"Not applicable (don't have children/these assets)" 
 foreach var of varlist LhCSIStress1 LhCSIStress2 LhCSIStress3 LhCSIStress4 LhCSICrisis1 LhCSICrisis2 LhCSICrisis3 LhCSIEmergency1 LhCSIEmergency2 LhCSIEmergency3 { 
+    label values `var' LcsEN_label
+}
 
-lab val `var' LcsEN_label 
-
-} 	
 	
 
 	label var LhCSIStress1 "Sold household assets/goods (radio, furniture, refrigerator, television, jewellery etc.) due to lack of food"
@@ -1505,11 +1738,16 @@ lab val `var' LcsEN_label
 	label var LhCSIEmergency2 "Begged and/or scavenged (asked strangers for money/food) due to lack of food"
 	label var LhCSIEmergency3 "Engaged in illegal income activities (theft, prostitution) due to lack of food"
  
-order LhCSIStress1 LhCSIStress2 LhCSIStress3 LhCSIStress4 LhCSICrisis1 LhCSICrisis2 LhCSICrisis3 LhCSIEmergency1 LhCSIEmergency2 LhCSIEmergency3 stress_coping_FS crisis_coping_FS emergency_coping_FS Max_coping_behaviourFS
+/*
+order LhCSIStress1 LhCSIStress2 LhCSIStress3 LhCSIStress4 LhCSICrisis1 LhCSICrisis2 LhCSICrisis3 LhCSIEmergency1 LhCSIEmergency2 LhCSIEmergency3 stress_coping_FS crisis_coping_FS emergency_coping_FS Max_coping_behaviourFS	
+*/	
 
-********************************************************************************
-*					  (HDDS): "Household Dietary Diversity Score"
-*******************************************************************************/
+*------------------------------------------------------------------------------*
+
+*	                        
+*                     (HDDS): "Household Dietary Diversity Score"
+
+*-----------------------------------------------------------------------------
 label var   HDDS     "Household Dietary Diversity Score"
 label var   HDDSStapCer     "household eat/consume the following foods yesterday: Rice, pasta, bread, sorghum, millet, maize."
 label var   HDDSStapRoot     "household eat/consume the following foods yesterday: Potato, yam, cassava, white sweet potato."
@@ -1535,15 +1773,12 @@ order HDDS_hema HDDS HDDS_CH HDDSCat_IPC HDDSStapCer HDDSStapRoot HDDSPulse HDDS
 
 drop HDDSVegAll - HDDSCond_calc
 
-rename HDDS_hema HDDS_New
-rename rCSI_hema rCSI_New
-rename FCS_hema FCS_New
+*------------------------------------------------------------------------------*
 
-********************************************************************************
-*					  (ABI): "ASSET BENEFIT INDICATOR"
-*******************************************************************************/
+*	                        
+*                    (ABI): "ASSET BENEFIT INDICATOR"
 
- 
+*-----------------------------------------------------------------------------
 
 
 lab var ABIProteger         "Do you think that the assets that have been created or rehabilitated in your community are likely to protect your household, its property and its production capacity (fields, equipment, etc.) against floods/droughts/disasters?"
@@ -1563,24 +1798,14 @@ tab ABIScore,m
 tab YEAR SURVEY if ABIScore==.
 
 tab1 ABIProteger ABIProduction ABIdifficultes ABIMarches ABIGererActifs ABIEnvironnement ABIutiliseractifs ABITensions ActifCreationEmploi BeneficieEmploi TRavailMaintienActif
-/*
-
-           |    Type
-           | d'enquête
-     Annee |  Baseline |     Total
------------+-----------+----------
-      2018 |     3,979 |     3,979 
------------+-----------+----------
-     Total |     3,979 |     3,979 
 
 
-*/
+*------------------------------------------------------------------------------*
 
-********************************************************************************
-*					  SER
-*******************************************************************************/
+*	                        
+*                    Self-evaluated resilience score
 
-
+*-----------------------------------------------------------------------------
 //https://github.com/WFP-VAM/RAMResourcesScripts/blob/main/Indicators/Resilience-capacity-score/RCS-indicator-calculation.do
 
 lab var SERSRebondir         "Your household can bounce back from any climatic, economic or socio-political challenge that life may throw at it.    "
@@ -1628,20 +1853,8 @@ egen RCS= rowtotal(HHRCSBounce HHRCSRevenue HHRCSIncrease HHRCSFinAccess HHRCSSu
 replace RCS=(100-0)*((RCS/9)-5)/(1-5) + 0 if temp_nonmiss_numberHHRCS!=0
 replace RCS=. if temp_nonmiss_numberHHRCS==0
 label var RCS "Resilience Capacity Score"
-//drop RCS
-//br RCS
- tab YEAR SURVEY if RCS==.
-/*
-           |          Type d'enquête
-     Annee |  Baseline  Enquête..        PDM |     Total
------------+---------------------------------+----------
-      2018 |     3,979          0          0 |     3,979 
-      2019 |         0        775          0 |       775 
-      2020 |         0          0        271 |       271 
-      2021 |         0          0        785 |       785 
------------+---------------------------------+----------
-     Total |     3,979        775      1,056 |     5,810 
-*/
+
+tab YEAR SURVEY if RCS==.
 /*
 Once the RCS is calculated, households are divided in terciles (low-medium-high) to show the distribution of the RCS within the target population. Therefore:
 	 if RCS<33 the household is categorized as reporting a low RCS,
@@ -1709,26 +1922,18 @@ putexcel B7=matrix(RCS), nformat("#.0 %")
 
 
 
-
-
-
-// drop 
-drop FCS
-rename SCA FCS
-
+//Sort the dataset by YEAR and SURVEY
 sort YEAR SURVEY
+
+//Reorder the variables
 order ID SvyDatePDM YEAR SURVEY ADMIN0Name adm0_ocha ADMIN1Name adm1_ocha ADMIN2Name adm2_ocha village Longitude Latitude Longitude_precision Latitude_precision
 
-
-//egen round = group(YEAR SURVEY)
-save "C:\Users\AHema\OneDrive - CGIAR\Desktop\2024\WFP\CBA - Chad\data\WFP_Chad_2018-2023_20250304.dta", replace
+save "$output_data\WFP_Chad_2018-2023_20250305.dta",replace
 *** ----------------------------------------------------------------------------------------------------------------*
 
 ***	                 		IPC/CH Information
 
 *** ----------------------------------------------------------------------------------------------------------------*
-
-
 
 gen month_survey = month(SvyDatePDM)
 tab month_survey,m
@@ -1746,6 +1951,35 @@ tab YEAR SURVEY if month_survey ==.
 
 */
 replace month_survey = 8 if month_survey ==.
+//Meeting Abel/Aboubacar on 22 May 2024 and  28 May 2024, 11h for clarifications
+/*
+Two times per year
+-	July-August for PDM :lean season
+-	December for enquête annuelle
+*/
+tab month_survey SURVEY,m  
+/*
+
+month_surv |          Type d'enquête
+        ey |  Baseline  Enquête..        PDM |     Total
+-----------+---------------------------------+----------
+         1 |         4      3,428          0 |     3,432 
+         2 |         0        169          1 |       170 
+         4 |         0          0          2 |         2 
+         5 |         0          1          0 |         1 
+         6 |         0          0          2 |         2 
+         7 |         0          0         43 |        43 
+         8 |         0          0      4,454 |     4,454 
+         9 |         3          0      1,002 |     1,005 
+        10 |         6          2          0 |         8 
+        11 |     3,639        774          0 |     4,413 
+        12 |       327      3,398          0 |     3,725 
+-----------+---------------------------------+----------
+     Total |     3,979      7,772      5,504 |    17,255 
+
+We need to recode some month_survey to ajust with SURVEY timing
+*/
+
 replace month_survey = 8 if (month_survey == 2 | month_survey == 4 | month_survey == 6) & SURVEY == "PDM"
 replace month_survey = 11 if (month_survey == 1 | month_survey == 9 | month_survey == 10) & SURVEY == "Baseline"
 replace month_survey = 12 if (month_survey == 1 | month_survey == 2 | month_survey == 5 | month_survey == 10) & SURVEY == "Enquête annuelle"
@@ -1758,14 +1992,14 @@ tab exercise_code
 gen newvar = string(YEAR) + string(exercise_code) + adm2_ocha
 tab newvar
 drop exercise_code
-save "C:\Users\AHema\OneDrive - CGIAR\Desktop\2024\WFP\CBA - Chad\data\WFP_Chad_2018-2023_20250304.dta", replace
+save "$output_data\WFP_Chad_2018-2023_20250305.dta",replace
 //////////////////////////////////////////////////
 /*
 The Cadre Harmonise leads two cycle of analyses every year. One around October/November (after the publication of harvest forecasts and the results of nutrition and market surveys), and one around February/March (after the publication of the final results of agricultural production and any new data on nutrition, HEA, food consumption, etc.). The validity periods of the analyses are the same every year and they cover: March-May (current) and June-August (projection) for the March cycle, and October-December (current) and June-August (projection) for the November cycle of analysis.
 */
 
 
-import excel "C:\Users\AHema\OneDrive - CGIAR\Desktop\2024\WFP\CBA - Chad\data\cadre_harmonise_caf_ipc_mar24_final_ver-2.xlsx", sheet("Sheet1") firstrow clear
+import excel "$output_data\cadre_harmonise_caf_ipc_mar24_final_ver-2.xlsx", sheet("Sheet1") firstrow clear
 
 keep if adm0_pcod2 == "TD" & exercise_year >= 2017 & exercise_year != 2024
 tab exercise_label exercise_year
@@ -1803,11 +2037,11 @@ drop adm0_5_name adm0_5_pcod2 adm1_5_name adm1_5_pcod2 adm2_5_name adm2_5_pcod2
 drop adm3_pcod2 adm0_pcod3
 compare exercise_code reference_code
 drop adm3_name
-save "C:\Users\AHema\OneDrive - CGIAR\Desktop\2024\WFP\CBA - Chad\data\cadre_harmonise_caf_ipc_mar24_final.dta",replace
+save "$output_data\cadre_harmonise_caf_ipc_mar24_final.dta",replace
 gen newvar = string(exercise_year) + string(exercise_code) + adm2_pcod2
 tab newvar
 
-merge 1:m newvar using "C:\Users\AHema\OneDrive - CGIAR\Desktop\2024\WFP\CBA - Chad\data\WFP_Chad_2018-2023_20250304.dta"
+merge 1:m newvar using "$output_data\WFP_Chad_2018-2023_20250305.dta"
 /*
 
     Result                      Number of obs
@@ -1826,5 +2060,5 @@ sort YEAR SURVEY
 order ID SvyDatePDM YEAR SURVEY ADMIN0Name adm0_ocha ADMIN1Name adm1_ocha ADMIN2Name adm2_ocha village Longitude Latitude Longitude_precision Latitude_precision
 drop newvar
 drop p_p*
-save "C:\Users\AHema\OneDrive - CGIAR\Desktop\2024\WFP\CBA - Chad\data\WFP_Chad_2018-2023_20250304.dta", replace
+save "$output_data\WFP_Chad_2018-2023_20250305.dta",replace
 //////////////////////////////////////////////////
