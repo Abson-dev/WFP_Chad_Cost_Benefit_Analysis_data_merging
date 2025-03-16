@@ -31,7 +31,7 @@
 				WFP_Chad_SERS.dta
 				WFP_Chad_ABI.dta
 				WFP_Chad_HDDS.dta	
-				WFP_Chad_2018-2023_20250305
+				WFP_Chad_2018-2023_20250314
 #################################### Africa #########################################
 */
 
@@ -237,6 +237,10 @@ In which ADMIN2Name |
 replace adm2_ocha ="TD0102"  if village == "AMCHOKA"
 replace ADMIN2Name ="Batha Est"  if adm2_ocha == "TD0102" & village == "AMCHOKA"
 
+tab ADMIN2Name adm2_ocha if village == "AMCHOKA DINEGUISS",m
+replace village = "AMCHOKA" if village == "AMCHOKA DINEGUISS"
+tab ADMIN2Name adm2_ocha if village == "AMCHOKA",m
+tab ADMIN1Name adm1_ocha if village == "AMCHOKA",m
 
 tab ADMIN2Name adm2_ocha if village == "AMDAKOUR",m
 /*
@@ -587,6 +591,9 @@ In which ADMIN2Name |
 
 replace adm2_ocha ="TD1702"  if village == "KONDOKO"
 replace ADMIN2Name ="Dar-Tama"  if adm2_ocha =="TD1702"  & village == "KONDOKO"
+tab ADMIN1Name adm1_ocha if village == "KONDOKO",m
+replace adm1_ocha ="TD17"  if  village == "KONDOKO"
+replace ADMIN1Name ="Wadi Fira"  if  village == "KONDOKO"
 
 tab ADMIN2Name adm2_ocha if village == "KOULKIME",m
 /*
@@ -760,6 +767,9 @@ replace ADMIN2Name ="Kanem"  if village == "TCHIRI OUDACHERI"
 replace village ="TCHIRI OUDACHARI"  if village == "TCHIRI OUDACHERI"
 replace ADMIN2Name ="Kanem"  if village == "TCHIRI OUDACHARI"
 replace adm2_ocha ="TD0601"  if village == "TCHIRI OUDACHARI"
+replace ADMIN1Name ="Kanem"  if village == "TCHIRI OUDACHARI"
+replace adm1_ocha ="TD06"  if village == "TCHIRI OUDACHARI"
+
 
 tab ADMIN2Name adm2_ocha if village == "TONGOLI",m
 /*
@@ -793,7 +803,8 @@ In which ADMIN2Name |
 */
 replace adm2_ocha ="TD1902"  if village == "WADICHAGARA"
 replace ADMIN2Name ="Barh-El-Gazel Sud"  if adm2_ocha =="TD1902"  & village == "WADICHAGARA"
-
+replace adm1_ocha ="TD19"  if village == "WADICHAGARA"
+replace ADMIN1Name ="Barh-El-Gazel"  if village == "WADICHAGARA"
 
 tab ADMIN2Name adm2_ocha if village == "WALDALMARA",m
 /*
@@ -923,14 +934,15 @@ tab ADMIN2Name adm2_ocha  if village == "AMBADAYE"
 replace adm1_ocha ="TD01"  if village == "AMBADAYE"
 replace ADMIN1Name ="Batha"  if village == "AMBADAYE"
 replace adm2_ocha ="TD0101"  if village == "AMBADAYE"
-replace ADMIN1Name ="Batha Ouest"  if village == "AMBADAYE"
+//replace ADMIN1Name ="Batha Ouest"  if village == "AMBADAYE"
+replace ADMIN2Name ="Batha Ouest"  if village == "AMBADAYE"
 //
 tab SURVEY YEAR  if village == "AMDAYE" //1 observation
 tab ADMIN2Name adm2_ocha  if village == "AMDAYE"
 replace adm1_ocha ="TD01"  if village == "AMDAYE"
 replace ADMIN1Name ="Batha"  if village == "AMDAYE"
 replace adm2_ocha ="TD0101"  if village == "AMDAYE"
-replace ADMIN1Name ="Batha Ouest"  if village == "AMDAYE"
+replace ADMIN2Name ="Batha Ouest"  if village == "AMDAYE"
 replace village ="AMBADAYE"  if village == "AMDAYE"
 
 //
@@ -969,7 +981,8 @@ tab SURVEY YEAR  if village == "ARADIP" //more admin2
 tab ADMIN2Name adm2_ocha  if village == "ARADIP"
 replace adm2_ocha ="TD0101"  if village == "ARADIP"
 replace ADMIN2Name ="Batha Ouest"  if village == "ARADIP"
-
+replace adm1_ocha ="TD01"  if village == "ARADIP"
+replace ADMIN1Name ="Batha"  if village == "ARADIP"
 //
 tab SURVEY YEAR  if village == "ARTCHINA" //1 observation
 tab ADMIN2Name adm2_ocha  if village == "ARTCHINA"
@@ -992,14 +1005,17 @@ tab ADMIN2Name adm2_ocha  if village == "BAOUDA"
 replace adm2_ocha ="TD0101"  if village == "BAOUDA"
 replace ADMIN2Name ="Batha Ouest"  if village == "BAOUDA"
 replace adm1_ocha ="TD01"  if village == "BAOUDA"
-
+replace ADMIN1Name ="Batha"  if village == "BAOUDA"
 //
 tab SURVEY YEAR  if village == "BARARINGUÉ" //1 observation
 tab ADMIN2Name adm2_ocha  if village == "BARARINGUÉ"
 tab village if adm2_ocha == "TD1702"
 replace village ="KONDOKO"  if village == "KNDOKO"
 replace village ="KONDOKO"  if village == "KODOUGOU"
-
+replace adm2_ocha ="TD1702"  if village == "KONDOKO"
+replace ADMIN2Name ="Dar-Tama"  if village == "KONDOKO"
+replace adm2_ocha ="TD1702"  if village == "KONDOKO"
+replace ADMIN2Name ="Dar-Tama"  if village == "KONDOKO"
 
 tab SURVEY YEAR  if village == "BARKADOUSSOU" //more admin2
 tab ADMIN2Name adm2_ocha  if village == "BARKADOUSSOU"
@@ -1051,7 +1067,7 @@ tab SURVEY YEAR  if village == "IWIRI" //2 observation
 tab SURVEY YEAR  if village == "KABARE" //more admin2
 tab ADMIN2Name adm2_ocha  if village == "KABARE"
 replace adm2_ocha ="TD0102"  if village == "KABARE"
-replace ADMIN2Name ="Batha Ouest"  if village == "KABARE"
+replace ADMIN2Name ="Batha Est"  if village == "KABARE"
 
 tab SURVEY YEAR  if village == "KADARANG" //2 observation
 tab ADMIN2Name adm2_ocha  if village == "KANGALIA"
@@ -1089,10 +1105,12 @@ replace village ="DEBE"  if village == "DEBE FOROU"
 replace village ="DEBE"  if village == "DEBE IMARI"
 replace village ="DEBE"  if village == "DEBE TOUKOULMOU"
 replace village ="FASSALADJOUL"  if village == "EASSALAFJOUL"
-/*
+
 replace adm2_ocha ="TD0601"  if village == "KOUNOUSSI"
 replace ADMIN2Name ="Kanem"  if village == "KOUNOUSSI"
-*/
+replace adm1_ocha ="TD06"  if village == "KOUNOUSSI"
+replace ADMIN1Name ="Kanem"  if village == "KOUNOUSSI"
+
 replace village ="N'GORLOLI"  if village == "NGORLOLI"
 
 tab ADMIN2Name adm2_ocha  if village == "KOÏDÉ"
@@ -1115,8 +1133,9 @@ replace ADMIN1Name ="Ouaddai"  if village == "MALANGA"
 
 
 tab ADMIN2Name adm2_ocha  if village == "MALMARI"
+tab YEAR SURVEY if  village == "MALMARI"
 replace adm2_ocha ="TD0703"  if village == "MALMARI"
-replace ADMIN2Name ="Mamdi"  if village == "MALMARI"
+replace ADMIN2Name ="Kaya"  if village == "MALMARI"
 replace adm1_ocha ="TD07"  if village == "MALMARI"
 replace ADMIN1Name ="Lac"  if village == "MALMARI"
 
@@ -1222,6 +1241,11 @@ replace ADMIN2Name ="Wayi"  if village == "UNKNOWN" & SURVEY == "PDM" & YEAR == 
 replace adm1_ocha ="TD07"  if village == "UNKNOWN" & SURVEY == "PDM" & YEAR == 2022
 replace ADMIN1Name ="Lac"  if village == "UNKNOWN" & SURVEY == "PDM" & YEAR == 2022
 replace village ="ISSEROM"  if village == "UNKNOWN" & SURVEY == "PDM" & YEAR == 2022
+replace adm2_ocha ="TD0702"  if village == "ISSEROM"
+replace ADMIN2Name ="Wayi"  if village == "ISSEROM"
+replace adm1_ocha ="TD07"  if village == "ISSEROM"
+replace ADMIN1Name ="Lac"  if village == "ISSEROM"
+replace village = "ISSEIROM" if village == "ISSEROM"
 
 // I need to check EN 2021 with 
 tab ID if village == "UNKNOWN" & SURVEY == "Enquête annuelle" & YEAR == 2021
@@ -1284,6 +1308,7 @@ replace village ="TCHIRI OUDACHARI"  if village == "TCHIRI OUADACHARI"
 replace adm1_ocha ="TD06"  if village == "TCHIRI OUDACHARI"
 replace adm2_ocha ="TD0601"  if village == "TCHIRI OUDACHARI"
 replace ADMIN1Name ="Kanem"  if village == "TCHIRI OUDACHARI"
+replace ADMIN2Name ="Kanem"  if village == "TCHIRI OUDACHARI"
 
 
 
@@ -1355,8 +1380,8 @@ tab ADMIN2Name adm2_ocha  if village == "AMDADAYE"
 tab ADMIN2Name adm2_ocha  if village == "AMBADAYE"
 replace village ="AMBADAYE"  if village == "AMDADAYE"
 replace adm2_ocha ="TD0101"  if village == "AMBADAYE"
-replace ADMIN1Name ="Batha Ouest"  if village == "AMBADAYE"
-
+//replace ADMIN1Name ="Batha Ouest"  if village == "AMBADAYE", not correct
+replace ADMIN2Name ="Batha Ouest"  if village == "AMBADAYE"
 
 tab ADMIN2Name adm2_ocha  if village == "AFFANINE AMBOUS"
 tab ADMIN2Name adm2_ocha  if village == "AFFANINE GIÈRE"
@@ -1392,6 +1417,24 @@ tab ADMIN2Name adm2_ocha if village == "AMDJOUFOUR"
 tab ADMIN2Name adm2_ocha if village == "HONDJEFOUR"
 replace village ="AMDJOUFOUR"  if village == "HONDJEFOUR"
 
+
+tab ADMIN2Name adm2_ocha if village == "DAR ES SALAM"
+// in the community excel file it corresponds to DARSALAM
+replace adm1_ocha ="TD07"  if village == "DAR ES SALAM"
+replace adm2_ocha ="TD0703"  if village == "DAR ES SALAM"
+replace ADMIN1Name ="Lac"  if village == "DAR ES SALAM"
+replace ADMIN2Name ="Kaya"  if village == "DAR ES SALAM"
+
+
+
+
+
+tab ADMIN2Name adm2_ocha if village == "DOUMBA"
+replace adm1_ocha ="TD07"  if village == "DOUMBA"
+replace adm2_ocha ="TD0701"  if village == "DOUMBA"
+replace ADMIN1Name ="Lac"  if village == "DOUMBA"
+replace ADMIN2Name ="Mamdi"  if village == "DOUMBA"
+
 tab village
 
 tab adm2_ocha,m
@@ -1402,6 +1445,65 @@ count if village == "UNKNOWN" & missing(adm2_ocha)
 tab SURVEY YEAR if village == "UNKNOWN"
 replace village =""  if village == "UNKNOWN"
 tab village,m
+
+
+tab ADMIN1Name adm1_ocha, m 
+tab ADMIN2Name adm2_ocha, m           
+table (village adm2_ocha)
+table (adm1_ocha adm2_ocha)
+tab village if adm1_ocha == "TD14" & adm2_ocha == "TD1702"
+/*
+MALMARI
+-	according to article on reliefweb (link below), it looks like it is south of Fourkoulom
+assignement : Mamdi (TD0701)/Lac(TD07)
+
+*/
+tab ADMIN2Name adm2_ocha if village == "MALMARI"
+replace adm1_ocha ="TD07"  if village == "MALMARI"
+replace adm2_ocha ="TD0701"  if village == "MALMARI"
+replace ADMIN1Name ="Lac"  if village == "MALMARI"
+replace ADMIN2Name ="Mamdi"  if village == "MALMARI"
+tab ADMIN2Name adm2_ocha if village == "MALMARI"
+tab ADMIN1Name adm1_ocha if village == "MALMARI"
+
+/*
+DAR ES SALAM
+-	according to report of OCR, the location of the camp is north of Baga Sola (exact georeferences are given)
+assignement : Kaya (TD0703)/Lac(TD07)
+*/
+tab ADMIN2Name adm2_ocha if village == "DAR ES SALAM"
+replace adm1_ocha ="TD07"  if village == "DAR ES SALAM"
+replace adm2_ocha ="TD0703"  if village == "DAR ES SALAM"
+replace ADMIN1Name ="Lac"  if village == "DAR ES SALAM"
+replace ADMIN2Name ="Kaya"  if village == "DAR ES SALAM"
+tab ADMIN2Name adm2_ocha if village == "DAR ES SALAM"
+tab ADMIN1Name adm1_ocha if village == "DAR ES SALAM"
+
+/*
+KONDOKO: -	this looks to be KANDOKO
+
+*/
+
+replace village = "KANDOKO" if village == "KONDOKO"
+tab ADMIN2Name adm2_ocha if village == "KANDOKO"
+tab ADMIN1Name adm1_ocha if village == "KANDOKO"
+replace adm1_ocha ="TD17"  if village == "KANDOKO"
+replace adm2_ocha ="TD1702"  if village == "KANDOKO"
+replace ADMIN1Name ="Wadi Fira"  if village == "KANDOKO"
+replace ADMIN2Name ="Dar-Tama"  if village == "KANDOKO"
+tab ADMIN2Name adm2_ocha if village == "KANDOKO"
+tab ADMIN1Name adm1_ocha if village == "KANDOKO"
+
+
+
+tab ADMIN1Name adm1_ocha, m 
+tab ADMIN2Name adm2_ocha, m           
+table (village adm2_ocha)
+table (adm1_ocha adm2_ocha)
+
+
+
+
 // save 
 save "$output_data\WFP_Chad_admin.dta",replace
 
@@ -1746,21 +1848,317 @@ order DateDerniereAssist DateDerniereAssist_other Montant TransfBenef BanqueCere
 	label var CantineScolaire "School canteen for children or take-home ration"
 	label var AutreTransferts "Other transaction"
 
+//Last assistance received from WFP
+tab DateDerniereAssist if YEAR!=2018,m
+/*
+
+      Last assistance |
+   received from WFP  |      Freq.     Percent        Cum.
+----------------------+-----------------------------------
+  moins d'une semaine |      1,750       13.18       13.18
+entre 1 et 3 semaines |      2,215       16.68       29.87
+   plus de 3 semaines |      5,241       39.48       69.34
+                Other |      2,048       15.43       84.77
+                    . |      2,022       15.23      100.00
+----------------------+-----------------------------------
+                Total |     13,276      100.00
+
+*/
+//"Last assistance received from WFP : Other"	
 tab DateDerniereAssist_other
 replace DateDerniereAssist_other = lower(DateDerniereAssist_other)
 replace DateDerniereAssist_other = trim(DateDerniereAssist_other)  // Removes leading and trailing spaces
 tab DateDerniereAssist_other	
-gen WFP_beneciary = .
-replace WFP_beneciary = 0 if regexm(DateDerniereAssist_other, "temoin|temoi|non|pas|aucun|aucune|jamais") & YEAR!=2018
-replace WFP_beneciary = 1 if regexm(DateDerniereAssist_other, "passée") & WFP_beneciary == 0
-replace WFP_beneciary = 1 if missing(WFP_beneciary)	& YEAR!=2018 
-//drop WFP_beneciary  depuis l'année passé
-tab WFP_beneciary
+gen WFP_assistency = .
+replace WFP_assistency = 0 if regexm(DateDerniereAssist_other, "temoin|temoi|non|pas|aucun|aucune|jamais") & YEAR!=2018
+replace WFP_assistency = 1 if regexm(DateDerniereAssist_other, "passée") & WFP_assistency == 0
+replace WFP_assistency = 1 if missing(WFP_assistency)	& YEAR!=2018 
+//drop WFP_assistency  
+tab WFP_assistency
 
-tab DateDerniereAssist_other WFP_beneciary	if WFP_beneciary == 0
+tab DateDerniereAssist_other WFP_assistency	if WFP_assistency == 0
+//342
+tab DateDerniereAssist if YEAR!=2018 & WFP_assistency == 0,m
+/*
+
+      Last assistance |
+   received from WFP  |      Freq.     Percent        Cum.
+----------------------+-----------------------------------
+                Other |        342      100.00      100.00
+----------------------+-----------------------------------
+                Total |        342      100.00
+
+*/
+
+tab1 TransfBenef BanqueCerealiere VivreContreTravail ArgentContreTravail DistribVivresSoudure DistribArgentSoudure BoursesAdo BlanketFeedingChildren BlanketFeedingWomen MAMChildren MASChildren MAMPLWomen FARNcommunaut FormationRenfCapacite CashTransfert CantineScolaire AutreTransferts if WFP_assistency == 0
+/*
+
+-> tabulation of TransfBenef if WFP_assistency == 0 
+
+    Has the |
+  household |
+     or any |
+  member of |
+       your |
+  household |
+  benefited |
+in the last |
+     12 mon |      Freq.     Percent        Cum.
+------------+-----------------------------------
+    Oui PAM |         26        7.60        7.60
+        Non |        180       52.63       60.23
+Ne Sait Pas |        136       39.77      100.00
+------------+-----------------------------------
+      Total |        342      100.00
+
+-> tabulation of BanqueCerealiere if WFP_assistency == 0 
+
+Cereal bank |      Freq.     Percent        Cum.
+------------+-----------------------------------
+    Oui PAM |         27        7.89        7.89
+        Non |        186       54.39       62.28
+Ne Sait Pas |        129       37.72      100.00
+------------+-----------------------------------
+      Total |        342      100.00
+
+-> tabulation of VivreContreTravail if WFP_assistency == 0 
+
+      Vivre |
+     contre |
+   travail/ |
+       Food |
+ assistance |
+  for asset |      Freq.     Percent        Cum.
+------------+-----------------------------------
+    Oui PAM |         14        4.09        4.09
+        Non |        193       56.43       60.53
+Ne Sait Pas |        135       39.47      100.00
+------------+-----------------------------------
+      Total |        342      100.00
+
+-> tabulation of ArgentContreTravail if WFP_assistency == 0 
+
+       Cash |
+ assistance |
+  for asset |      Freq.     Percent        Cum.
+------------+-----------------------------------
+    Oui PAM |         49       14.33       14.33
+        Non |        176       51.46       65.79
+Ne Sait Pas |        117       34.21      100.00
+------------+-----------------------------------
+      Total |        342      100.00
+
+-> tabulation of DistribVivresSoudure if WFP_assistency == 0 
+
+  Free food |
+distributio |
+    n (e.g. |
+ during the |
+       lean |
+    period) |      Freq.     Percent        Cum.
+------------+-----------------------------------
+    Oui PAM |         21        6.14        6.14
+        Non |        192       56.14       62.28
+Ne Sait Pas |        129       37.72      100.00
+------------+-----------------------------------
+      Total |        342      100.00
+
+-> tabulation of DistribArgentSoudure if WFP_assistency == 0 
+
+Distributio |
+ n gratuite |
+   d'argent |
+    (p. ex. |
+ pendant la |
+ période de |
+   soudure) |      Freq.     Percent        Cum.
+------------+-----------------------------------
+    Oui PAM |         28        8.19        8.19
+        Non |        181       52.92       61.11
+Ne Sait Pas |        133       38.89      100.00
+------------+-----------------------------------
+      Total |        342      100.00
+
+-> tabulation of BoursesAdo if WFP_assistency == 0 
+
+     School |
+  bursaries |
+for teenage |
+      girls |      Freq.     Percent        Cum.
+------------+-----------------------------------
+    Oui PAM |         35       10.23       10.23
+        Non |        185       54.09       64.33
+Ne Sait Pas |        122       35.67      100.00
+------------+-----------------------------------
+      Total |        342      100.00
+
+-> tabulation of BlanketFeedingChildren if WFP_assistency == 0 
+
+    Blanket |
+  feeding - |
+     NSPAMM |
+  (children |
+       6-23 |
+    months) |      Freq.     Percent        Cum.
+------------+-----------------------------------
+    Oui PAM |         31        9.06        9.06
+        Non |        186       54.39       63.45
+Ne Sait Pas |        125       36.55      100.00
+------------+-----------------------------------
+      Total |        342      100.00
+
+-> tabulation of BlanketFeedingWomen if WFP_assistency == 0 
+
+    Blanket |
+feeding-NSP |
+        AMM |
+  (pregnant |
+        and |
+breastfeedi |
+  ng women) |      Freq.     Percent        Cum.
+------------+-----------------------------------
+    Oui PAM |         36       10.53       10.53
+        Non |        183       53.51       64.04
+Ne Sait Pas |        123       35.96      100.00
+------------+-----------------------------------
+      Total |        342      100.00
+
+-> tabulation of MAMChildren if WFP_assistency == 0 
+
+ Management |
+of moderate |
+      acute |
+malnutritio |
+       n in |
+   children |
+  aged 6 to |
+  59 months |
+     at the |      Freq.     Percent        Cum.
+------------+-----------------------------------
+    Oui PAM |         47       13.74       13.74
+        Non |        170       49.71       63.45
+Ne Sait Pas |        125       36.55      100.00
+------------+-----------------------------------
+      Total |        342      100.00
+
+-> tabulation of MASChildren if WFP_assistency == 0 
+
+ Management |
+  of severe |
+      acute |
+malnutritio |
+       n in |
+   children |
+       aged |
+  between 6 |
+     and 59 |
+     months |      Freq.     Percent        Cum.
+------------+-----------------------------------
+    Oui PAM |         49       14.33       14.33
+        Non |        166       48.54       62.87
+Ne Sait Pas |        127       37.13      100.00
+------------+-----------------------------------
+      Total |        342      100.00
+
+-> tabulation of MAMPLWomen if WFP_assistency == 0 
+
+ Management |
+   of acute |
+malnutritio |
+       n in |
+pregnant or |
+breast-feed |
+  ing women |
+at the heal |      Freq.     Percent        Cum.
+------------+-----------------------------------
+    Oui PAM |         48       14.04       14.04
+        Non |        166       48.54       62.57
+Ne Sait Pas |        128       37.43      100.00
+------------+-----------------------------------
+      Total |        342      100.00
+
+-> tabulation of FARNcommunaut if WFP_assistency == 0 
+
+FARN/commun |
+        ity |
+  nutrition |      Freq.     Percent        Cum.
+------------+-----------------------------------
+    Oui PAM |         39       11.40       11.40
+        Non |        176       51.46       62.87
+Ne Sait Pas |        127       37.13      100.00
+------------+-----------------------------------
+      Total |        342      100.00
+
+-> tabulation of FormationRenfCapacite if WFP_assistency == 0 
+
+Training/ca |
+     pacity |
+   building |      Freq.     Percent        Cum.
+------------+-----------------------------------
+    Oui PAM |         45       13.16       13.16
+        Non |        166       48.54       61.70
+Ne Sait Pas |        131       38.30      100.00
+------------+-----------------------------------
+      Total |        342      100.00
+
+-> tabulation of CashTransfert if WFP_assistency == 0 
+
+       Cash |
+   transfer |
+    (social |
+safety nets |
+   or other |
+structures) |      Freq.     Percent        Cum.
+------------+-----------------------------------
+    Oui PAM |         26        7.60        7.60
+        Non |        180       52.63       60.23
+Ne Sait Pas |        136       39.77      100.00
+------------+-----------------------------------
+      Total |        342      100.00
+
+-> tabulation of CantineScolaire if WFP_assistency == 0 
+
+     School |
+canteen for |
+children or |
+  take-home |
+     ration |      Freq.     Percent        Cum.
+------------+-----------------------------------
+    Oui PAM |         59       17.25       17.25
+        Non |        169       49.42       66.67
+Ne Sait Pas |        114       33.33      100.00
+------------+-----------------------------------
+      Total |        342      100.00
+
+-> tabulation of AutreTransferts if WFP_assistency == 0 
+
+      Other |
+transaction |      Freq.     Percent        Cum.
+------------+-----------------------------------
+    Oui PAM |         10        2.92        2.92
+        Non |        183       53.51       56.43
+Ne Sait Pas |        149       43.57      100.00
+------------+-----------------------------------
+      Total |        342      100.00
+
+
+*/
+tab YEAR SURVEY if WFP_assistency == 0
+/*
+
+           |    Type d'enquête
+     Annee | Enquête..        PDM |     Total
+-----------+----------------------+----------
+      2021 |       102          0 |       102 
+      2022 |         5         21 |        26 
+      2023 |        70        144 |       214 
+-----------+----------------------+----------
+     Total |       177        165 |       342 
+
+*/
 
 foreach var of varlist TransfBenef BanqueCerealiere VivreContreTravail ArgentContreTravail DistribVivresSoudure DistribArgentSoudure BoursesAdo BlanketFeedingChildren BlanketFeedingWomen MAMChildren MASChildren MAMPLWomen FARNcommunaut FormationRenfCapacite CashTransfert CantineScolaire AutreTransferts { 
-    recode `var' (1 = 3) (2 = 3) (4 = 3) if WFP_beneciary == 0
+    recode `var' (1 = 3) (2 = 3) (4 = 3) if WFP_assistency == 0
 }
 
 
@@ -1769,7 +2167,7 @@ foreach var of varlist TransfBenef BanqueCerealiere VivreContreTravail ArgentCon
 }
 
 
-drop WFP_beneciary
+drop WFP_assistency
 
 
 *------------------------------------------------------------------------------*
@@ -2191,7 +2589,7 @@ sort YEAR SURVEY
 //Reorder the variables
 order ID SvyDatePDM YEAR SURVEY ADMIN0Name adm0_ocha ADMIN1Name adm1_ocha ADMIN2Name adm2_ocha village Longitude Latitude Longitude_precision Latitude_precision
 
-save "$output_data\WFP_Chad_2018-2023_20250305.dta",replace
+save "$output_data\WFP_Chad_2018-2023_20250314.dta",replace
 *** ----------------------------------------------------------------------------------------------------------------*
 
 ***	                 		IPC/CH Information
@@ -2260,7 +2658,7 @@ gen IP_var = string(YEAR) + string(exercise_code) + adm2_ocha if YEAR != 2018
 replace IP_var = "2017" + string(exercise_code) + adm2_ocha if YEAR == 2018
 tab IP_var
 drop exercise_code
-save "$output_data\WFP_Chad_2018-2023_20250305.dta",replace
+save "$output_data\WFP_Chad_2018-2023_20250314.dta",replace
 //////////////////////////////////////////////////
 /*
 The Cadre Harmonise leads two cycle of analyses every year. One around October/November (after the publication of harvest forecasts and the results of nutrition and market surveys), and one around February/March (after the publication of the final results of agricultural production and any new data on nutrition, HEA, food consumption, etc.). The validity periods of the analyses are the same every year and they cover: March-May (current) and June-August (projection) for the March cycle, and October-December (current) and June-August (projection) for the November cycle of analysis.
@@ -2268,6 +2666,10 @@ The Cadre Harmonise leads two cycle of analyses every year. One around October/N
 
 
 import excel "$output_data\cadre_harmonise_caf_ipc_mar24_final_ver-2.xlsx", sheet("Sheet1") firstrow clear
+/*
+keep if adm0_pcod2 == "TD" & exercise_year >= 2017 
+save "$output_data\cadre_harmonise_caf_ipc_2017-2024.dta",replace
+*/
 
 keep if adm0_pcod2 == "TD" & exercise_year >= 2017 & exercise_year != 2024
 tab exercise_label exercise_year
@@ -2309,7 +2711,7 @@ save "$output_data\cadre_harmonise_caf_ipc_mar24_final.dta",replace
 gen IP_var = string(exercise_year) + string(exercise_code) + adm2_pcod2
 tab IP_var
 
-merge 1:m IP_var using "$output_data\WFP_Chad_2018-2023_20250305.dta"
+merge 1:m IP_var using "$output_data\WFP_Chad_2018-2023_20250314.dta"
 /*
 
     Result                      Number of obs
@@ -2329,6 +2731,6 @@ drop _m
 sort YEAR SURVEY
 order ID SvyDatePDM YEAR SURVEY ADMIN0Name adm0_ocha ADMIN1Name adm1_ocha ADMIN2Name adm2_ocha village Longitude Latitude Longitude_precision Latitude_precision IP_var exercise_year exercise_code exercise_code exercise_label
 //drop IP_var
-
-save "$output_data\WFP_Chad_2018-2023_20250305.dta",replace
+tab  YEAR SURVEY
+save "$output_data\WFP_Chad_2018-2023_20250314.dta",replace
 //////////////////////////////////////////////////
