@@ -1,7 +1,7 @@
 ---
 title: "WFP datasets wrangling - Chad : ASSET BENEFIT INDICATOR"
 author: "Aboubacar HEMA"
-date: "2025-03-05"
+date: "2025-03-18"
 output: 
   html_document:
     toc: true
@@ -506,10 +506,15 @@ df_Chad <- df_Chad %>%
 df_Chad <- df_Chad %>%
   mutate(across(HHAssetProtect:HHWorkAsset, ~ dplyr::recode(.x, "0" = 0, "1" = 1, "999" = 0, "888" = 0)))
 
+# Count non-missing values per row
+df_Chad$NonMissingCount <- rowSums(!is.na(df_Chad[, c("ABIProteger", "ABIProduction", 
+                                             "ABIdifficultes", "ABIMarches", 
+                                             "ABIGererActifs", "ABIEnvironnement", 
+                                             "ABIutiliseractifs")]))
 
 #sum ABI rows
 df_Chad <- df_Chad %>% 
-  mutate(ABIScore = rowSums(across(c(HHAssetProtect:HHWorkAsset)),na.rm = T))
+  mutate(ABIScore = ifelse(NonMissingCount >0 ,rowSums(across(c(HHAssetProtect:HHWorkAsset)),na.rm = T),NA))
 ```
 
 

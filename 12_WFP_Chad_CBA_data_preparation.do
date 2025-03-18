@@ -2380,7 +2380,7 @@ gen emergency_coping_FS=(LhCSIEmergency1==2 | LhCSIEmergency1==3) | (LhCSIEmerge
 
 egen temp_nonmiss_number = rownonmiss(LhCSIStress1 LhCSIStress2 LhCSIStress3 LhCSIStress4 LhCSICrisis1 LhCSICrisis2 LhCSICrisis3 LhCSIEmergency1 LhCSIEmergency2 LhCSIEmergency3)  //this variable counts the strategies with valid (i.e. non missing) values - normally it should be equal to 10 for all respondents
 label var temp_nonmiss_number "Number of strategies with non missing values"
- 
+tab temp_nonmiss_number
 gen 	Max_coping_behaviourFS=1 if temp_nonmiss_number>0 // the Max_coping_behaviourFS variable will be missing for an observation if answers to strategies are all missing
 
 replace Max_coping_behaviourFS=2 if stress_coping_FS==1 
@@ -2454,14 +2454,24 @@ lab var ABITensions         "Do you think that the [assets] created/rehabilitate
 lab var ActifCreationEmploi         "Do you think the [name the assets] rehabilitated/created have generated employment opportunities in your community? "
 lab var BeneficieEmploi         "Have you or any member of your household ever had the opportunity to work as a result of the [name the assets] created or rehabilitated in your community? "
 lab var TRavailMaintienActif         "Have you or any member of your household had work in the maintenance and management of the [name the assets] created or rehabilitated in your community? "
+/*
+egen temp_nonmiss_number = rownonmiss(ABIProteger ABIProduction ABIdifficultes ABIMarches ABIGererActifs ABIEnvironnement ABIutiliseractifs)
+tab temp_nonmiss_number
+tab1 ABIProteger ABIProduction ABIdifficultes ABIMarches ABIGererActifs ABIEnvironnement ABIutiliseractifs
+tab1 ABIProteger ABIProduction ABIdifficultes ABIMarches ABIGererActifs ABIEnvironnement ABIutiliseractifs,nolab
+*/
 
-
+tab NonMissingCount ABIScore,m
+br ABIScore NonMissingCount if NonMissingCount == 0 & !missing(ABIScore)
 tab ABIScore,m
+sum ABIScore
 tab YEAR SURVEY if ABIScore==.
 
-tab1 ABIProteger ABIProduction ABIdifficultes ABIMarches ABIGererActifs ABIEnvironnement ABIutiliseractifs ABITensions ActifCreationEmploi BeneficieEmploi TRavailMaintienActif
+tab1 ABIProteger ABIProduction ABIdifficultes ABIMarches ABIGererActifs ABIEnvironnement ABIutiliseractifs ABITensions ActifCreationEmploi BeneficieEmploi TRavailMaintienActif,m
 
-
+br ABIScore ABIProteger ABIProduction ABIdifficultes ABIMarches ABIGererActifs ABIEnvironnement ABIutiliseractifs if ABIScore==0
+tab YEAR SURVEY if ABIScore==0
+drop NonMissingCount
 *------------------------------------------------------------------------------*
 
 *	                        
@@ -2509,22 +2519,31 @@ label define Likert5 1 "Strongly Agree" 2 "Partially agree" 3 "Neutral" 4 "Somew
 label values HHRCSBounce HHRCSRevenue HHRCSIncrease HHRCSFinAccess HHRCSSupportCommunity HHRCSSupportPublic HHRCSLessonsLearnt HHRCSFutureChallenge HHRCSWarningAccess Likert5
 //recode missing values
 
+tab1 HHRCSBounce HHRCSRevenue HHRCSIncrease HHRCSFinAccess HHRCSSupportCommunity HHRCSSupportPublic HHRCSLessonsLearnt HHRCSFutureChallenge HHRCSWarningAccess,m
 
+tab1 HHRCSBounce HHRCSRevenue HHRCSIncrease HHRCSFinAccess HHRCSSupportCommunity HHRCSSupportPublic HHRCSLessonsLearnt HHRCSFutureChallenge HHRCSWarningAccess,m nolab
+//HHRCSFutureChallenge HHRCSWarningAccess
 
 egen temp_nonmiss_numberHHRCS = rownonmiss(HHRCSBounce HHRCSRevenue HHRCSIncrease HHRCSFinAccess HHRCSSupportCommunity HHRCSSupportPublic HHRCSLessonsLearnt HHRCSFutureChallenge HHRCSWarningAccess) 
 
 tab temp_nonmiss_numberHHRCS,m
 tab temp_nonmiss_numberHHRCS YEAR
+//drop RCS
 egen RCS= rowtotal(HHRCSBounce HHRCSRevenue HHRCSIncrease HHRCSFinAccess HHRCSSupportCommunity HHRCSSupportPublic HHRCSLessonsLearnt HHRCSFutureChallenge HHRCSWarningAccess) 
-replace RCS=(100-0)*((RCS/9)-5)/(1-5) + 0 if temp_nonmiss_numberHHRCS!=0
+tab RCS
+//replace RCS=. if temp_nonmiss_numberHHRCS==0
+//replace RCS=(100-0)*((RCS/9)-5)/(1-5) + 0 if temp_nonmiss_numberHHRCS>0 & !missing(RCS)
+replace RCS=(100-0)*((RCS/temp_nonmiss_numberHHRCS)-5)/(1-5) + 0 if temp_nonmiss_numberHHRCS>0 & !missing(RCS)
 replace RCS=. if temp_nonmiss_numberHHRCS==0
 label var RCS "Resilience Capacity Score"
 sum RCS 
 tab RCS
 count  if RCS > 100 & !missing(RCS)
+//7
 tab SURVEY YEAR if RCS > 100 & !missing(RCS)
 tab1 HHRCSBounce HHRCSRevenue HHRCSIncrease HHRCSFinAccess HHRCSSupportCommunity HHRCSSupportPublic HHRCSLessonsLearnt HHRCSFutureChallenge HHRCSWarningAccess if RCS > 100 & !missing(RCS),m
 br RCS HHRCSBounce HHRCSRevenue HHRCSIncrease HHRCSFinAccess HHRCSSupportCommunity HHRCSSupportPublic HHRCSLessonsLearnt HHRCSFutureChallenge HHRCSWarningAccess if RCS > 100 & !missing(RCS)
+br RCS HHRCSBounce HHRCSRevenue HHRCSIncrease HHRCSFinAccess HHRCSSupportCommunity HHRCSSupportPublic HHRCSLessonsLearnt HHRCSFutureChallenge HHRCSWarningAccess if RCS == 0 & !missing(RCS)
 tab YEAR SURVEY if RCS==.
 /*
 Once the RCS is calculated, households are divided in terciles (low-medium-high) to show the distribution of the RCS within the target population. Therefore:
@@ -2533,7 +2552,7 @@ Once the RCS is calculated, households are divided in terciles (low-medium-high)
 	 if RCS>=66 then the household is categorized as reporting a high RCS.
 */
 
-gen RCSCat33=cond(RCS<33,1,cond(RCS<66,2,3))  if temp_nonmiss_numberHHRCS!=0
+gen RCSCat33=cond(RCS<33,1,cond(RCS<66,2,3))  if temp_nonmiss_numberHHRCS>0
 label var RCSCat33 "RCS Categories, thresholds 33-66"
 *** define variables labels and properties for "RCS Categories".
 label define RCSCat 1 "low RCS" 2 "medium RCS" 3 "high RCS"
@@ -2542,10 +2561,10 @@ label define RCSCat2 1 "low" 2 "medium" 3 "high"
 label values RCSCat33 RCSCat
 
 *produce the scores of resilience capacities as follows:
-gen RCSAnticipatory=(100-0)*(HHRCSFutureChallenge-5)/(1-5) + 0 if temp_nonmiss_numberHHRCS!=0
-gen RCSAbsorptive=(100-0)*(HHRCSBounce-5)/(1-5) + 0 if temp_nonmiss_numberHHRCS!=0
-gen RCSTransformative=(100-0)*(HHRCSRevenue-5)/(1-5) + 0 if temp_nonmiss_numberHHRCS!=0
-gen RCSAdaptive=(100-0)*(HHRCSIncrease-5)/(1-5) + 0 if temp_nonmiss_numberHHRCS!=0
+gen RCSAnticipatory=(100-0)*(HHRCSFutureChallenge-5)/(1-5) + 0 if temp_nonmiss_numberHHRCS>0
+gen RCSAbsorptive=(100-0)*(HHRCSBounce-5)/(1-5) + 0 if temp_nonmiss_numberHHRCS>0
+gen RCSTransformative=(100-0)*(HHRCSRevenue-5)/(1-5) + 0 if temp_nonmiss_numberHHRCS>0
+gen RCSAdaptive=(100-0)*(HHRCSIncrease-5)/(1-5) + 0 if temp_nonmiss_numberHHRCS>0
 
 label var RCSAnticipatory "Resilience Capacity - Anticipatory"
 label var RCSAbsorptive "Resilience Capacity - Absorptive"
@@ -2554,10 +2573,10 @@ label var RCSAdaptive "Resilience Capacity - Adaptive"
 
 
 
-gen RCSAnticipatoryCat33=cond(RCSAnticipatory<33,1,cond(RCSAnticipatory<66,2,3)) if temp_nonmiss_numberHHRCS!=0
-gen RCSAbsorptiveCat33=cond(RCSAbsorptive<33,1,cond(RCSAbsorptive<66,2,3)) if temp_nonmiss_numberHHRCS!=0
-gen RCSTransformativeCat33=cond(RCSTransformative<33,1,cond(RCSTransformative<66,2,3)) if temp_nonmiss_numberHHRCS!=0
-gen RCSSAdaptiveCat33=cond(RCSAdaptive<33,1,cond(RCSAdaptive<66,2,3)) if temp_nonmiss_numberHHRCS!=0
+gen RCSAnticipatoryCat33=cond(RCSAnticipatory<33,1,cond(RCSAnticipatory<66,2,3)) if temp_nonmiss_numberHHRCS>0
+gen RCSAbsorptiveCat33=cond(RCSAbsorptive<33,1,cond(RCSAbsorptive<66,2,3)) if temp_nonmiss_numberHHRCS>0
+gen RCSTransformativeCat33=cond(RCSTransformative<33,1,cond(RCSTransformative<66,2,3)) if temp_nonmiss_numberHHRCS>0
+gen RCSSAdaptiveCat33=cond(RCSAdaptive<33,1,cond(RCSAdaptive<66,2,3)) if temp_nonmiss_numberHHRCS>0
 
 label values RCSAnticipatoryCat33 RCSAbsorptiveCat33 RCSTransformativeCat33 RCSSAdaptiveCat33 RCSCat2
 

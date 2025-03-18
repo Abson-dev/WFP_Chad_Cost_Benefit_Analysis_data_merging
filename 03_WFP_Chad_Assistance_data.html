@@ -2218,7 +2218,7 @@ Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;%
     .default = NA
   ))
 Chad_ea_2022 &lt;- 
-  Chad_ea_2022 %&gt;% dplyr::mutate(BanqueCerealiere = dplyr::recode(BanqueCerealiere,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_ea_2022 %&gt;% dplyr::mutate(BanqueCerealiere = dplyr::recode(BanqueCerealiere,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_ea_2022$BanqueCerealiere &lt;- labelled::labelled(Chad_ea_2022$BanqueCerealiere, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;% 
   dplyr::mutate(VivreContreTravail = case_when(
@@ -2228,7 +2228,7 @@ Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;%
     .default = NA
   ))
 Chad_ea_2022 &lt;- 
-  Chad_ea_2022 %&gt;% dplyr::mutate(VivreContreTravail = dplyr::recode(VivreContreTravail,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_ea_2022 %&gt;% dplyr::mutate(VivreContreTravail = dplyr::recode(VivreContreTravail,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_ea_2022$VivreContreTravail &lt;- labelled::labelled(Chad_ea_2022$VivreContreTravail, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;% 
   dplyr::mutate(ArgentContreTravail = case_when(
@@ -2238,7 +2238,7 @@ Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;%
     .default = NA
   ))
 Chad_ea_2022 &lt;- 
-  Chad_ea_2022 %&gt;% dplyr::mutate(ArgentContreTravail = dplyr::recode(ArgentContreTravail,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_ea_2022 %&gt;% dplyr::mutate(ArgentContreTravail = dplyr::recode(ArgentContreTravail,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_ea_2022$ArgentContreTravail &lt;- labelled::labelled(Chad_ea_2022$ArgentContreTravail, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;% 
   dplyr::mutate(DistribVivresSoudure = case_when(
@@ -2248,7 +2248,7 @@ Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;%
     .default = NA
   ))
 Chad_ea_2022 &lt;- 
-  Chad_ea_2022 %&gt;% dplyr::mutate(DistribVivresSoudure = dplyr::recode(DistribVivresSoudure,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_ea_2022 %&gt;% dplyr::mutate(DistribVivresSoudure = dplyr::recode(DistribVivresSoudure,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_ea_2022$DistribVivresSoudure &lt;- labelled::labelled(Chad_ea_2022$DistribVivresSoudure, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;% 
@@ -2259,7 +2259,7 @@ Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;%
     .default = NA
   ))
 Chad_ea_2022 &lt;- 
-  Chad_ea_2022 %&gt;% dplyr::mutate(DistribArgentSoudure = dplyr::recode(DistribArgentSoudure,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_ea_2022 %&gt;% dplyr::mutate(DistribArgentSoudure = dplyr::recode(DistribArgentSoudure,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_ea_2022$DistribArgentSoudure &lt;- labelled::labelled(Chad_ea_2022$DistribArgentSoudure, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;% 
@@ -2270,7 +2270,7 @@ Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;%
     .default = NA
   ))
 Chad_ea_2022 &lt;- 
-  Chad_ea_2022 %&gt;% dplyr::mutate(BoursesAdo = dplyr::recode(BoursesAdo,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_ea_2022 %&gt;% dplyr::mutate(BoursesAdo = dplyr::recode(BoursesAdo,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_ea_2022$BoursesAdo &lt;- labelled::labelled(Chad_ea_2022$BoursesAdo, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;% 
@@ -2281,7 +2281,7 @@ Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;%
     .default = NA
   ))
 Chad_ea_2022 &lt;- 
-  Chad_ea_2022 %&gt;% dplyr::mutate(BlanketFeedingChildren = dplyr::recode(BlanketFeedingChildren,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_ea_2022 %&gt;% dplyr::mutate(BlanketFeedingChildren = dplyr::recode(BlanketFeedingChildren,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_ea_2022$BlanketFeedingChildren &lt;- labelled::labelled(Chad_ea_2022$BlanketFeedingChildren, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;% 
@@ -2292,7 +2292,7 @@ Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;%
     .default = NA
   ))
 Chad_ea_2022 &lt;- 
-  Chad_ea_2022 %&gt;% dplyr::mutate(BlanketFeedingWomen = dplyr::recode(BlanketFeedingWomen,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_ea_2022 %&gt;% dplyr::mutate(BlanketFeedingWomen = dplyr::recode(BlanketFeedingWomen,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_ea_2022$BlanketFeedingWomen &lt;- labelled::labelled(Chad_ea_2022$BlanketFeedingWomen, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;% 
@@ -2303,7 +2303,7 @@ Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;%
     .default = NA
   ))
 Chad_ea_2022 &lt;- 
-  Chad_ea_2022 %&gt;% dplyr::mutate(MAMChildren = dplyr::recode(MAMChildren,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_ea_2022 %&gt;% dplyr::mutate(MAMChildren = dplyr::recode(MAMChildren,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_ea_2022$MAMChildren &lt;- labelled::labelled(Chad_ea_2022$MAMChildren, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;% 
@@ -2314,7 +2314,7 @@ Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;%
     .default = NA
   ))
 Chad_ea_2022 &lt;- 
-  Chad_ea_2022 %&gt;% dplyr::mutate(MAMPLWomen = dplyr::recode(MAMPLWomen,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_ea_2022 %&gt;% dplyr::mutate(MAMPLWomen = dplyr::recode(MAMPLWomen,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_ea_2022$MAMPLWomen &lt;- labelled::labelled(Chad_ea_2022$MAMPLWomen, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;% 
@@ -2325,7 +2325,7 @@ Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;%
     .default = NA
   ))
 Chad_ea_2022 &lt;- 
-  Chad_ea_2022 %&gt;% dplyr::mutate(FARNcommunaut = dplyr::recode(FARNcommunaut,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_ea_2022 %&gt;% dplyr::mutate(FARNcommunaut = dplyr::recode(FARNcommunaut,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_ea_2022$FARNcommunaut &lt;- labelled::labelled(Chad_ea_2022$FARNcommunaut, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;% 
@@ -2336,7 +2336,7 @@ Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;%
     .default = NA
   ))
 Chad_ea_2022 &lt;- 
-  Chad_ea_2022 %&gt;% dplyr::mutate(FormationRenfCapacite = dplyr::recode(FormationRenfCapacite,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_ea_2022 %&gt;% dplyr::mutate(FormationRenfCapacite = dplyr::recode(FormationRenfCapacite,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_ea_2022$FormationRenfCapacite &lt;- labelled::labelled(Chad_ea_2022$FormationRenfCapacite, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;% 
@@ -2347,7 +2347,7 @@ Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;%
     .default = NA
   ))
 Chad_ea_2022 &lt;- 
-  Chad_ea_2022 %&gt;% dplyr::mutate(CashTransfert = dplyr::recode(CashTransfert,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_ea_2022 %&gt;% dplyr::mutate(CashTransfert = dplyr::recode(CashTransfert,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_ea_2022$CashTransfert &lt;- labelled::labelled(Chad_ea_2022$CashTransfert, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;% 
@@ -2358,7 +2358,7 @@ Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;%
     .default = NA
   ))
 Chad_ea_2022 &lt;- 
-  Chad_ea_2022 %&gt;% dplyr::mutate(CantineScolaire = dplyr::recode(CantineScolaire,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_ea_2022 %&gt;% dplyr::mutate(CantineScolaire = dplyr::recode(CantineScolaire,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_ea_2022$CantineScolaire &lt;- labelled::labelled(Chad_ea_2022$CantineScolaire, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;% 
@@ -2369,7 +2369,7 @@ Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;%
     .default = NA
   ))
 Chad_ea_2022 &lt;- 
-  Chad_ea_2022 %&gt;% dplyr::mutate(MASChildren = dplyr::recode(MASChildren,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_ea_2022 %&gt;% dplyr::mutate(MASChildren = dplyr::recode(MASChildren,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_ea_2022$MASChildren &lt;- labelled::labelled(Chad_ea_2022$MASChildren, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;% 
@@ -2380,7 +2380,7 @@ Chad_ea_2022 &lt;- Chad_ea_2022 %&gt;%
     .default = NA
   ))
 Chad_ea_2022 &lt;- 
-  Chad_ea_2022 %&gt;% dplyr::mutate(AutreTransferts = dplyr::recode(AutreTransferts,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_ea_2022 %&gt;% dplyr::mutate(AutreTransferts = dplyr::recode(AutreTransferts,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_ea_2022$AutreTransferts &lt;- labelled::labelled(Chad_ea_2022$AutreTransferts, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))</code></pre>
 </div>
 <div id="ea-2023" class="section level3" number="1.4.6">
@@ -2956,7 +2956,7 @@ Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;%
     .default = NA
   ))
 Chad_pdm_2022 &lt;- 
-  Chad_pdm_2022 %&gt;% dplyr::mutate(TransfBenef = dplyr::recode(TransfBenef,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_pdm_2022 %&gt;% dplyr::mutate(TransfBenef = dplyr::recode(TransfBenef,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_pdm_2022$TransfBenef &lt;- labelled::labelled(Chad_pdm_2022$TransfBenef, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;% 
@@ -2967,7 +2967,7 @@ Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;%
     .default = NA
   ))
 Chad_pdm_2022 &lt;- 
-  Chad_pdm_2022 %&gt;% dplyr::mutate(BanqueCerealiere = dplyr::recode(BanqueCerealiere,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_pdm_2022 %&gt;% dplyr::mutate(BanqueCerealiere = dplyr::recode(BanqueCerealiere,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_pdm_2022$BanqueCerealiere &lt;- labelled::labelled(Chad_pdm_2022$BanqueCerealiere, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;% 
   dplyr::mutate(VivreContreTravail = case_when(
@@ -2977,7 +2977,7 @@ Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;%
     .default = NA
   ))
 Chad_pdm_2022 &lt;- 
-  Chad_pdm_2022 %&gt;% dplyr::mutate(VivreContreTravail = dplyr::recode(VivreContreTravail,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_pdm_2022 %&gt;% dplyr::mutate(VivreContreTravail = dplyr::recode(VivreContreTravail,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_pdm_2022$VivreContreTravail &lt;- labelled::labelled(Chad_pdm_2022$VivreContreTravail, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;% 
   dplyr::mutate(ArgentContreTravail = case_when(
@@ -2987,7 +2987,7 @@ Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;%
     .default = NA
   ))
 Chad_pdm_2022 &lt;- 
-  Chad_pdm_2022 %&gt;% dplyr::mutate(ArgentContreTravail = dplyr::recode(ArgentContreTravail,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_pdm_2022 %&gt;% dplyr::mutate(ArgentContreTravail = dplyr::recode(ArgentContreTravail,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_pdm_2022$ArgentContreTravail &lt;- labelled::labelled(Chad_pdm_2022$ArgentContreTravail, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;% 
   dplyr::mutate(DistribVivresSoudure = case_when(
@@ -2997,7 +2997,7 @@ Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;%
     .default = NA
   ))
 Chad_pdm_2022 &lt;- 
-  Chad_pdm_2022 %&gt;% dplyr::mutate(DistribVivresSoudure = dplyr::recode(DistribVivresSoudure,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_pdm_2022 %&gt;% dplyr::mutate(DistribVivresSoudure = dplyr::recode(DistribVivresSoudure,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_pdm_2022$DistribVivresSoudure &lt;- labelled::labelled(Chad_pdm_2022$DistribVivresSoudure, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;% 
@@ -3008,7 +3008,7 @@ Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;%
     .default = NA
   ))
 Chad_pdm_2022 &lt;- 
-  Chad_pdm_2022 %&gt;% dplyr::mutate(DistribArgentSoudure = dplyr::recode(DistribArgentSoudure,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_pdm_2022 %&gt;% dplyr::mutate(DistribArgentSoudure = dplyr::recode(DistribArgentSoudure,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_pdm_2022$DistribArgentSoudure &lt;- labelled::labelled(Chad_pdm_2022$DistribArgentSoudure, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;% 
@@ -3019,7 +3019,7 @@ Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;%
     .default = NA
   ))
 Chad_pdm_2022 &lt;- 
-  Chad_pdm_2022 %&gt;% dplyr::mutate(BoursesAdo = dplyr::recode(BoursesAdo,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_pdm_2022 %&gt;% dplyr::mutate(BoursesAdo = dplyr::recode(BoursesAdo,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_pdm_2022$BoursesAdo &lt;- labelled::labelled(Chad_pdm_2022$BoursesAdo, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;% 
@@ -3030,7 +3030,7 @@ Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;%
     .default = NA
   ))
 Chad_pdm_2022 &lt;- 
-  Chad_pdm_2022 %&gt;% dplyr::mutate(BlanketFeedingChildren = dplyr::recode(BlanketFeedingChildren,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_pdm_2022 %&gt;% dplyr::mutate(BlanketFeedingChildren = dplyr::recode(BlanketFeedingChildren,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_pdm_2022$BlanketFeedingChildren &lt;- labelled::labelled(Chad_pdm_2022$BlanketFeedingChildren, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;% 
@@ -3041,7 +3041,7 @@ Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;%
     .default = NA
   ))
 Chad_pdm_2022 &lt;- 
-  Chad_pdm_2022 %&gt;% dplyr::mutate(BlanketFeedingWomen = dplyr::recode(BlanketFeedingWomen,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_pdm_2022 %&gt;% dplyr::mutate(BlanketFeedingWomen = dplyr::recode(BlanketFeedingWomen,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_pdm_2022$BlanketFeedingWomen &lt;- labelled::labelled(Chad_pdm_2022$BlanketFeedingWomen, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;% 
@@ -3052,7 +3052,7 @@ Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;%
     .default = NA
   ))
 Chad_pdm_2022 &lt;- 
-  Chad_pdm_2022 %&gt;% dplyr::mutate(MAMChildren = dplyr::recode(MAMChildren,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_pdm_2022 %&gt;% dplyr::mutate(MAMChildren = dplyr::recode(MAMChildren,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_pdm_2022$MAMChildren &lt;- labelled::labelled(Chad_pdm_2022$MAMChildren, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;% 
@@ -3063,7 +3063,7 @@ Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;%
     .default = NA
   ))
 Chad_pdm_2022 &lt;- 
-  Chad_pdm_2022 %&gt;% dplyr::mutate(MAMPLWomen = dplyr::recode(MAMPLWomen,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_pdm_2022 %&gt;% dplyr::mutate(MAMPLWomen = dplyr::recode(MAMPLWomen,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_pdm_2022$MAMPLWomen &lt;- labelled::labelled(Chad_pdm_2022$MAMPLWomen, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;% 
@@ -3074,7 +3074,7 @@ Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;%
     .default = NA
   ))
 Chad_pdm_2022 &lt;- 
-  Chad_pdm_2022 %&gt;% dplyr::mutate(FARNcommunaut = dplyr::recode(FARNcommunaut,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_pdm_2022 %&gt;% dplyr::mutate(FARNcommunaut = dplyr::recode(FARNcommunaut,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_pdm_2022$FARNcommunaut &lt;- labelled::labelled(Chad_pdm_2022$FARNcommunaut, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;% 
@@ -3085,7 +3085,7 @@ Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;%
     .default = NA
   ))
 Chad_pdm_2022 &lt;- 
-  Chad_pdm_2022 %&gt;% dplyr::mutate(FormationRenfCapacite = dplyr::recode(FormationRenfCapacite,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_pdm_2022 %&gt;% dplyr::mutate(FormationRenfCapacite = dplyr::recode(FormationRenfCapacite,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_pdm_2022$FormationRenfCapacite &lt;- labelled::labelled(Chad_pdm_2022$FormationRenfCapacite, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;% 
@@ -3096,7 +3096,7 @@ Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;%
     .default = NA
   ))
 Chad_pdm_2022 &lt;- 
-  Chad_pdm_2022 %&gt;% dplyr::mutate(CashTransfert = dplyr::recode(CashTransfert,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_pdm_2022 %&gt;% dplyr::mutate(CashTransfert = dplyr::recode(CashTransfert,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_pdm_2022$CashTransfert &lt;- labelled::labelled(Chad_pdm_2022$CashTransfert, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;% 
@@ -3107,7 +3107,7 @@ Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;%
     .default = NA
   ))
 Chad_pdm_2022 &lt;- 
-  Chad_pdm_2022 %&gt;% dplyr::mutate(CantineScolaire = dplyr::recode(CantineScolaire,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_pdm_2022 %&gt;% dplyr::mutate(CantineScolaire = dplyr::recode(CantineScolaire,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_pdm_2022$CantineScolaire &lt;- labelled::labelled(Chad_pdm_2022$CantineScolaire, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;% 
@@ -3118,7 +3118,7 @@ Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;%
     .default = NA
   ))
 Chad_pdm_2022 &lt;- 
-  Chad_pdm_2022 %&gt;% dplyr::mutate(MASChildren = dplyr::recode(MASChildren,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_pdm_2022 %&gt;% dplyr::mutate(MASChildren = dplyr::recode(MASChildren,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_pdm_2022$MASChildren &lt;- labelled::labelled(Chad_pdm_2022$MASChildren, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 
@@ -3130,7 +3130,7 @@ Chad_pdm_2022 &lt;- Chad_pdm_2022 %&gt;%
     .default = NA
   ))
 Chad_pdm_2022 &lt;- 
-  Chad_pdm_2022 %&gt;% dplyr::mutate(AutreTransferts = dplyr::recode(AutreTransferts,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+  Chad_pdm_2022 %&gt;% dplyr::mutate(AutreTransferts = dplyr::recode(AutreTransferts,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
 Chad_pdm_2022$AutreTransferts &lt;- labelled::labelled(Chad_pdm_2022$AutreTransferts, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))</code></pre>
 </div>
 <div id="pdm-2023" class="section level3" number="1.4.10">

@@ -229,4 +229,82 @@ forvalues i=9(1)9{
 }
 
 
-save "$output_data\WFP_Chad_2018-2023_20250317.dta",replace
+save "$output_data\WFP_Chad_2018-2023_20250318.dta",replace
+
+use "$output_data\WFP_Chad_2018-2023_20250318.dta",clear
+// Confused by coding of two modalities in PDM 2020
+tab BanqueCerealiere3 BanqueCerealiere if round==3, missing nolab
+tab CashTransfert3 CashTransfert if round==3, missing
+
+tab CashTransfert10 CashTransfert if round==10, missing
+
+forvalues i=3(1)3{
+	foreach v in BanqueCerealiere VivreContreTravail ArgentContreTravail DistribVivresSoudure DistribArgentSoudure BoursesAdo BlanketFeedingChildren BlanketFeedingWomen MAMChildren MASChildren MAMPLWomen FARNcommunaut FormationRenfCapacite CashTransfert CantineScolaire AutreTransferts { 
+	tab `v'`i' `v' if round==`i', m
+	
+}
+}
+
+//
+forvalues i=4(1)4{
+	foreach v in BanqueCerealiere VivreContreTravail ArgentContreTravail DistribVivresSoudure DistribArgentSoudure BoursesAdo BlanketFeedingChildren BlanketFeedingWomen MAMChildren MASChildren MAMPLWomen FARNcommunaut FormationRenfCapacite CashTransfert CantineScolaire AutreTransferts { 
+	tab `v'`i' `v' if round==`i', m
+	
+}
+}
+
+//
+forvalues i=5(1)5{
+	foreach v in BanqueCerealiere VivreContreTravail ArgentContreTravail DistribVivresSoudure DistribArgentSoudure BoursesAdo BlanketFeedingChildren BlanketFeedingWomen MAMChildren MASChildren MAMPLWomen FARNcommunaut FormationRenfCapacite CashTransfert CantineScolaire AutreTransferts { 
+	tab `v'`i' `v' if round==`i', m
+	
+}
+}
+
+//
+forvalues i=6(1)6{
+	foreach v in BanqueCerealiere VivreContreTravail ArgentContreTravail DistribVivresSoudure DistribArgentSoudure BoursesAdo BlanketFeedingChildren BlanketFeedingWomen MAMChildren MASChildren MAMPLWomen FARNcommunaut FormationRenfCapacite CashTransfert CantineScolaire AutreTransferts { 
+	tab `v'`i' `v' if round==`i', m
+	
+}
+
+}
+
+//Non et NSP, PDM 2022
+forvalues i=7(1)7{
+	foreach v in BanqueCerealiere VivreContreTravail ArgentContreTravail DistribVivresSoudure DistribArgentSoudure BoursesAdo BlanketFeedingChildren BlanketFeedingWomen MAMChildren MASChildren MAMPLWomen FARNcommunaut FormationRenfCapacite CashTransfert CantineScolaire AutreTransferts { 
+	tab `v'`i' `v' if round==`i', m
+	
+}
+}
+
+//Non et NSP,EA 2022
+forvalues i=8(1)8{
+	foreach v in BanqueCerealiere VivreContreTravail ArgentContreTravail DistribVivresSoudure DistribArgentSoudure BoursesAdo BlanketFeedingChildren BlanketFeedingWomen MAMChildren MASChildren MAMPLWomen FARNcommunaut FormationRenfCapacite CashTransfert CantineScolaire AutreTransferts { 
+	tab `v'`i' `v' if round==`i', m
+	
+}
+}
+
+
+forvalues i=9(1)9{
+	foreach v in BanqueCerealiere VivreContreTravail ArgentContreTravail DistribVivresSoudure DistribArgentSoudure BoursesAdo BlanketFeedingChildren BlanketFeedingWomen MAMChildren MASChildren MAMPLWomen FARNcommunaut FormationRenfCapacite CashTransfert CantineScolaire AutreTransferts { 
+	tab `v'`i' `v' if round==`i', m
+	
+}
+}
+
+
+
+
+forvalues i=10(1)10{
+	foreach v in BanqueCerealiere VivreContreTravail ArgentContreTravail DistribVivresSoudure DistribArgentSoudure BoursesAdo BlanketFeedingChildren BlanketFeedingWomen MAMChildren MASChildren MAMPLWomen FARNcommunaut FormationRenfCapacite CashTransfert CantineScolaire AutreTransferts { 
+	tab `v'`i' `v' if round==`i', m
+	
+}
+}
+
+
+/*
+
+*/
