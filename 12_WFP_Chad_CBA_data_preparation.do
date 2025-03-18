@@ -1808,7 +1808,7 @@ order ID SvyDatePDM YEAR SURVEY ADMIN0Name adm0_ocha ADMIN1Name adm1_ocha ADMIN2
 *                     WFP Assistencies
 
 *------------------------------------------------------------------------------
-
+/*
 // Correct WFP 2023 intervention labels values
 foreach var of varlist TransfBenef BanqueCerealiere VivreContreTravail ArgentContreTravail DistribVivresSoudure DistribArgentSoudure BoursesAdo BlanketFeedingChildren BlanketFeedingWomen MAMChildren MASChildren MAMPLWomen FARNcommunaut FormationRenfCapacite CashTransfert CantineScolaire AutreTransferts { 
     recode `var' (1 = 1) (2 = 3) (3 = 4) if YEAR == 2023
@@ -1822,10 +1822,11 @@ lab def assistency 1"Oui PAM" 2"Oui Autre" 3"Non" 4"Ne Sait Pas"
 foreach var of varlist TransfBenef BanqueCerealiere VivreContreTravail ArgentContreTravail DistribVivresSoudure DistribArgentSoudure BoursesAdo BlanketFeedingChildren BlanketFeedingWomen MAMChildren MASChildren MAMPLWomen FARNcommunaut FormationRenfCapacite CashTransfert CantineScolaire AutreTransferts { 
     label values `var' assistency
 }
-
+*/
 order DateDerniereAssist DateDerniereAssist_other Montant TransfBenef BanqueCerealiere VivreContreTravail ArgentContreTravail DistribVivresSoudure DistribArgentSoudure BoursesAdo BlanketFeedingChildren BlanketFeedingWomen MAMChildren MASChildren MAMPLWomen FARNcommunaut FormationRenfCapacite CashTransfert CantineScolaire AutreTransferts
 
-
+tab1 TransfBenef - AutreTransferts
+tab1 TransfBenef - AutreTransferts, nolab
 
 	label var Montant "Amount"
 	label var DateDerniereAssist "Last assistance received from WFP "
@@ -2156,7 +2157,7 @@ tab YEAR SURVEY if WFP_assistency == 0
      Total |       177        165 |       342 
 
 */
-
+/*
 foreach var of varlist TransfBenef BanqueCerealiere VivreContreTravail ArgentContreTravail DistribVivresSoudure DistribArgentSoudure BoursesAdo BlanketFeedingChildren BlanketFeedingWomen MAMChildren MASChildren MAMPLWomen FARNcommunaut FormationRenfCapacite CashTransfert CantineScolaire AutreTransferts { 
     recode `var' (1 = 3) (2 = 3) (4 = 3) if WFP_assistency == 0
 }
@@ -2165,7 +2166,7 @@ foreach var of varlist TransfBenef BanqueCerealiere VivreContreTravail ArgentCon
 foreach var of varlist TransfBenef BanqueCerealiere VivreContreTravail ArgentContreTravail DistribVivresSoudure DistribArgentSoudure BoursesAdo BlanketFeedingChildren BlanketFeedingWomen MAMChildren MASChildren MAMPLWomen FARNcommunaut FormationRenfCapacite CashTransfert CantineScolaire AutreTransferts { 
     label values `var' assistency
 }
-
+*/
 
 drop WFP_assistency
 
@@ -2506,15 +2507,24 @@ label var HHRCSWarningAccess    "Your household receives useful information warn
 
 label define Likert5 1 "Strongly Agree" 2 "Partially agree" 3 "Neutral" 4 "Somewhat disagree" 5 "Totally disagree"
 label values HHRCSBounce HHRCSRevenue HHRCSIncrease HHRCSFinAccess HHRCSSupportCommunity HHRCSSupportPublic HHRCSLessonsLearnt HHRCSFutureChallenge HHRCSWarningAccess Likert5
+//recode missing values
+
+
 
 egen temp_nonmiss_numberHHRCS = rownonmiss(HHRCSBounce HHRCSRevenue HHRCSIncrease HHRCSFinAccess HHRCSSupportCommunity HHRCSSupportPublic HHRCSLessonsLearnt HHRCSFutureChallenge HHRCSWarningAccess) 
-tab temp_nonmiss_numberHHRCS
+
+tab temp_nonmiss_numberHHRCS,m
 tab temp_nonmiss_numberHHRCS YEAR
 egen RCS= rowtotal(HHRCSBounce HHRCSRevenue HHRCSIncrease HHRCSFinAccess HHRCSSupportCommunity HHRCSSupportPublic HHRCSLessonsLearnt HHRCSFutureChallenge HHRCSWarningAccess) 
 replace RCS=(100-0)*((RCS/9)-5)/(1-5) + 0 if temp_nonmiss_numberHHRCS!=0
 replace RCS=. if temp_nonmiss_numberHHRCS==0
 label var RCS "Resilience Capacity Score"
-
+sum RCS 
+tab RCS
+count  if RCS > 100 & !missing(RCS)
+tab SURVEY YEAR if RCS > 100 & !missing(RCS)
+tab1 HHRCSBounce HHRCSRevenue HHRCSIncrease HHRCSFinAccess HHRCSSupportCommunity HHRCSSupportPublic HHRCSLessonsLearnt HHRCSFutureChallenge HHRCSWarningAccess if RCS > 100 & !missing(RCS),m
+br RCS HHRCSBounce HHRCSRevenue HHRCSIncrease HHRCSFinAccess HHRCSSupportCommunity HHRCSSupportPublic HHRCSLessonsLearnt HHRCSFutureChallenge HHRCSWarningAccess if RCS > 100 & !missing(RCS)
 tab YEAR SURVEY if RCS==.
 /*
 Once the RCS is calculated, households are divided in terciles (low-medium-high) to show the distribution of the RCS within the target population. Therefore:
@@ -2732,5 +2742,14 @@ sort YEAR SURVEY
 order ID SvyDatePDM YEAR SURVEY ADMIN0Name adm0_ocha ADMIN1Name adm1_ocha ADMIN2Name adm2_ocha village Longitude Latitude Longitude_precision Latitude_precision IP_var exercise_year exercise_code exercise_code exercise_label
 //drop IP_var
 tab  YEAR SURVEY
+
+tab ADMIN1Name adm1_name,m
+
+tab adm1_ocha adm1_pcod2,m
+tab ADMIN2Name adm2_name,m
+tab adm2_ocha adm2_pcod2,m
+br if ADMIN2Name!=adm2_name
+br if adm2_ocha!=adm2_pcod2
+
 save "$output_data\WFP_Chad_2018-2023_20250314.dta",replace
 //////////////////////////////////////////////////
