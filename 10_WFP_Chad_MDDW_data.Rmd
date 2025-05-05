@@ -14,7 +14,7 @@ output:
 
 
 
-```{r setup, include=FALSE, results = 'hide'}
+```{r 10setup, include=FALSE, results = 'hide'}
 knitr::opts_chunk$set(
 	echo = TRUE,
 	message = FALSE,
@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
 ```
 
 
-```{r packages needed}
+```{r}
 library(haven)
 library(labelled) # for general functions to work with labelled data
 library(tidyverse) # general wrangling
@@ -47,13 +47,13 @@ rm(list = ls())
 ```
 
 
-```{r environment settings}
+```{r}
 
 dir_input_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/input_data/Chad"
 dir_output_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/output_data/Chad"
 ```
 
-```{r read harmonization excel file}
+```{r}
 
 Chad_Harmonization_variables <- read_excel(paste0(dir_input_data,"/Chad_Harmonization.xlsx"), 
     sheet = "variables_harmonization")
@@ -64,7 +64,7 @@ Chad_Harmonization_description <- read_excel(paste0(dir_input_data,"/Chad_Harmon
 #View(Chad_Harmonization_description)
 ```
 
-```{r data importation}
+```{r}
 
 lst_data = Chad_Harmonization_description$Data
 lst_test = Chad_Harmonization_description$Name

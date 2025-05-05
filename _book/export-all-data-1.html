@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>10 Export all data | WFP datasets wrangling - Chad : HDDS</title>
+  <meta name="description" content="10 Export all data | WFP datasets wrangling - Chad : HDDS" />
+  <meta name="generator" content="bookdown 0.37 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="10 Export all data | WFP datasets wrangling - Chad : HDDS" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="10 Export all data | WFP datasets wrangling - Chad : HDDS" />
+  
+  
+  
+
+<meta name="author" content="Aboubacar HEMA" />
+
+
+<meta name="date" content="2025-05-05" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="compute-household-size-variable.html"/>
+<link rel="next" href="assistance.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="administrative-check.html"><a href="administrative-check.html"><i class="fa fa-check"></i><b>1</b> Administrative check</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="administrative-check.html"><a href="administrative-check.html#sitevillage"><i class="fa fa-check"></i><b>1.1</b> Site/Village</a></li>
+<li class="chapter" data-level="1.2" data-path="administrative-check.html"><a href="administrative-check.html#baseline-2018"><i class="fa fa-check"></i><b>1.2</b> Baseline 2018</a></li>
+<li class="chapter" data-level="1.3" data-path="administrative-check.html"><a href="administrative-check.html#ea-2019"><i class="fa fa-check"></i><b>1.3</b> EA 2019</a></li>
+<li class="chapter" data-level="1.4" data-path="administrative-check.html"><a href="administrative-check.html#ea-2020"><i class="fa fa-check"></i><b>1.4</b> EA 2020</a></li>
+<li class="chapter" data-level="1.5" data-path="administrative-check.html"><a href="administrative-check.html#ea-2021"><i class="fa fa-check"></i><b>1.5</b> EA 2021</a></li>
+<li class="chapter" data-level="1.6" data-path="administrative-check.html"><a href="administrative-check.html#ea-2022"><i class="fa fa-check"></i><b>1.6</b> EA 2022</a></li>
+<li class="chapter" data-level="1.7" data-path="administrative-check.html"><a href="administrative-check.html#ea-2023"><i class="fa fa-check"></i><b>1.7</b> EA 2023</a></li>
+<li class="chapter" data-level="1.8" data-path="administrative-check.html"><a href="administrative-check.html#pdm-2020"><i class="fa fa-check"></i><b>1.8</b> PDM 2020</a></li>
+<li class="chapter" data-level="1.9" data-path="administrative-check.html"><a href="administrative-check.html#pdm-2021"><i class="fa fa-check"></i><b>1.9</b> PDM 2021</a></li>
+<li class="chapter" data-level="1.10" data-path="administrative-check.html"><a href="administrative-check.html#pdm-2022"><i class="fa fa-check"></i><b>1.10</b> PDM 2022</a></li>
+<li class="chapter" data-level="1.11" data-path="administrative-check.html"><a href="administrative-check.html#pdm-2023"><i class="fa fa-check"></i><b>1.11</b> PDM 2023</a></li>
+<li class="chapter" data-level="1.12" data-path="administrative-check.html"><a href="administrative-check.html#date-format-check"><i class="fa fa-check"></i><b>1.12</b> Date format check</a></li>
+<li class="chapter" data-level="1.13" data-path="administrative-check.html"><a href="administrative-check.html#merging-all-data"><i class="fa fa-check"></i><b>1.13</b> Merging all data</a></li>
+<li class="chapter" data-level="1.14" data-path="administrative-check.html"><a href="administrative-check.html#export-all-data"><i class="fa fa-check"></i><b>1.14</b> Export all data</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="gender-recodification.html"><a href="gender-recodification.html"><i class="fa fa-check"></i><b>2</b> Gender recodification</a></li>
+<li class="chapter" data-level="3" data-path="hh-age.html"><a href="hh-age.html"><i class="fa fa-check"></i><b>3</b> HH Age</a></li>
+<li class="chapter" data-level="4" data-path="household-head-education-level.html"><a href="household-head-education-level.html"><i class="fa fa-check"></i><b>4</b> Household head education level</a></li>
+<li class="chapter" data-level="5" data-path="hhhmainactivity.html"><a href="hhhmainactivity.html"><i class="fa fa-check"></i><b>5</b> HHHMainActivity</a></li>
+<li class="chapter" data-level="6" data-path="hhhmatrimonial.html"><a href="hhhmatrimonial.html"><i class="fa fa-check"></i><b>6</b> HHHMatrimonial</a></li>
+<li class="chapter" data-level="7" data-path="hhsourceincome.html"><a href="hhsourceincome.html"><i class="fa fa-check"></i><b>7</b> HHSourceIncome</a></li>
+<li class="chapter" data-level="8" data-path="merging-all-data-1.html"><a href="merging-all-data-1.html"><i class="fa fa-check"></i><b>8</b> Merging all data</a></li>
+<li class="chapter" data-level="9" data-path="compute-household-size-variable.html"><a href="compute-household-size-variable.html"><i class="fa fa-check"></i><b>9</b> Compute household size variable</a></li>
+<li class="chapter" data-level="10" data-path="export-all-data-1.html"><a href="export-all-data-1.html"><i class="fa fa-check"></i><b>10</b> Export all data</a></li>
+<li class="chapter" data-level="11" data-path="assistance.html"><a href="assistance.html"><i class="fa fa-check"></i><b>11</b> Assistance</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="assistance.html"><a href="assistance.html#date-assistance-check"><i class="fa fa-check"></i><b>11.1</b> Date assistance check</a></li>
+<li class="chapter" data-level="11.2" data-path="assistance.html"><a href="assistance.html#date-last-assistance-check"><i class="fa fa-check"></i><b>11.2</b> Date last assistance check</a></li>
+<li class="chapter" data-level="11.3" data-path="assistance.html"><a href="assistance.html#montant"><i class="fa fa-check"></i><b>11.3</b> Montant</a></li>
+<li class="chapter" data-level="11.4" data-path="assistance.html"><a href="assistance.html#type-dassistance"><i class="fa fa-check"></i><b>11.4</b> Type d’assistance</a>
+<ul>
+<li class="chapter" data-level="11.4.1" data-path="assistance.html"><a href="assistance.html#baseline-2018-1"><i class="fa fa-check"></i><b>11.4.1</b> Baseline 2018</a></li>
+<li class="chapter" data-level="11.4.2" data-path="assistance.html"><a href="assistance.html#ea-2019-1"><i class="fa fa-check"></i><b>11.4.2</b> EA 2019</a></li>
+<li class="chapter" data-level="11.4.3" data-path="assistance.html"><a href="assistance.html#ea-2020-1"><i class="fa fa-check"></i><b>11.4.3</b> EA 2020</a></li>
+<li class="chapter" data-level="11.4.4" data-path="assistance.html"><a href="assistance.html#ea-2021-1"><i class="fa fa-check"></i><b>11.4.4</b> EA 2021</a></li>
+<li class="chapter" data-level="11.4.5" data-path="assistance.html"><a href="assistance.html#ea-2022-1"><i class="fa fa-check"></i><b>11.4.5</b> EA 2022</a></li>
+<li class="chapter" data-level="11.4.6" data-path="assistance.html"><a href="assistance.html#ea-2023-1"><i class="fa fa-check"></i><b>11.4.6</b> EA 2023</a></li>
+<li class="chapter" data-level="11.4.7" data-path="assistance.html"><a href="assistance.html#pdm-2020-1"><i class="fa fa-check"></i><b>11.4.7</b> PDM 2020</a></li>
+<li class="chapter" data-level="11.4.8" data-path="assistance.html"><a href="assistance.html#pdm-2021-1"><i class="fa fa-check"></i><b>11.4.8</b> PDM 2021</a></li>
+<li class="chapter" data-level="11.4.9" data-path="assistance.html"><a href="assistance.html#pdm-2022-1"><i class="fa fa-check"></i><b>11.4.9</b> PDM 2022</a></li>
+<li class="chapter" data-level="11.4.10" data-path="assistance.html"><a href="assistance.html#pdm-2023-1"><i class="fa fa-check"></i><b>11.4.10</b> PDM 2023</a></li>
+</ul></li>
+<li class="chapter" data-level="11.5" data-path="assistance.html"><a href="assistance.html#merging-all-data-2"><i class="fa fa-check"></i><b>11.5</b> Merging all data</a></li>
+<li class="chapter" data-level="11.6" data-path="assistance.html"><a href="assistance.html#export-all-data-2"><i class="fa fa-check"></i><b>11.6</b> Export all data</a></li>
+<li class="chapter" data-level="11.7" data-path="assistance.html"><a href="assistance.html#food-consumption-score"><i class="fa fa-check"></i><b>11.7</b> Food consumption score</a>
+<ul>
+<li class="chapter" data-level="11.7.1" data-path="assistance.html"><a href="assistance.html#fcs-céréales-et-tubercules"><i class="fa fa-check"></i><b>11.7.1</b> FCS : Céréales et tubercules</a></li>
+<li class="chapter" data-level="11.7.2" data-path="assistance.html"><a href="assistance.html#fcs-céréales-et-tubercules---sources"><i class="fa fa-check"></i><b>11.7.2</b> FCS : Céréales et tubercules - Sources</a></li>
+<li class="chapter" data-level="11.7.3" data-path="assistance.html"><a href="assistance.html#fcs-légumineuses"><i class="fa fa-check"></i><b>11.7.3</b> FCS : Légumineuses</a></li>
+<li class="chapter" data-level="11.7.4" data-path="assistance.html"><a href="assistance.html#fcs-légumineuses---sources"><i class="fa fa-check"></i><b>11.7.4</b> FCS : Légumineuses - Sources</a></li>
+<li class="chapter" data-level="11.7.5" data-path="assistance.html"><a href="assistance.html#fcs-lait-et-produits-laitiers"><i class="fa fa-check"></i><b>11.7.5</b> FCS : Lait et produits laitiers</a></li>
+<li class="chapter" data-level="11.7.6" data-path="assistance.html"><a href="assistance.html#fcs-lait-et-produits-laitiers---sources"><i class="fa fa-check"></i><b>11.7.6</b> FCS : Lait et produits laitiers - Sources</a></li>
+<li class="chapter" data-level="11.7.7" data-path="assistance.html"><a href="assistance.html#fcs-viande-poisson-et-oeufs"><i class="fa fa-check"></i><b>11.7.7</b> FCS: Viande, poisson et oeufs</a></li>
+<li class="chapter" data-level="11.7.8" data-path="assistance.html"><a href="assistance.html#fcs-viande-poisson-et-oeufs---sources"><i class="fa fa-check"></i><b>11.7.8</b> FCS: Viande, poisson et oeufs - Sources</a></li>
+<li class="chapter" data-level="11.7.9" data-path="assistance.html"><a href="assistance.html#fcs-chairviande-rouge"><i class="fa fa-check"></i><b>11.7.9</b> FCS : Chair/viande rouge</a></li>
+<li class="chapter" data-level="11.7.10" data-path="assistance.html"><a href="assistance.html#fcs-viande-dorgane-telle-que-foie-reins-coeur-et-ou-autres-abats"><i class="fa fa-check"></i><b>11.7.10</b> FCS : Viande d’organe, telle que: (foie, reins, coeur et / ou autres abats)</a></li>
+<li class="chapter" data-level="11.7.11" data-path="assistance.html"><a href="assistance.html#fcs-poissons-et-coquillage-tels-que-poissons-y-compris-le-thon-en-conserve-les-escargots-et-ou-dautres-fruits-de-mer-remplacer-par-des-exemples-localement-pertinents"><i class="fa fa-check"></i><b>11.7.11</b> FCS : Poissons et coquillage, tels que: (poissons, y compris le thon en conserve, les escargots et / ou d’autres fruits de mer remplacer par des exemples localement pertinents )</a></li>
+<li class="chapter" data-level="11.7.12" data-path="assistance.html"><a href="assistance.html#fcs-oeufs"><i class="fa fa-check"></i><b>11.7.12</b> FCS : Oeufs</a></li>
+<li class="chapter" data-level="11.7.13" data-path="assistance.html"><a href="assistance.html#fcs-légumes-et-feuilles-tels-que-épinards-oignons-tomates-carottes-poivrons-haricots-verts-laitue-etc"><i class="fa fa-check"></i><b>11.7.13</b> FCS : Légumes et feuilles , tels que : (épinards, oignons, tomates, carottes, poivrons, haricots verts, laitue, etc)</a></li>
+<li class="chapter" data-level="11.7.14" data-path="assistance.html"><a href="assistance.html#fcs-légumes-et-feuilles-tels-que-épinards-oignons-tomates-carottes-poivrons-haricots-verts-laitue-etc---sources"><i class="fa fa-check"></i><b>11.7.14</b> FCS : Légumes et feuilles , tels que : (épinards, oignons, tomates, carottes, poivrons, haricots verts, laitue, etc) - Sources</a></li>
+<li class="chapter" data-level="11.7.15" data-path="assistance.html"><a href="assistance.html#fcs-légumes-oranges-légumes-riches-en-vitamine-a"><i class="fa fa-check"></i><b>11.7.15</b> FCS : Légumes oranges (légumes riches en Vitamine A)</a></li>
+<li class="chapter" data-level="11.7.16" data-path="assistance.html"><a href="assistance.html#fcs-légumes-à-feuilles-vertes-tels-que-épinards-brocoli-amarante-etou-autres-feuilles-vert-foncé-feuilles-de-manioc"><i class="fa fa-check"></i><b>11.7.16</b> FCS : Légumes à feuilles vertes,, tels que : ( épinards, brocoli, amarante et/ou autres feuilles vert foncé , feuilles de manioc )</a></li>
+<li class="chapter" data-level="11.7.17" data-path="assistance.html"><a href="assistance.html#fcs-fruits-tels-que-banane-pomme-citron-mangue-papaye-abricot-pêche-etc"><i class="fa fa-check"></i><b>11.7.17</b> FCS : Fruits, tels que : (banane, pomme, citron, mangue, papaye, abricot, pêche, etc)</a></li>
+<li class="chapter" data-level="11.7.18" data-path="assistance.html"><a href="assistance.html#fcs-huilematières-grassesbeurre-tels-que-huile-végétale-huile-de-palme-beurre-de-karité-margarine-autres-huiles-matières-grasses"><i class="fa fa-check"></i><b>11.7.18</b> FCS : Huile/matières grasses/beurre: tels que (huile végétale, huile de palme, beurre de karité, margarine, autres huiles / matières grasses)</a></li>
+<li class="chapter" data-level="11.7.19" data-path="assistance.html"><a href="assistance.html#fcs-huilematières-grassesbeurre-tels-que-huile-végétale-huile-de-palme-beurre-de-karité-margarine-autres-huiles-matières-grasses---sources"><i class="fa fa-check"></i><b>11.7.19</b> FCS : Huile/matières grasses/beurre: tels que (huile végétale, huile de palme, beurre de karité, margarine, autres huiles / matières grasses) - Sources</a></li>
+<li class="chapter" data-level="11.7.20" data-path="assistance.html"><a href="assistance.html#fsc-sucre-ou-sucreries-tels-que-sucre-miel-confiture-gâteau-bonbons-biscuits-viennoiserie-et-autres-produits-sucrés-boissons-sucrées"><i class="fa fa-check"></i><b>11.7.20</b> FSC : Sucre ou sucreries, tels que (sucre, miel, confiture, gâteau, bonbons, biscuits, viennoiserie et autres produits sucrés (boissons sucrées) )</a></li>
+<li class="chapter" data-level="11.7.21" data-path="assistance.html"><a href="assistance.html#fsc-sucre-ou-sucreries-tels-que-sucre-miel-confiture-gâteau-bonbons-biscuits-viennoiserie-et-autres-produits-sucrés-boissons-sucrées---sources"><i class="fa fa-check"></i><b>11.7.21</b> FSC : Sucre ou sucreries, tels que (sucre, miel, confiture, gâteau, bonbons, biscuits, viennoiserie et autres produits sucrés (boissons sucrées) ) - Sources</a></li>
+<li class="chapter" data-level="11.7.22" data-path="assistance.html"><a href="assistance.html#fcs-condimentsépices-tels-que-thé-cafécacao-sel-ail-épices-levurelevure-chimique-tomatesauce-viande-ou-poisson-comme-condiment-condiments-incluant-des-petites-quantités-de-laitthé-café."><i class="fa fa-check"></i><b>11.7.22</b> FCS : Condiments/épices: tels que (thé, café/cacao, sel, ail, épices, levure/levure chimique, tomate/sauce, viande ou poisson comme condiment, condiments incluant des petites quantités de lait/thé, café.) ?</a></li>
+<li class="chapter" data-level="11.7.23" data-path="assistance.html"><a href="assistance.html#merging-all-data-3"><i class="fa fa-check"></i><b>11.7.23</b> Merging all data</a></li>
+<li class="chapter" data-level="11.7.24" data-path="assistance.html"><a href="assistance.html#fcs-computation"><i class="fa fa-check"></i><b>11.7.24</b> FCS computation</a></li>
+</ul></li>
+<li class="chapter" data-level="11.8" data-path="assistance.html"><a href="assistance.html#stratégies-dadaptation-aux-moyens-dexistence-lhcsi"><i class="fa fa-check"></i><b>11.8</b> Stratégies d’adaptation aux moyens d’existence (LhCSI)</a>
+<ul>
+<li class="chapter" data-level="11.8.1" data-path="assistance.html"><a href="assistance.html#lhcsi-vendre-des-actifsbiens-non-productifs-du-ménage-radio-meuble-réfrigérateur-télévision-bijoux-etc."><i class="fa fa-check"></i><b>11.8.1</b> LhCSI : Vendre des actifs/biens non productifs du ménage (radio, meuble, réfrigérateur, télévision, bijoux etc.)</a></li>
+<li class="chapter" data-level="11.8.2" data-path="assistance.html"><a href="assistance.html#lhcsi-vendre-plus-danimaux-non-productifs-que-dhabitude"><i class="fa fa-check"></i><b>11.8.2</b> LhCSI : Vendre plus d’animaux (non-productifs) que d’habitude</a></li>
+<li class="chapter" data-level="11.8.3" data-path="assistance.html"><a href="assistance.html#lhcsi-dépenser-lépargne-en-raison-dun-manque-de-nourriture-ou-dargent-pour-acheter-de-la-nourriture"><i class="fa fa-check"></i><b>11.8.3</b> LhCSI : Dépenser l’épargne en raison d’un manque de nourriture ou d’argent pour acheter de la nourriture ?</a></li>
+<li class="chapter" data-level="11.8.4" data-path="assistance.html"><a href="assistance.html#lhcsi-emprunter-de-largent-nourriture-auprès-dun-prêteur-formel-banque"><i class="fa fa-check"></i><b>11.8.4</b> LhCSI : Emprunter de l’argent / nourriture auprès d’un prêteur formel /banque</a></li>
+<li class="chapter" data-level="11.8.5" data-path="assistance.html"><a href="assistance.html#lhcsi-réduire-les-dépenses-non-alimentaires-essentielles-telles-que-léducation-la-santé-dont-de-médicaments"><i class="fa fa-check"></i><b>11.8.5</b> LhCSI : Réduire les dépenses non alimentaires essentielles telles que l’éducation, la santé (dont de médicaments)</a></li>
+<li class="chapter" data-level="11.8.6" data-path="assistance.html"><a href="assistance.html#lhcsi-vendre-des-biens-productifs-ou-des-moyens-de-transport-machine-à-coudre-brouette-vélo-car-etc."><i class="fa fa-check"></i><b>11.8.6</b> LhCSI : Vendre des biens productifs ou des moyens de transport (machine à coudre, brouette, vélo, car, etc.)</a></li>
+<li class="chapter" data-level="11.8.7" data-path="assistance.html"><a href="assistance.html#lhcsi-retirer-les-enfants-de-lécole"><i class="fa fa-check"></i><b>11.8.7</b> LhCSI : Retirer les enfants de l’école</a></li>
+<li class="chapter" data-level="11.8.8" data-path="assistance.html"><a href="assistance.html#lhcsi-vendre-la-maison-ou-des-terrains"><i class="fa fa-check"></i><b>11.8.8</b> LhCSI : Vendre la maison ou des terrains</a></li>
+<li class="chapter" data-level="11.8.9" data-path="assistance.html"><a href="assistance.html#lhcsi-mendier"><i class="fa fa-check"></i><b>11.8.9</b> LhCSI : Mendier</a></li>
+<li class="chapter" data-level="11.8.10" data-path="assistance.html"><a href="assistance.html#lhcsi-vendre-les-derniers-animaux-femelles-reproductrices"><i class="fa fa-check"></i><b>11.8.10</b> LhCSI : Vendre les derniers animaux femelles reproductrices</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="merging-all-data-4.html"><a href="merging-all-data-4.html"><i class="fa fa-check"></i><b>12</b> Merging all data</a>
+<ul>
+<li class="chapter" data-level="12.1" data-path="merging-all-data-4.html"><a href="merging-all-data-4.html#reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi"><i class="fa fa-check"></i><b>12.1</b> reduced coping strategy index OU l’indice réduit des stratégies de survie (rCSI)</a>
+<ul>
+<li class="chapter" data-level="12.1.1" data-path="merging-all-data-4.html"><a href="merging-all-data-4.html#rcsi-consommer-des-aliments-moins-préférés-et-moins-chers"><i class="fa fa-check"></i><b>12.1.1</b> rCSI : Consommer des aliments moins préférés et moins chers</a></li>
+<li class="chapter" data-level="12.1.2" data-path="merging-all-data-4.html"><a href="merging-all-data-4.html#rcsi-emprunter-de-la-nourriture-ou-compter-sur-laide-des-parentsamis"><i class="fa fa-check"></i><b>12.1.2</b> rCSI : Emprunter de la nourriture ou compter sur l’aide des parents/amis</a></li>
+<li class="chapter" data-level="12.1.3" data-path="merging-all-data-4.html"><a href="merging-all-data-4.html#rcsi-diminuer-la-quantité-consommée-pendant-les-repas"><i class="fa fa-check"></i><b>12.1.3</b> rCSI : Diminuer la quantité consommée pendant les repas</a></li>
+<li class="chapter" data-level="12.1.4" data-path="merging-all-data-4.html"><a href="merging-all-data-4.html#rcsi-restreindre-la-consommation-des-adultes-pour-nourrir-les-enfants"><i class="fa fa-check"></i><b>12.1.4</b> rCSI : Restreindre la consommation des adultes pour nourrir les enfants</a></li>
+<li class="chapter" data-level="12.1.5" data-path="merging-all-data-4.html"><a href="merging-all-data-4.html#rcsi-diminuer-le-nombre-de-repas-par-jour"><i class="fa fa-check"></i><b>12.1.5</b> rCSI : Diminuer le nombre de repas par jour</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="merging-all-data-5.html"><a href="merging-all-data-5.html"><i class="fa fa-check"></i><b>13</b> Merging all data</a>
+<ul>
+<li class="chapter" data-level="13.1" data-path="merging-all-data-5.html"><a href="merging-all-data-5.html#asset-benefit-indicator-abi"><i class="fa fa-check"></i><b>13.1</b> ASSET BENEFIT INDICATOR (ABI)</a></li>
+<li class="chapter" data-level="13.2" data-path="merging-all-data-5.html"><a href="merging-all-data-5.html#ea-2019-2"><i class="fa fa-check"></i><b>13.2</b> EA 2019</a></li>
+<li class="chapter" data-level="13.3" data-path="merging-all-data-5.html"><a href="merging-all-data-5.html#ea-2020-2"><i class="fa fa-check"></i><b>13.3</b> EA 2020</a></li>
+<li class="chapter" data-level="13.4" data-path="merging-all-data-5.html"><a href="merging-all-data-5.html#ea-2021-2"><i class="fa fa-check"></i><b>13.4</b> EA 2021</a></li>
+<li class="chapter" data-level="13.5" data-path="merging-all-data-5.html"><a href="merging-all-data-5.html#ea-2022-2"><i class="fa fa-check"></i><b>13.5</b> EA 2022</a></li>
+<li class="chapter" data-level="13.6" data-path="merging-all-data-5.html"><a href="merging-all-data-5.html#ea-2023-2"><i class="fa fa-check"></i><b>13.6</b> EA 2023</a></li>
+<li class="chapter" data-level="13.7" data-path="merging-all-data-5.html"><a href="merging-all-data-5.html#pdm-2020-2"><i class="fa fa-check"></i><b>13.7</b> PDM 2020</a></li>
+<li class="chapter" data-level="13.8" data-path="merging-all-data-5.html"><a href="merging-all-data-5.html#pdm-2021-2"><i class="fa fa-check"></i><b>13.8</b> PDM 2021</a></li>
+<li class="chapter" data-level="13.9" data-path="merging-all-data-5.html"><a href="merging-all-data-5.html#pdm-2022-2"><i class="fa fa-check"></i><b>13.9</b> PDM 2022</a></li>
+<li class="chapter" data-level="13.10" data-path="merging-all-data-5.html"><a href="merging-all-data-5.html#pdm-2023-2"><i class="fa fa-check"></i><b>13.10</b> PDM 2023</a></li>
+<li class="chapter" data-level="13.11" data-path="merging-all-data-5.html"><a href="merging-all-data-5.html#merging-all-data-6"><i class="fa fa-check"></i><b>13.11</b> Merging all data</a></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="self-evaluated-resilience-score-sers.html"><a href="self-evaluated-resilience-score-sers.html"><i class="fa fa-check"></i><b>14</b> Self-evaluated resilience score (SERS)</a>
+<ul>
+<li class="chapter" data-level="14.1" data-path="self-evaluated-resilience-score-sers.html"><a href="self-evaluated-resilience-score-sers.html#ea-2020-3"><i class="fa fa-check"></i><b>14.1</b> EA 2020</a></li>
+<li class="chapter" data-level="14.2" data-path="self-evaluated-resilience-score-sers.html"><a href="self-evaluated-resilience-score-sers.html#ea-2021-3"><i class="fa fa-check"></i><b>14.2</b> EA 2021</a></li>
+<li class="chapter" data-level="14.3" data-path="self-evaluated-resilience-score-sers.html"><a href="self-evaluated-resilience-score-sers.html#ea-2022-3"><i class="fa fa-check"></i><b>14.3</b> EA 2022</a></li>
+<li class="chapter" data-level="14.4" data-path="self-evaluated-resilience-score-sers.html"><a href="self-evaluated-resilience-score-sers.html#ea-2023-3"><i class="fa fa-check"></i><b>14.4</b> EA 2023</a></li>
+<li class="chapter" data-level="14.5" data-path="self-evaluated-resilience-score-sers.html"><a href="self-evaluated-resilience-score-sers.html#pdm-2022-3"><i class="fa fa-check"></i><b>14.5</b> PDM 2022</a></li>
+<li class="chapter" data-level="14.6" data-path="self-evaluated-resilience-score-sers.html"><a href="self-evaluated-resilience-score-sers.html#pdm-2023-3"><i class="fa fa-check"></i><b>14.6</b> PDM 2023</a></li>
+<li class="chapter" data-level="14.7" data-path="self-evaluated-resilience-score-sers.html"><a href="self-evaluated-resilience-score-sers.html#merging-all-data-7"><i class="fa fa-check"></i><b>14.7</b> Merging all data</a></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="data-consistency-check.html"><a href="data-consistency-check.html"><i class="fa fa-check"></i><b>15</b> Data consistency Check</a>
+<ul>
+<li class="chapter" data-level="15.1" data-path="data-consistency-check.html"><a href="data-consistency-check.html#drop-duplicated-observations"><i class="fa fa-check"></i><b>15.1</b> Drop duplicated observations</a></li>
+<li class="chapter" data-level="15.2" data-path="data-consistency-check.html"><a href="data-consistency-check.html#consent-check"><i class="fa fa-check"></i><b>15.2</b> Consent check</a></li>
+<li class="chapter" data-level="15.3" data-path="data-consistency-check.html"><a href="data-consistency-check.html#id-check"><i class="fa fa-check"></i><b>15.3</b> ID Check</a></li>
+</ul></li>
+<li class="chapter" data-level="16" data-path="ea-2021-4.html"><a href="ea-2021-4.html"><i class="fa fa-check"></i><b>16</b> EA 2021</a></li>
+<li class="chapter" data-level="17" data-path="ea-2022-4.html"><a href="ea-2022-4.html"><i class="fa fa-check"></i><b>17</b> EA 2022</a></li>
+<li class="chapter" data-level="18" data-path="ea-2023-4.html"><a href="ea-2023-4.html"><i class="fa fa-check"></i><b>18</b> EA 2023</a></li>
+<li class="chapter" data-level="19" data-path="pdm-2022-4.html"><a href="pdm-2022-4.html"><i class="fa fa-check"></i><b>19</b> PDM 2022</a></li>
+<li class="chapter" data-level="20" data-path="pdm-2023-4.html"><a href="pdm-2023-4.html"><i class="fa fa-check"></i><b>20</b> PDM 2023</a></li>
+<li class="chapter" data-level="21" data-path="régime-alimentaire-minimum-acceptable-mad.html"><a href="régime-alimentaire-minimum-acceptable-mad.html"><i class="fa fa-check"></i><b>21</b> Régime alimentaire minimum acceptable (MAD)</a></li>
+<li class="chapter" data-level="22" data-path="export-all-data-3.html"><a href="export-all-data-3.html"><i class="fa fa-check"></i><b>22</b> Export all data</a></li>
+<li class="chapter" data-level="23" data-path="data-consistency-check-1.html"><a href="data-consistency-check-1.html"><i class="fa fa-check"></i><b>23</b> Data consistency Check</a>
+<ul>
+<li class="chapter" data-level="23.1" data-path="data-consistency-check-1.html"><a href="data-consistency-check-1.html#drop-duplicated-observations-1"><i class="fa fa-check"></i><b>23.1</b> Drop duplicated observations</a></li>
+<li class="chapter" data-level="23.2" data-path="data-consistency-check-1.html"><a href="data-consistency-check-1.html#consent-check-1"><i class="fa fa-check"></i><b>23.2</b> Consent check</a></li>
+<li class="chapter" data-level="23.3" data-path="data-consistency-check-1.html"><a href="data-consistency-check-1.html#id-check-1"><i class="fa fa-check"></i><b>23.3</b> ID Check</a></li>
+</ul></li>
+<li class="chapter" data-level="24" data-path="ea-2021-5.html"><a href="ea-2021-5.html"><i class="fa fa-check"></i><b>24</b> EA 2021</a></li>
+<li class="chapter" data-level="25" data-path="ea-2022-5.html"><a href="ea-2022-5.html"><i class="fa fa-check"></i><b>25</b> EA 2022</a></li>
+<li class="chapter" data-level="26" data-path="ea-2023-5.html"><a href="ea-2023-5.html"><i class="fa fa-check"></i><b>26</b> EA 2023</a></li>
+<li class="chapter" data-level="27" data-path="pdm-2022-5.html"><a href="pdm-2022-5.html"><i class="fa fa-check"></i><b>27</b> PDM 2022</a></li>
+<li class="chapter" data-level="28" data-path="pdm-2023-5.html"><a href="pdm-2023-5.html"><i class="fa fa-check"></i><b>28</b> PDM 2023</a></li>
+<li class="chapter" data-level="29" data-path="export-all-data-4.html"><a href="export-all-data-4.html"><i class="fa fa-check"></i><b>29</b> Export all data</a></li>
+<li class="chapter" data-level="30" data-path="data-consistency-check-2.html"><a href="data-consistency-check-2.html"><i class="fa fa-check"></i><b>30</b> Data consistency Check</a>
+<ul>
+<li class="chapter" data-level="30.1" data-path="data-consistency-check-2.html"><a href="data-consistency-check-2.html#drop-duplicated-observations-2"><i class="fa fa-check"></i><b>30.1</b> Drop duplicated observations</a></li>
+<li class="chapter" data-level="30.2" data-path="data-consistency-check-2.html"><a href="data-consistency-check-2.html#consent-check-2"><i class="fa fa-check"></i><b>30.2</b> Consent check</a></li>
+<li class="chapter" data-level="30.3" data-path="data-consistency-check-2.html"><a href="data-consistency-check-2.html#id-check-2"><i class="fa fa-check"></i><b>30.3</b> ID Check</a></li>
+<li class="chapter" data-level="30.4" data-path="data-consistency-check-2.html"><a href="data-consistency-check-2.html#hdds-check"><i class="fa fa-check"></i><b>30.4</b> HDDS Check</a></li>
+<li class="chapter" data-level="30.5" data-path="data-consistency-check-2.html"><a href="data-consistency-check-2.html#export-all-data-5"><i class="fa fa-check"></i><b>30.5</b> Export all data</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">WFP datasets wrangling - Chad : HDDS</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="export-all-data-1" class="section level1 hasAnchor" number="10">
+<h1><span class="header-section-number">10</span> Export all data<a href="export-all-data-1.html#export-all-data-1" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+
+<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="export-all-data-1.html#cb106-1" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb106-2"><a href="export-all-data-1.html#cb106-2" tabindex="-1"></a><span class="fu">library</span>(labelled) <span class="co"># for general functions to work with labelled data</span></span>
+<span id="cb106-3"><a href="export-all-data-1.html#cb106-3" tabindex="-1"></a><span class="fu">library</span>(tidyverse) <span class="co"># general wrangling</span></span>
+<span id="cb106-4"><a href="export-all-data-1.html#cb106-4" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb106-5"><a href="export-all-data-1.html#cb106-5" tabindex="-1"></a><span class="fu">library</span>(Hmisc)</span>
+<span id="cb106-6"><a href="export-all-data-1.html#cb106-6" tabindex="-1"></a><span class="fu">library</span>(gtsummary) <span class="co"># to demonstrate automatic use of variable labels in summary tables</span></span>
+<span id="cb106-7"><a href="export-all-data-1.html#cb106-7" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
+<span id="cb106-8"><a href="export-all-data-1.html#cb106-8" tabindex="-1"></a><span class="fu">library</span>(foreign)</span>
+<span id="cb106-9"><a href="export-all-data-1.html#cb106-9" tabindex="-1"></a><span class="fu">library</span>(sjPlot)</span>
+<span id="cb106-10"><a href="export-all-data-1.html#cb106-10" tabindex="-1"></a><span class="fu">library</span>(sjmisc)</span>
+<span id="cb106-11"><a href="export-all-data-1.html#cb106-11" tabindex="-1"></a><span class="fu">library</span>(sjlabelled) <span class="co"># for example efc data set with variable labels</span></span>
+<span id="cb106-12"><a href="export-all-data-1.html#cb106-12" tabindex="-1"></a><span class="fu">library</span>(stringr)</span></code></pre></div>
+<div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="export-all-data-1.html#cb107-1" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span></code></pre></div>
+<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="export-all-data-1.html#cb108-1" tabindex="-1"></a>dir_input_data <span class="ot">=</span> <span class="st">&quot;C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/input_data/Chad&quot;</span></span>
+<span id="cb108-2"><a href="export-all-data-1.html#cb108-2" tabindex="-1"></a>dir_output_data <span class="ot">=</span> <span class="st">&quot;C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/output_data/Chad&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="export-all-data-1.html#cb109-1" tabindex="-1"></a>Chad_Harmonization_variables <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="fu">paste0</span>(dir_input_data,<span class="st">&quot;/Chad_Harmonization.xlsx&quot;</span>), </span>
+<span id="cb109-2"><a href="export-all-data-1.html#cb109-2" tabindex="-1"></a>    <span class="at">sheet =</span> <span class="st">&quot;variables_harmonization&quot;</span>)</span>
+<span id="cb109-3"><a href="export-all-data-1.html#cb109-3" tabindex="-1"></a><span class="co">#View(Chad_Harmonization_variables)</span></span>
+<span id="cb109-4"><a href="export-all-data-1.html#cb109-4" tabindex="-1"></a></span>
+<span id="cb109-5"><a href="export-all-data-1.html#cb109-5" tabindex="-1"></a>Chad_Harmonization_description <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="fu">paste0</span>(dir_input_data,<span class="st">&quot;/Chad_Harmonization.xlsx&quot;</span>), </span>
+<span id="cb109-6"><a href="export-all-data-1.html#cb109-6" tabindex="-1"></a>    <span class="at">sheet =</span> <span class="st">&quot;description&quot;</span>)</span>
+<span id="cb109-7"><a href="export-all-data-1.html#cb109-7" tabindex="-1"></a><span class="co">#View(Chad_Harmonization_description)</span></span></code></pre></div>
+<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="export-all-data-1.html#cb110-1" tabindex="-1"></a>lst_data <span class="ot">=</span> Chad_Harmonization_description<span class="sc">$</span>Data</span>
+<span id="cb110-2"><a href="export-all-data-1.html#cb110-2" tabindex="-1"></a>lst_test <span class="ot">=</span> Chad_Harmonization_description<span class="sc">$</span>Name</span>
+<span id="cb110-3"><a href="export-all-data-1.html#cb110-3" tabindex="-1"></a></span>
+<span id="cb110-4"><a href="export-all-data-1.html#cb110-4" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(lst_data)) {                              <span class="co"># Head of for-loop</span></span>
+<span id="cb110-5"><a href="export-all-data-1.html#cb110-5" tabindex="-1"></a>  <span class="fu">assign</span>(lst_test[i],                                   <span class="co"># Read and store data frames</span></span>
+<span id="cb110-6"><a href="export-all-data-1.html#cb110-6" tabindex="-1"></a>         <span class="fu">read_sav</span>(<span class="fu">paste0</span>(dir_input_data,<span class="st">&quot;/&quot;</span>,lst_data[i])))</span>
+<span id="cb110-7"><a href="export-all-data-1.html#cb110-7" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb111-1"><a href="export-all-data-1.html#cb111-1" tabindex="-1"></a><span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(lst_test)){</span>
+<span id="cb111-2"><a href="export-all-data-1.html#cb111-2" tabindex="-1"></a>         df<span class="ot">=</span>  <span class="fu">get</span>(lst_test[j], <span class="at">envir =</span> .GlobalEnv)</span>
+<span id="cb111-3"><a href="export-all-data-1.html#cb111-3" tabindex="-1"></a>          <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(Chad_Harmonization_variables)){</span>
+<span id="cb111-4"><a href="export-all-data-1.html#cb111-4" tabindex="-1"></a>            df[,Chad_Harmonization_variables<span class="sc">$</span>NewVariable_Name[i]]<span class="ot">=</span><span class="fu">ifelse</span>(<span class="fu">is.na</span>(Chad_Harmonization_variables[i,lst_test[j]]),<span class="cn">NA</span>,df[,Chad_Harmonization_variables[i,lst_test[j]][[<span class="dv">1</span>]]])</span>
+<span id="cb111-5"><a href="export-all-data-1.html#cb111-5" tabindex="-1"></a>          }</span>
+<span id="cb111-6"><a href="export-all-data-1.html#cb111-6" tabindex="-1"></a>    </span>
+<span id="cb111-7"><a href="export-all-data-1.html#cb111-7" tabindex="-1"></a>    df<span class="ot">&lt;-</span>df <span class="sc">%&gt;%</span> <span class="fu">select</span>(Chad_Harmonization_variables<span class="sc">$</span>NewVariable_Name)</span>
+<span id="cb111-8"><a href="export-all-data-1.html#cb111-8" tabindex="-1"></a>    <span class="fu">assign</span>(lst_test[j],                                   <span class="co"># Read and store data frames</span></span>
+<span id="cb111-9"><a href="export-all-data-1.html#cb111-9" tabindex="-1"></a>         df)</span>
+<span id="cb111-10"><a href="export-all-data-1.html#cb111-10" tabindex="-1"></a><span class="co">#write_sav(df, paste0(dir_output_data,&quot;/&quot;,lst_test[j],&quot;.sav&quot;))</span></span>
+<span id="cb111-11"><a href="export-all-data-1.html#cb111-11" tabindex="-1"></a><span class="co">#write_dta(df, paste0(dir_output_data,&quot;/&quot;,lst_test[j],&quot;.dta&quot;))</span></span>
+<span id="cb111-12"><a href="export-all-data-1.html#cb111-12" tabindex="-1"></a>    </span>
+<span id="cb111-13"><a href="export-all-data-1.html#cb111-13" tabindex="-1"></a></span>
+<span id="cb111-14"><a href="export-all-data-1.html#cb111-14" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="export-all-data-1.html#cb112-1" tabindex="-1"></a>Chad_pdm_2022<span class="sc">$</span>ID <span class="ot">=</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(Chad_pdm_2022)</span></code></pre></div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="compute-household-size-variable.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="assistance.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

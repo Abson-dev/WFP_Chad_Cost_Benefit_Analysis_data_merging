@@ -12,7 +12,7 @@ output:
     keep_md: true
 ---
 
-```{r 01 setup, include=FALSE, results = 'hide'}
+```{r 02 setup, include=FALSE, results = 'hide'}
 knitr::opts_chunk$set(
 	echo = TRUE,
 	message = FALSE,
@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 
 
 
-```{r 01 packages needed}
+```{r 02 packages needed}
 library(haven)
 library(labelled) # for general functions to work with labelled data
 library(tidyverse) # general wrangling
@@ -40,18 +40,18 @@ library(stringr)
 
 
 
-```{r 01 remove environment variables}
+```{r 02 remove environment variables}
 
 rm(list = ls())
 ```
 
-```{r 01 environment settings}
+```{r 02 environment settings}
 
 dir_input_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/input_data/Chad"
 dir_output_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/output_data/Chad"
 ```
 
-```{r 01 read harmonization excel file}
+```{r 02 read harmonization excel file}
 
 Chad_Harmonization_variables <- read_excel(paste0(dir_input_data,"/Chad_Harmonization.xlsx"), 
     sheet = "variables_harmonization")
@@ -62,7 +62,7 @@ Chad_Harmonization_description <- read_excel(paste0(dir_input_data,"/Chad_Harmon
 #View(Chad_Harmonization_description)
 ```
 
-```{r 01 data importation}
+```{r 02 data importation}
 
 lst_data = Chad_Harmonization_description$Data
 lst_test = Chad_Harmonization_description$Name
@@ -75,7 +75,7 @@ for(i in 1:length(lst_data)) {                              # Head of for-loop
 ```
 
 
-```{r 01 select and rename columns needed}
+```{r 02 select and rename columns needed}
 
 for (j in 1:length(lst_test)){
          df=  get(lst_test[j], envir = .GlobalEnv)
