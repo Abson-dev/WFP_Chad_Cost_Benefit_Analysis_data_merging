@@ -11,7 +11,7 @@
 
 <meta name="author" content="Aboubacar HEMA" />
 
-<meta name="date" content="2025-03-18" />
+<meta name="date" content="2025-04-22" />
 
 <title>WFP datasets wrangling - Chad : Assistency</title>
 
@@ -1570,7 +1570,7 @@ border-radius: 0px;
 <h1 class="title toc-ignore">WFP datasets wrangling - Chad :
 Assistency</h1>
 <h4 class="author">Aboubacar HEMA</h4>
-<h4 class="date">2025-03-18</h4>
+<h4 class="date">2025-04-22</h4>
 
 </div>
 
@@ -1726,9 +1726,12 @@ d’assistance</h2>
 &quot;ArgentContreTravail&quot;,
 &quot;DistribVivresSoudure&quot;,
 &quot;DistribArgentSoudure&quot;,
+&quot;DistribVivresArgentSoudure&quot;,
+&quot;BlanketFeedingChildrenWomen&quot;,
 &quot;BoursesAdo&quot;,
 &quot;BlanketFeedingChildren&quot;,
 &quot;BlanketFeedingWomen&quot;,
+&quot;MAMMASChildrenMAMPLWomen&quot;,
 &quot;MAMChildren&quot;,
 &quot;MASChildren&quot;,
 &quot;MAMPLWomen&quot;,
@@ -1736,6 +1739,7 @@ d’assistance</h2>
 &quot;FormationRenfCapacite&quot;,
 &quot;CashTransfert&quot;,
 &quot;CantineScolaire&quot;,
+&quot;CantineScolaireBoursesAdo&quot;,
 &quot;AutreTransferts&quot;
 )</code></pre>
 <div id="baseline-2018" class="section level3" number="1.4.1">
@@ -1743,48 +1747,85 @@ d’assistance</h2>
 </div>
 <div id="ea-2019" class="section level3" number="1.4.2">
 <h3><span class="header-section-number">1.4.2</span> EA 2019</h3>
+<pre class="r"><code>#Chad_ea_2019$ArgentContreTravail
+# Chad_ea_2019=Chad_ea_2019 %&gt;% labelled::to_factor() %&gt;% 
+#   mutate_at(var_type_assistance, as.character)
+Chad_ea_2019 &lt;- Chad_ea_2019 %&gt;% 
+  dplyr::mutate(ArgentContreTravail = case_when(
+    ArgentContreTravail == &quot;Oui&quot; ~ &quot;1&quot;,
+    ArgentContreTravail == &quot;Non&quot; ~ &quot;3&quot;,
+    .default = NA
+  ))
+Chad_ea_2019 &lt;- 
+  Chad_ea_2019 %&gt;% dplyr::mutate(ArgentContreTravail = dplyr::recode(ArgentContreTravail,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
+Chad_ea_2019$ArgentContreTravail &lt;- labelled::labelled(Chad_ea_2019$ArgentContreTravail, c(`Oui PAM` = 1, `Oui Autre` = 2, Non=3, `Ne Sait Pas`= 4))
+
+#Chad_ea_2019$DistribVivresArgentSoudure
+# Chad_ea_2019=Chad_ea_2019 %&gt;% labelled::to_factor() %&gt;% 
+#   mutate_at(var_type_assistance, as.character)
+Chad_ea_2019 &lt;- Chad_ea_2019 %&gt;% 
+  dplyr::mutate(DistribVivresArgentSoudure = case_when(
+    DistribVivresArgentSoudure == &quot;Oui&quot; ~ &quot;1&quot;,
+    DistribVivresArgentSoudure == &quot;Non&quot; ~ &quot;3&quot;,
+    .default = NA
+  ))
+Chad_ea_2019 &lt;- 
+  Chad_ea_2019 %&gt;% dplyr::mutate(DistribVivresArgentSoudure = dplyr::recode(DistribVivresArgentSoudure,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
+Chad_ea_2019$DistribVivresArgentSoudure &lt;- labelled::labelled(Chad_ea_2019$DistribVivresArgentSoudure, c(`Oui PAM` = 1, `Oui Autre` = 2, Non=3, `Ne Sait Pas`= 4))
+
+#Chad_ea_2019$BlanketFeedingChildrenWomen
+# Chad_ea_2019=Chad_ea_2019 %&gt;% labelled::to_factor() %&gt;% 
+#   mutate_at(var_type_assistance, as.character)
+Chad_ea_2019 &lt;- Chad_ea_2019 %&gt;% 
+  dplyr::mutate(BlanketFeedingChildrenWomen = case_when(
+    BlanketFeedingChildrenWomen == &quot;Oui&quot; ~ &quot;1&quot;,
+    BlanketFeedingChildrenWomen == &quot;Non&quot; ~ &quot;3&quot;,
+    .default = NA
+  ))
+Chad_ea_2019 &lt;- 
+  Chad_ea_2019 %&gt;% dplyr::mutate(BlanketFeedingChildrenWomen = dplyr::recode(BlanketFeedingChildrenWomen,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
+Chad_ea_2019$BlanketFeedingChildrenWomen &lt;- labelled::labelled(Chad_ea_2019$BlanketFeedingChildrenWomen, c(`Oui PAM` = 1, `Oui Autre` = 2, Non=3, `Ne Sait Pas`= 4))
+#Chad_ea_2019$MAMMASChildrenMAMPLWomen
+# Chad_ea_2019=Chad_ea_2019 %&gt;% labelled::to_factor() %&gt;% 
+#   mutate_at(var_type_assistance, as.character)
+Chad_ea_2019 &lt;- Chad_ea_2019 %&gt;% 
+  dplyr::mutate(MAMMASChildrenMAMPLWomen = case_when(
+    MAMMASChildrenMAMPLWomen == &quot;Oui&quot; ~ &quot;1&quot;,
+    MAMMASChildrenMAMPLWomen == &quot;Non&quot; ~ &quot;3&quot;,
+    .default = NA
+  ))
+Chad_ea_2019 &lt;- 
+  Chad_ea_2019 %&gt;% dplyr::mutate(MAMMASChildrenMAMPLWomen = dplyr::recode(MAMMASChildrenMAMPLWomen,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
+Chad_ea_2019$MAMMASChildrenMAMPLWomen &lt;- labelled::labelled(Chad_ea_2019$MAMMASChildrenMAMPLWomen, c(`Oui PAM` = 1, `Oui Autre` = 2, Non=3, `Ne Sait Pas`= 4))
+#Chad_ea_2019$FormationRenfCapacite
+# Chad_ea_2019=Chad_ea_2019 %&gt;% labelled::to_factor() %&gt;% 
+#   mutate_at(var_type_assistance, as.character)
+Chad_ea_2019 &lt;- Chad_ea_2019 %&gt;% 
+  dplyr::mutate(FormationRenfCapacite = case_when(
+    FormationRenfCapacite == &quot;Oui&quot; ~ &quot;1&quot;,
+    FormationRenfCapacite == &quot;Non&quot; ~ &quot;3&quot;,
+    .default = NA
+  ))
+Chad_ea_2019 &lt;- 
+  Chad_ea_2019 %&gt;% dplyr::mutate(FormationRenfCapacite = dplyr::recode(FormationRenfCapacite,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
+Chad_ea_2019$FormationRenfCapacite &lt;- labelled::labelled(Chad_ea_2019$FormationRenfCapacite, c(`Oui PAM` = 1, `Oui Autre` = 2, Non=3, `Ne Sait Pas`= 4))
+#Chad_ea_2019$CantineScolaire
+# Chad_ea_2019=Chad_ea_2019 %&gt;% labelled::to_factor() %&gt;% 
+#   mutate_at(var_type_assistance, as.character)
+Chad_ea_2019 &lt;- Chad_ea_2019 %&gt;% 
+  dplyr::mutate(CantineScolaire = case_when(
+    CantineScolaire == &quot;Oui&quot; ~ &quot;1&quot;,
+    CantineScolaire == &quot;Non&quot; ~ &quot;3&quot;,
+    .default = NA
+  ))
+Chad_ea_2019 &lt;- 
+  Chad_ea_2019 %&gt;% dplyr::mutate(CantineScolaire = dplyr::recode(CantineScolaire,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=3,&quot;4&quot;=4))
+Chad_ea_2019$CantineScolaire &lt;- labelled::labelled(Chad_ea_2019$CantineScolaire, c(`Oui PAM` = 1, `Oui Autre` = 2, Non=3, `Ne Sait Pas`= 4))</code></pre>
 </div>
 <div id="ea-2020" class="section level3" number="1.4.3">
 <h3><span class="header-section-number">1.4.3</span> EA 2020</h3>
 <pre class="r"><code>Chad_ea_2020=Chad_ea_2020 %&gt;% labelled::to_factor() %&gt;% 
- mutate_at(var_type_assistance, as.character)
-Chad_ea_2020 &lt;- Chad_ea_2020 %&gt;% 
-  dplyr::mutate(TransfBenef = case_when(
-    TransfBenef == &quot;Oui&quot; ~ &quot;1&quot;,
-    TransfBenef == &quot;Non&quot; ~ &quot;3&quot;,
-    TransfBenef == &quot;Ne Sait Pas&quot; ~ &quot;4&quot;,
-    TransfBenef == &quot;4&quot; ~ &quot;3&quot;,
-    TransfBenef == &quot;5&quot; ~ &quot;3&quot;,
-    .default = NA
-  ))
-Chad_ea_2020 &lt;- 
-  Chad_ea_2020 %&gt;% dplyr::mutate(TransfBenef = dplyr::recode(TransfBenef,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_ea_2020$TransfBenef &lt;- labelled::labelled(Chad_ea_2020$TransfBenef, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
-
-Chad_ea_2020 &lt;- Chad_ea_2020 %&gt;% 
-  dplyr::mutate(BanqueCerealiere = case_when(
-    BanqueCerealiere == &quot;Oui&quot; ~ &quot;1&quot;,
-    BanqueCerealiere == &quot;Non&quot; ~ &quot;3&quot;,
-    BanqueCerealiere == &quot;Ne Sait Pas&quot; ~ &quot;4&quot;,
-    BanqueCerealiere == &quot;4&quot; ~ &quot;3&quot;,
-    BanqueCerealiere == &quot;5&quot; ~ &quot;3&quot;,
-    .default = NA
-  ))
-Chad_ea_2020 &lt;- 
-  Chad_ea_2020 %&gt;% dplyr::mutate(BanqueCerealiere = dplyr::recode(BanqueCerealiere,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_ea_2020$BanqueCerealiere &lt;- labelled::labelled(Chad_ea_2020$BanqueCerealiere, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
-Chad_ea_2020 &lt;- Chad_ea_2020 %&gt;% 
-  dplyr::mutate(VivreContreTravail = case_when(
-    VivreContreTravail == &quot;Oui&quot; ~ &quot;1&quot;,
-    VivreContreTravail == &quot;Non&quot; ~ &quot;3&quot;,
-    VivreContreTravail == &quot;Ne Sait Pas&quot; ~ &quot;4&quot;,
-    VivreContreTravail == &quot;4&quot; ~ &quot;3&quot;,
-    VivreContreTravail == &quot;5&quot; ~ &quot;3&quot;,
-    .default = NA
-  ))
-Chad_ea_2020 &lt;- 
-  Chad_ea_2020 %&gt;% dplyr::mutate(VivreContreTravail = dplyr::recode(VivreContreTravail,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_ea_2020$VivreContreTravail &lt;- labelled::labelled(Chad_ea_2020$VivreContreTravail, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
+  mutate_at(var_type_assistance, as.character)
 Chad_ea_2020 &lt;- Chad_ea_2020 %&gt;% 
   dplyr::mutate(ArgentContreTravail = case_when(
     ArgentContreTravail == &quot;Oui&quot; ~ &quot;1&quot;,
@@ -1798,108 +1839,49 @@ Chad_ea_2020 &lt;-
   Chad_ea_2020 %&gt;% dplyr::mutate(ArgentContreTravail = dplyr::recode(ArgentContreTravail,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
 Chad_ea_2020$ArgentContreTravail &lt;- labelled::labelled(Chad_ea_2020$ArgentContreTravail, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 Chad_ea_2020 &lt;- Chad_ea_2020 %&gt;% 
-  dplyr::mutate(DistribVivresSoudure = case_when(
-    DistribVivresSoudure == &quot;Oui&quot; ~ &quot;1&quot;,
-    DistribVivresSoudure == &quot;Non&quot; ~ &quot;3&quot;,
-    DistribVivresSoudure == &quot;Ne Sait Pas&quot; ~ &quot;4&quot;,
-    DistribVivresSoudure == &quot;4&quot; ~ &quot;3&quot;,
-    DistribVivresSoudure == &quot;5&quot; ~ &quot;3&quot;,
+  dplyr::mutate(DistribVivresArgentSoudure = case_when(
+    DistribVivresArgentSoudure == &quot;Oui&quot; ~ &quot;1&quot;,
+    DistribVivresArgentSoudure == &quot;Non&quot; ~ &quot;3&quot;,
+    DistribVivresArgentSoudure == &quot;Ne Sait Pas&quot; ~ &quot;4&quot;,
+    DistribVivresArgentSoudure == &quot;4&quot; ~ &quot;3&quot;,
+    DistribVivresArgentSoudure == &quot;5&quot; ~ &quot;3&quot;,
     .default = NA
   ))
 Chad_ea_2020 &lt;- 
-  Chad_ea_2020 %&gt;% dplyr::mutate(DistribVivresSoudure = dplyr::recode(DistribVivresSoudure,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_ea_2020$DistribVivresSoudure &lt;- labelled::labelled(Chad_ea_2020$DistribVivresSoudure, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
+  Chad_ea_2020 %&gt;% dplyr::mutate(DistribVivresArgentSoudure = dplyr::recode(DistribVivresArgentSoudure,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+Chad_ea_2020$DistribVivresArgentSoudure &lt;- labelled::labelled(Chad_ea_2020$DistribVivresArgentSoudure, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
+
+
 
 Chad_ea_2020 &lt;- Chad_ea_2020 %&gt;% 
-  dplyr::mutate(DistribArgentSoudure = case_when(
-    DistribArgentSoudure == &quot;Oui&quot; ~ &quot;1&quot;,
-    DistribArgentSoudure == &quot;Non&quot; ~ &quot;3&quot;,
-    DistribArgentSoudure == &quot;Ne Sait Pas&quot; ~ &quot;4&quot;,
-    DistribArgentSoudure == &quot;4&quot; ~ &quot;3&quot;,
-    DistribArgentSoudure == &quot;5&quot; ~ &quot;3&quot;,
+  dplyr::mutate(BlanketFeedingChildrenWomen = case_when(
+    BlanketFeedingChildrenWomen == &quot;Oui&quot; ~ &quot;1&quot;,
+    BlanketFeedingChildrenWomen == &quot;Non&quot; ~ &quot;3&quot;,
+    BlanketFeedingChildrenWomen == &quot;Ne Sait Pas&quot; ~ &quot;4&quot;,
+    BlanketFeedingChildrenWomen == &quot;4&quot; ~ &quot;3&quot;,
+    BlanketFeedingChildrenWomen == &quot;5&quot; ~ &quot;3&quot;,
     .default = NA
   ))
 Chad_ea_2020 &lt;- 
-  Chad_ea_2020 %&gt;% dplyr::mutate(DistribArgentSoudure = dplyr::recode(DistribArgentSoudure,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_ea_2020$DistribArgentSoudure &lt;- labelled::labelled(Chad_ea_2020$DistribArgentSoudure, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
+  Chad_ea_2020 %&gt;% dplyr::mutate(BlanketFeedingChildrenWomen = dplyr::recode(BlanketFeedingChildrenWomen,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+Chad_ea_2020$BlanketFeedingChildrenWomenWomen &lt;- labelled::labelled(Chad_ea_2020$BlanketFeedingChildrenWomen, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
+
+
 
 Chad_ea_2020 &lt;- Chad_ea_2020 %&gt;% 
-  dplyr::mutate(BoursesAdo = case_when(
-    BoursesAdo == &quot;Oui&quot; ~ &quot;1&quot;,
-    BoursesAdo == &quot;Non&quot; ~ &quot;3&quot;,
-    BoursesAdo == &quot;Ne Sait Pas&quot; ~ &quot;4&quot;,
-    BoursesAdo == &quot;4&quot; ~ &quot;3&quot;,
-    BoursesAdo == &quot;5&quot; ~ &quot;3&quot;,
+  dplyr::mutate(MAMMASChildrenMAMPLWomen = case_when(
+    MAMMASChildrenMAMPLWomen == &quot;Oui&quot; ~ &quot;1&quot;,
+    MAMMASChildrenMAMPLWomen == &quot;Non&quot; ~ &quot;3&quot;,
+    MAMMASChildrenMAMPLWomen == &quot;Ne Sait Pas&quot; ~ &quot;4&quot;,
+    MAMMASChildrenMAMPLWomen == &quot;4&quot; ~ &quot;3&quot;,
+    MAMMASChildrenMAMPLWomen == &quot;5&quot; ~ &quot;3&quot;,
     .default = NA
   ))
 Chad_ea_2020 &lt;- 
-  Chad_ea_2020 %&gt;% dplyr::mutate(BoursesAdo = dplyr::recode(BoursesAdo,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_ea_2020$BoursesAdo &lt;- labelled::labelled(Chad_ea_2020$BoursesAdo, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
+  Chad_ea_2020 %&gt;% dplyr::mutate(MAMMASChildrenMAMPLWomen = dplyr::recode(MAMMASChildrenMAMPLWomen,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+Chad_ea_2020$MAMMASChildrenMAMPLWomen &lt;- labelled::labelled(Chad_ea_2020$MAMMASChildrenMAMPLWomen, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
-Chad_ea_2020 &lt;- Chad_ea_2020 %&gt;% 
-  dplyr::mutate(BlanketFeedingChildren = case_when(
-    BlanketFeedingChildren == &quot;Oui&quot; ~ &quot;1&quot;,
-    BlanketFeedingChildren == &quot;Non&quot; ~ &quot;3&quot;,
-    BlanketFeedingChildren == &quot;Ne Sait Pas&quot; ~ &quot;4&quot;,
-    BlanketFeedingChildren == &quot;4&quot; ~ &quot;3&quot;,
-    BlanketFeedingChildren == &quot;5&quot; ~ &quot;3&quot;,
-    .default = NA
-  ))
-Chad_ea_2020 &lt;- 
-  Chad_ea_2020 %&gt;% dplyr::mutate(BlanketFeedingChildren = dplyr::recode(BlanketFeedingChildren,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_ea_2020$BlanketFeedingChildren &lt;- labelled::labelled(Chad_ea_2020$BlanketFeedingChildren, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
-Chad_ea_2020 &lt;- Chad_ea_2020 %&gt;% 
-  dplyr::mutate(BlanketFeedingWomen = case_when(
-    BlanketFeedingWomen == &quot;Oui&quot; ~ &quot;1&quot;,
-    BlanketFeedingWomen == &quot;Non&quot; ~ &quot;3&quot;,
-    BlanketFeedingWomen == &quot;Ne Sait Pas&quot; ~ &quot;4&quot;,
-    BlanketFeedingWomen == &quot;4&quot; ~ &quot;3&quot;,
-    BlanketFeedingWomen == &quot;5&quot; ~ &quot;3&quot;,
-    .default = NA
-  ))
-Chad_ea_2020 &lt;- 
-  Chad_ea_2020 %&gt;% dplyr::mutate(BlanketFeedingWomen = dplyr::recode(BlanketFeedingWomen,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_ea_2020$BlanketFeedingWomen &lt;- labelled::labelled(Chad_ea_2020$BlanketFeedingWomen, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
-
-Chad_ea_2020 &lt;- Chad_ea_2020 %&gt;% 
-  dplyr::mutate(MAMChildren = case_when(
-    MAMChildren == &quot;Oui&quot; ~ &quot;1&quot;,
-    MAMChildren == &quot;Non&quot; ~ &quot;3&quot;,
-    MAMChildren == &quot;Ne Sait Pas&quot; ~ &quot;4&quot;,
-    MAMChildren == &quot;4&quot; ~ &quot;3&quot;,
-    MAMChildren == &quot;5&quot; ~ &quot;3&quot;,
-    .default = NA
-  ))
-Chad_ea_2020 &lt;- 
-  Chad_ea_2020 %&gt;% dplyr::mutate(MAMChildren = dplyr::recode(MAMChildren,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_ea_2020$MAMChildren &lt;- labelled::labelled(Chad_ea_2020$MAMChildren, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
-
-Chad_ea_2020 &lt;- Chad_ea_2020 %&gt;% 
-  dplyr::mutate(MAMPLWomen = case_when(
-    MAMPLWomen == &quot;Oui&quot; ~ &quot;1&quot;,
-    MAMPLWomen == &quot;Non&quot; ~ &quot;3&quot;,
-    MAMPLWomen == &quot;Ne Sait Pas&quot; ~ &quot;4&quot;,
-    MAMPLWomen == &quot;4&quot; ~ &quot;3&quot;,
-    MAMPLWomen == &quot;5&quot; ~ &quot;3&quot;,
-    .default = NA
-  ))
-Chad_ea_2020 &lt;- 
-  Chad_ea_2020 %&gt;% dplyr::mutate(MAMPLWomen = dplyr::recode(MAMPLWomen,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_ea_2020$MAMPLWomen &lt;- labelled::labelled(Chad_ea_2020$MAMPLWomen, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
-
-Chad_ea_2020 &lt;- Chad_ea_2020 %&gt;% 
-  dplyr::mutate(FARNcommunaut = case_when(
-    FARNcommunaut == &quot;Oui&quot; ~ &quot;1&quot;,
-    FARNcommunaut == &quot;Non&quot; ~ &quot;3&quot;,
-    FARNcommunaut == &quot;Ne Sait Pas&quot; ~ &quot;4&quot;,
-    FARNcommunaut == &quot;4&quot; ~ &quot;3&quot;,
-    FARNcommunaut == &quot;5&quot; ~ &quot;3&quot;,
-    .default = NA
-  ))
-Chad_ea_2020 &lt;- 
-  Chad_ea_2020 %&gt;% dplyr::mutate(FARNcommunaut = dplyr::recode(FARNcommunaut,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_ea_2020$FARNcommunaut &lt;- labelled::labelled(Chad_ea_2020$FARNcommunaut, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 Chad_ea_2020 &lt;- Chad_ea_2020 %&gt;% 
   dplyr::mutate(FormationRenfCapacite = case_when(
@@ -1914,18 +1896,7 @@ Chad_ea_2020 &lt;-
   Chad_ea_2020 %&gt;% dplyr::mutate(FormationRenfCapacite = dplyr::recode(FormationRenfCapacite,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
 Chad_ea_2020$FormationRenfCapacite &lt;- labelled::labelled(Chad_ea_2020$FormationRenfCapacite, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
-Chad_ea_2020 &lt;- Chad_ea_2020 %&gt;% 
-  dplyr::mutate(CashTransfert = case_when(
-    CashTransfert == &quot;Oui&quot; ~ &quot;1&quot;,
-    CashTransfert == &quot;Non&quot; ~ &quot;3&quot;,
-    CashTransfert == &quot;Ne Sait Pas&quot; ~ &quot;4&quot;,
-    CashTransfert == &quot;4&quot; ~ &quot;3&quot;,
-    CashTransfert == &quot;5&quot; ~ &quot;3&quot;,
-    .default = NA
-  ))
-Chad_ea_2020 &lt;- 
-  Chad_ea_2020 %&gt;% dplyr::mutate(CashTransfert = dplyr::recode(CashTransfert,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_ea_2020$CashTransfert &lt;- labelled::labelled(Chad_ea_2020$CashTransfert, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
+
 
 Chad_ea_2020 &lt;- Chad_ea_2020 %&gt;% 
   dplyr::mutate(CantineScolaire = case_when(
@@ -1938,20 +1909,7 @@ Chad_ea_2020 &lt;- Chad_ea_2020 %&gt;%
   ))
 Chad_ea_2020 &lt;- 
   Chad_ea_2020 %&gt;% dplyr::mutate(CantineScolaire = dplyr::recode(CantineScolaire,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_ea_2020$CantineScolaire &lt;- labelled::labelled(Chad_ea_2020$CantineScolaire, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
-
-Chad_ea_2020 &lt;- Chad_ea_2020 %&gt;% 
-  dplyr::mutate(AutreTransferts = case_when(
-    AutreTransferts == &quot;Oui&quot; ~ &quot;1&quot;,
-    AutreTransferts == &quot;Non&quot; ~ &quot;3&quot;,
-    AutreTransferts == &quot;Ne Sait Pas&quot; ~ &quot;4&quot;,
-    AutreTransferts == &quot;4&quot; ~ &quot;3&quot;,
-    AutreTransferts == &quot;5&quot; ~ &quot;3&quot;,
-    .default = NA
-  ))
-Chad_ea_2020 &lt;- 
-  Chad_ea_2020 %&gt;% dplyr::mutate(AutreTransferts = dplyr::recode(AutreTransferts,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_ea_2020$AutreTransferts &lt;- labelled::labelled(Chad_ea_2020$AutreTransferts, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))</code></pre>
+Chad_ea_2020$CantineScolaire &lt;- labelled::labelled(Chad_ea_2020$CantineScolaire, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))</code></pre>
 </div>
 <div id="ea-2021" class="section level3" number="1.4.4">
 <h3><span class="header-section-number">1.4.4</span> EA 2021</h3>
@@ -2582,40 +2540,7 @@ Chad_ea_2023$AutreTransferts &lt;- labelled::labelled(Chad_ea_2023$AutreTransfer
 #      4     4
 #      5     5
 Chad_pdm_2020=Chad_pdm_2020 %&gt;% mutate_at(var_type_assistance, as.character)
-Chad_pdm_2020 &lt;- Chad_pdm_2020 %&gt;% 
-  dplyr::mutate(TransfBenef = case_when(
-    TransfBenef == &quot;1&quot; ~ &quot;1&quot;,
-    TransfBenef == &quot;2&quot; ~ &quot;2&quot;,
-    TransfBenef == &quot;3&quot; ~ &quot;4&quot;,
-    TransfBenef == &quot;4&quot; ~ &quot;3&quot;,
-    TransfBenef == &quot;5&quot; ~ &quot;3&quot;,
-    .default = NA
-  ))
-Chad_pdm_2020 &lt;- 
-  Chad_pdm_2020 %&gt;% dplyr::mutate(TransfBenef = dplyr::recode(TransfBenef,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2020$TransfBenef &lt;- labelled::labelled(Chad_pdm_2020$TransfBenef, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
-Chad_pdm_2020 &lt;- Chad_pdm_2020 %&gt;% 
-  dplyr::mutate(BanqueCerealiere = case_when(
-    BanqueCerealiere == &quot;1&quot; ~ &quot;1&quot;,
-    BanqueCerealiere == &quot;2&quot; ~ &quot;2&quot;,
-    BanqueCerealiere == &quot;3&quot; ~ &quot;4&quot;,
-    BanqueCerealiere == &quot;4&quot; ~ &quot;3&quot;,
-    BanqueCerealiere == &quot;5&quot; ~ &quot;3&quot;,
-    .default = NA
-  ))
-Chad_pdm_2020 &lt;- 
-  Chad_pdm_2020 %&gt;% dplyr::mutate(BanqueCerealiere = dplyr::recode(BanqueCerealiere,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2020$BanqueCerealiere &lt;- labelled::labelled(Chad_pdm_2020$BanqueCerealiere, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
-Chad_pdm_2020 &lt;- Chad_pdm_2020 %&gt;% 
-  dplyr::mutate(VivreContreTravail = case_when(
-    VivreContreTravail == &quot;1&quot; ~ &quot;1&quot;,
-    VivreContreTravail == &quot;0&quot; ~ &quot;3&quot;,
-    .default = NA
-  ))
-Chad_pdm_2020 &lt;- 
-  Chad_pdm_2020 %&gt;% dplyr::mutate(VivreContreTravail = dplyr::recode(VivreContreTravail,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2020$VivreContreTravail &lt;- labelled::labelled(Chad_pdm_2020$VivreContreTravail, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 Chad_pdm_2020 &lt;- Chad_pdm_2020 %&gt;% 
   dplyr::mutate(ArgentContreTravail = case_when(
     ArgentContreTravail == &quot;1&quot; ~ &quot;1&quot;,
@@ -2625,75 +2550,53 @@ Chad_pdm_2020 &lt;- Chad_pdm_2020 %&gt;%
 Chad_pdm_2020 &lt;- 
   Chad_pdm_2020 %&gt;% dplyr::mutate(ArgentContreTravail = dplyr::recode(ArgentContreTravail,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
 Chad_pdm_2020$ArgentContreTravail &lt;- labelled::labelled(Chad_pdm_2020$ArgentContreTravail, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
-Chad_pdm_2020 &lt;- Chad_pdm_2020 %&gt;% 
-  dplyr::mutate(DistribVivresSoudure = case_when(
-    DistribVivresSoudure == &quot;1&quot; ~ &quot;1&quot;,
-    DistribVivresSoudure == &quot;0&quot; ~ &quot;3&quot;,
-    .default = NA
-  ))
-Chad_pdm_2020 &lt;- 
-  Chad_pdm_2020 %&gt;% dplyr::mutate(DistribVivresSoudure = dplyr::recode(DistribVivresSoudure,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2020$DistribVivresSoudure &lt;- labelled::labelled(Chad_pdm_2020$DistribVivresSoudure, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 Chad_pdm_2020 &lt;- Chad_pdm_2020 %&gt;% 
-  dplyr::mutate(DistribArgentSoudure = case_when(
-    DistribArgentSoudure == &quot;1&quot; ~ &quot;1&quot;,
-    DistribArgentSoudure == &quot;0&quot; ~ &quot;3&quot;,
+  dplyr::mutate(DistribVivresArgentSoudure = case_when(
+    DistribVivresArgentSoudure == &quot;1&quot; ~ &quot;1&quot;,
+    DistribVivresArgentSoudure == &quot;0&quot; ~ &quot;3&quot;,
     .default = NA
   ))
+
 Chad_pdm_2020 &lt;- 
-  Chad_pdm_2020 %&gt;% dplyr::mutate(DistribArgentSoudure = dplyr::recode(DistribArgentSoudure,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2020$DistribArgentSoudure &lt;- labelled::labelled(Chad_pdm_2020$DistribArgentSoudure, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
+  Chad_pdm_2020 %&gt;% dplyr::mutate(DistribVivresArgentSoudure = dplyr::recode(DistribVivresArgentSoudure,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+Chad_pdm_2020$DistribVivresArgentSoudure &lt;- labelled::labelled(Chad_pdm_2020$DistribVivresArgentSoudure, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
+
+
 
 Chad_pdm_2020 &lt;- Chad_pdm_2020 %&gt;% 
-  dplyr::mutate(BoursesAdo = case_when(
-    BoursesAdo == &quot;1&quot; ~ &quot;1&quot;,
-    BoursesAdo == &quot;0&quot; ~ &quot;3&quot;,
+  dplyr::mutate(CantineScolaireBoursesAdo = case_when(
+    CantineScolaireBoursesAdo == &quot;1&quot; ~ &quot;1&quot;,
+    CantineScolaireBoursesAdo == &quot;0&quot; ~ &quot;3&quot;,
     .default = NA
   ))
 Chad_pdm_2020 &lt;- 
-  Chad_pdm_2020 %&gt;% dplyr::mutate(BoursesAdo = dplyr::recode(BoursesAdo,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2020$BoursesAdo &lt;- labelled::labelled(Chad_pdm_2020$BoursesAdo, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
+  Chad_pdm_2020 %&gt;% dplyr::mutate(CantineScolaireBoursesAdo = dplyr::recode(CantineScolaireBoursesAdo,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+Chad_pdm_2020$CantineScolaireBoursesAdo &lt;- labelled::labelled(Chad_pdm_2020$CantineScolaireBoursesAdo, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 Chad_pdm_2020 &lt;- Chad_pdm_2020 %&gt;% 
-  dplyr::mutate(BlanketFeedingChildren = case_when(
-    BlanketFeedingChildren == &quot;1&quot; ~ &quot;1&quot;,
-    BlanketFeedingChildren == &quot;0&quot; ~ &quot;3&quot;,
+  dplyr::mutate(BlanketFeedingChildrenWomen = case_when(
+    BlanketFeedingChildrenWomen == &quot;1&quot; ~ &quot;1&quot;,
+    BlanketFeedingChildrenWomen == &quot;0&quot; ~ &quot;3&quot;,
     .default = NA
   ))
 Chad_pdm_2020 &lt;- 
-  Chad_pdm_2020 %&gt;% dplyr::mutate(BlanketFeedingChildren = dplyr::recode(BlanketFeedingChildren,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2020$BlanketFeedingChildren &lt;- labelled::labelled(Chad_pdm_2020$BlanketFeedingChildren, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
+  Chad_pdm_2020 %&gt;% dplyr::mutate(BlanketFeedingChildrenWomen = dplyr::recode(BlanketFeedingChildrenWomen,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+Chad_pdm_2020$BlanketFeedingChildrenWomen &lt;- labelled::labelled(Chad_pdm_2020$BlanketFeedingChildrenWomen, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
+
+
 
 Chad_pdm_2020 &lt;- Chad_pdm_2020 %&gt;% 
-  dplyr::mutate(BlanketFeedingWomen = case_when(
-    BlanketFeedingWomen == &quot;1&quot; ~ &quot;1&quot;,
-    BlanketFeedingWomen == &quot;0&quot; ~ &quot;3&quot;,
+  dplyr::mutate(MAMMASChildrenMAMPLWomen = case_when(
+    MAMMASChildrenMAMPLWomen == &quot;1&quot; ~ &quot;1&quot;,
+    MAMMASChildrenMAMPLWomen == &quot;0&quot; ~ &quot;3&quot;,
     .default = NA
   ))
 Chad_pdm_2020 &lt;- 
-  Chad_pdm_2020 %&gt;% dplyr::mutate(BlanketFeedingWomen = dplyr::recode(BlanketFeedingWomen,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2020$BlanketFeedingWomen &lt;- labelled::labelled(Chad_pdm_2020$BlanketFeedingWomen, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
+  Chad_pdm_2020 %&gt;% dplyr::mutate(MAMMASChildrenMAMPLWomen = dplyr::recode(MAMMASChildrenMAMPLWomen,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+Chad_pdm_2020$MAMMASChildrenMAMPLWomen &lt;- labelled::labelled(Chad_pdm_2020$MAMMASChildrenMAMPLWomen, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
-Chad_pdm_2020 &lt;- Chad_pdm_2020 %&gt;% 
-  dplyr::mutate(MAMChildren = case_when(
-    MAMChildren == &quot;1&quot; ~ &quot;1&quot;,
-    MAMChildren == &quot;0&quot; ~ &quot;3&quot;,
-    .default = NA
-  ))
-Chad_pdm_2020 &lt;- 
-  Chad_pdm_2020 %&gt;% dplyr::mutate(MAMChildren = dplyr::recode(MAMChildren,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2020$MAMChildren &lt;- labelled::labelled(Chad_pdm_2020$MAMChildren, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
-Chad_pdm_2020 &lt;- Chad_pdm_2020 %&gt;% 
-  dplyr::mutate(MAMPLWomen = case_when(
-    MAMPLWomen == &quot;1&quot; ~ &quot;1&quot;,
-    MAMPLWomen == &quot;0&quot; ~ &quot;3&quot;,
-    .default = NA
-  ))
-Chad_pdm_2020 &lt;- 
-  Chad_pdm_2020 %&gt;% dplyr::mutate(MAMPLWomen = dplyr::recode(MAMPLWomen,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2020$MAMPLWomen &lt;- labelled::labelled(Chad_pdm_2020$MAMPLWomen, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 Chad_pdm_2020 &lt;- Chad_pdm_2020 %&gt;% 
   dplyr::mutate(FARNcommunaut = case_when(
@@ -2703,239 +2606,81 @@ Chad_pdm_2020 &lt;- Chad_pdm_2020 %&gt;%
   ))
 Chad_pdm_2020 &lt;- 
   Chad_pdm_2020 %&gt;% dplyr::mutate(FARNcommunaut = dplyr::recode(FARNcommunaut,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2020$FARNcommunaut &lt;- labelled::labelled(Chad_pdm_2020$FARNcommunaut, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
-
-Chad_pdm_2020 &lt;- Chad_pdm_2020 %&gt;% 
-  dplyr::mutate(FormationRenfCapacite = case_when(
-    FormationRenfCapacite == &quot;1&quot; ~ &quot;1&quot;,
-    FormationRenfCapacite == &quot;0&quot; ~ &quot;3&quot;,
-    .default = NA
-  ))
-Chad_pdm_2020 &lt;- 
-  Chad_pdm_2020 %&gt;% dplyr::mutate(FormationRenfCapacite = dplyr::recode(FormationRenfCapacite,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2020$FormationRenfCapacite &lt;- labelled::labelled(Chad_pdm_2020$FormationRenfCapacite, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
-
-Chad_pdm_2020 &lt;- Chad_pdm_2020 %&gt;% 
-  dplyr::mutate(CashTransfert = case_when(
-    CashTransfert == &quot;1&quot; ~ &quot;1&quot;,
-    CashTransfert == &quot;2&quot; ~ &quot;2&quot;,
-    CashTransfert == &quot;3&quot; ~ &quot;4&quot;,
-    CashTransfert == &quot;4&quot; ~ &quot;3&quot;,
-    CashTransfert == &quot;5&quot; ~ &quot;3&quot;,
-    .default = NA
-  ))
-Chad_pdm_2020 &lt;- 
-  Chad_pdm_2020 %&gt;% dplyr::mutate(CashTransfert = dplyr::recode(CashTransfert,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2020$CashTransfert &lt;- labelled::labelled(Chad_pdm_2020$CashTransfert, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
-
-Chad_pdm_2020 &lt;- Chad_pdm_2020 %&gt;% 
-  dplyr::mutate(CantineScolaire = case_when(
-    CantineScolaire == &quot;1&quot; ~ &quot;1&quot;,
-    CantineScolaire == &quot;0&quot; ~ &quot;3&quot;,
-    .default = NA
-  ))
-Chad_pdm_2020 &lt;- 
-  Chad_pdm_2020 %&gt;% dplyr::mutate(CantineScolaire = dplyr::recode(CantineScolaire,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2020$CantineScolaire &lt;- labelled::labelled(Chad_pdm_2020$CantineScolaire, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
-
-Chad_pdm_2020 &lt;- Chad_pdm_2020 %&gt;% 
-  dplyr::mutate(MASChildren = case_when(
-    MASChildren == &quot;1&quot; ~ &quot;1&quot;,
-    MASChildren == &quot;0&quot; ~ &quot;3&quot;,
-    .default = NA
-  ))
-Chad_pdm_2020 &lt;- 
-  Chad_pdm_2020 %&gt;% dplyr::mutate(MASChildren = dplyr::recode(MASChildren,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2020$MASChildren &lt;- labelled::labelled(Chad_pdm_2020$MASChildren, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
-
-Chad_pdm_2020 &lt;- Chad_pdm_2020 %&gt;% 
-  dplyr::mutate(AutreTransferts = case_when(
-    AutreTransferts == &quot;1&quot; ~ &quot;1&quot;,
-    AutreTransferts == &quot;0&quot; ~ &quot;3&quot;,
-    .default = NA
-  ))
-Chad_pdm_2020 &lt;- 
-  Chad_pdm_2020 %&gt;% dplyr::mutate(AutreTransferts = dplyr::recode(AutreTransferts,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2020$AutreTransferts &lt;- labelled::labelled(Chad_pdm_2020$AutreTransferts, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))</code></pre>
+Chad_pdm_2020$FARNcommunaut &lt;- labelled::labelled(Chad_pdm_2020$FARNcommunaut, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))</code></pre>
 </div>
 <div id="pdm-2021" class="section level3" number="1.4.8">
 <h3><span class="header-section-number">1.4.8</span> PDM 2021</h3>
 <pre class="r"><code>Chad_pdm_2021=Chad_pdm_2021 %&gt;% mutate_at(var_type_assistance, as.character)
-Chad_pdm_2021 &lt;- Chad_pdm_2021 %&gt;% 
-  dplyr::mutate(TransfBenef = case_when(
-    TransfBenef == &quot;1&quot; ~ &quot;1&quot;,
-    TransfBenef == &quot;2&quot; ~ &quot;4&quot;,
-    TransfBenef == &quot;3&quot; ~ &quot;3&quot;,
-    TransfBenef == &quot;4&quot; ~ &quot;2&quot;,
-    TransfBenef == &quot;5&quot; ~ &quot;3&quot;,
-    .default = NA
-  ))
-Chad_pdm_2021 &lt;- 
-  Chad_pdm_2021 %&gt;% dplyr::mutate(TransfBenef = dplyr::recode(TransfBenef,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2021$TransfBenef &lt;- labelled::labelled(Chad_pdm_2021$TransfBenef, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
-Chad_pdm_2021 &lt;- Chad_pdm_2021 %&gt;% 
-  dplyr::mutate(BanqueCerealiere = case_when(
-    BanqueCerealiere == &quot;1&quot; ~ &quot;1&quot;,
-    BanqueCerealiere == &quot;2&quot; ~ &quot;4&quot;,
-    BanqueCerealiere == &quot;3&quot; ~ &quot;3&quot;,
-    BanqueCerealiere == &quot;4&quot; ~ &quot;2&quot;,
-    BanqueCerealiere == &quot;5&quot; ~ &quot;3&quot;,
-    .default = NA
-  ))
-Chad_pdm_2021 &lt;- 
-  Chad_pdm_2021 %&gt;% dplyr::mutate(BanqueCerealiere = dplyr::recode(BanqueCerealiere,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2021$BanqueCerealiere &lt;- labelled::labelled(Chad_pdm_2021$BanqueCerealiere, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
-Chad_pdm_2021 &lt;- Chad_pdm_2021 %&gt;% 
-  dplyr::mutate(VivreContreTravail = case_when(
-    VivreContreTravail == &quot;1&quot; ~ &quot;1&quot;,
-    VivreContreTravail == &quot;0&quot; ~ &quot;4&quot;,
-    .default = NA
-  ))
-Chad_pdm_2021 &lt;- 
-  Chad_pdm_2021 %&gt;% dplyr::mutate(VivreContreTravail = dplyr::recode(VivreContreTravail,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2021$VivreContreTravail &lt;- labelled::labelled(Chad_pdm_2021$VivreContreTravail, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
+
 Chad_pdm_2021 &lt;- Chad_pdm_2021 %&gt;% 
   dplyr::mutate(ArgentContreTravail = case_when(
     ArgentContreTravail == &quot;1&quot; ~ &quot;1&quot;,
-    ArgentContreTravail == &quot;0&quot; ~ &quot;4&quot;,
+    ArgentContreTravail == &quot;0&quot; ~ &quot;3&quot;,
     .default = NA
   ))
 Chad_pdm_2021 &lt;- 
   Chad_pdm_2021 %&gt;% dplyr::mutate(ArgentContreTravail = dplyr::recode(ArgentContreTravail,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
 Chad_pdm_2021$ArgentContreTravail &lt;- labelled::labelled(Chad_pdm_2021$ArgentContreTravail, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 Chad_pdm_2021 &lt;- Chad_pdm_2021 %&gt;% 
-  dplyr::mutate(DistribVivresSoudure = case_when(
-    DistribVivresSoudure == &quot;1&quot; ~ &quot;1&quot;,
-    DistribVivresSoudure == &quot;0&quot; ~ &quot;4&quot;,
+  dplyr::mutate(DistribVivresArgentSoudure = case_when(
+    DistribVivresArgentSoudure == &quot;1&quot; ~ &quot;1&quot;,
+    DistribVivresArgentSoudure == &quot;0&quot; ~ &quot;3&quot;,
     .default = NA
   ))
 Chad_pdm_2021 &lt;- 
-  Chad_pdm_2021 %&gt;% dplyr::mutate(DistribVivresSoudure = dplyr::recode(DistribVivresSoudure,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2021$DistribVivresSoudure &lt;- labelled::labelled(Chad_pdm_2021$DistribVivresSoudure, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
+  Chad_pdm_2021 %&gt;% dplyr::mutate(DistribVivresArgentSoudure = dplyr::recode(DistribVivresArgentSoudure,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+Chad_pdm_2021$DistribVivresArgentSoudure &lt;- labelled::labelled(Chad_pdm_2021$DistribVivresArgentSoudure, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
+
+
+
 
 Chad_pdm_2021 &lt;- Chad_pdm_2021 %&gt;% 
-  dplyr::mutate(DistribArgentSoudure = case_when(
-    DistribArgentSoudure == &quot;1&quot; ~ &quot;1&quot;,
-    DistribArgentSoudure == &quot;0&quot; ~ &quot;4&quot;,
+  dplyr::mutate(BlanketFeedingChildrenWomen = case_when(
+    BlanketFeedingChildrenWomen == &quot;1&quot; ~ &quot;1&quot;,
+    BlanketFeedingChildrenWomen == &quot;0&quot; ~ &quot;3&quot;,
     .default = NA
   ))
 Chad_pdm_2021 &lt;- 
-  Chad_pdm_2021 %&gt;% dplyr::mutate(DistribArgentSoudure = dplyr::recode(DistribArgentSoudure,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2021$DistribArgentSoudure &lt;- labelled::labelled(Chad_pdm_2021$DistribArgentSoudure, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
+  Chad_pdm_2021 %&gt;% dplyr::mutate(BlanketFeedingChildrenWomen = dplyr::recode(BlanketFeedingChildrenWomen,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+Chad_pdm_2021$BlanketFeedingChildrenWomen &lt;- labelled::labelled(Chad_pdm_2021$BlanketFeedingChildrenWomen, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
+
+
 
 Chad_pdm_2021 &lt;- Chad_pdm_2021 %&gt;% 
-  dplyr::mutate(BoursesAdo = case_when(
-    BoursesAdo == &quot;1&quot; ~ &quot;1&quot;,
-    BoursesAdo == &quot;0&quot; ~ &quot;4&quot;,
+  dplyr::mutate(MAMMASChildrenMAMPLWomen = case_when(
+    MAMMASChildrenMAMPLWomen == &quot;1&quot; ~ &quot;1&quot;,
+    MAMMASChildrenMAMPLWomen == &quot;0&quot; ~ &quot;3&quot;,
     .default = NA
   ))
 Chad_pdm_2021 &lt;- 
-  Chad_pdm_2021 %&gt;% dplyr::mutate(BoursesAdo = dplyr::recode(BoursesAdo,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2021$BoursesAdo &lt;- labelled::labelled(Chad_pdm_2021$BoursesAdo, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
+  Chad_pdm_2021 %&gt;% dplyr::mutate(MAMMASChildrenMAMPLWomen = dplyr::recode(MAMMASChildrenMAMPLWomen,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
+Chad_pdm_2021$MAMMASChildrenMAMPLWomen &lt;- labelled::labelled(Chad_pdm_2021$MAMMASChildrenMAMPLWomen, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
-Chad_pdm_2021 &lt;- Chad_pdm_2021 %&gt;% 
-  dplyr::mutate(BlanketFeedingChildren = case_when(
-    BlanketFeedingChildren == &quot;1&quot; ~ &quot;1&quot;,
-    BlanketFeedingChildren == &quot;0&quot; ~ &quot;4&quot;,
-    .default = NA
-  ))
-Chad_pdm_2021 &lt;- 
-  Chad_pdm_2021 %&gt;% dplyr::mutate(BlanketFeedingChildren = dplyr::recode(BlanketFeedingChildren,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2021$BlanketFeedingChildren &lt;- labelled::labelled(Chad_pdm_2021$BlanketFeedingChildren, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
-Chad_pdm_2021 &lt;- Chad_pdm_2021 %&gt;% 
-  dplyr::mutate(BlanketFeedingWomen = case_when(
-    BlanketFeedingWomen == &quot;1&quot; ~ &quot;1&quot;,
-    BlanketFeedingWomen == &quot;0&quot; ~ &quot;4&quot;,
-    .default = NA
-  ))
-Chad_pdm_2021 &lt;- 
-  Chad_pdm_2021 %&gt;% dplyr::mutate(BlanketFeedingWomen = dplyr::recode(BlanketFeedingWomen,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2021$BlanketFeedingWomen &lt;- labelled::labelled(Chad_pdm_2021$BlanketFeedingWomen, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
-Chad_pdm_2021 &lt;- Chad_pdm_2021 %&gt;% 
-  dplyr::mutate(MAMChildren = case_when(
-    MAMChildren == &quot;1&quot; ~ &quot;1&quot;,
-    MAMChildren == &quot;0&quot; ~ &quot;4&quot;,
-    .default = NA
-  ))
-Chad_pdm_2021 &lt;- 
-  Chad_pdm_2021 %&gt;% dplyr::mutate(MAMChildren = dplyr::recode(MAMChildren,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2021$MAMChildren &lt;- labelled::labelled(Chad_pdm_2021$MAMChildren, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
-
-Chad_pdm_2021 &lt;- Chad_pdm_2021 %&gt;% 
-  dplyr::mutate(MAMPLWomen = case_when(
-    MAMPLWomen == &quot;1&quot; ~ &quot;1&quot;,
-    MAMPLWomen == &quot;0&quot; ~ &quot;4&quot;,
-    .default = NA
-  ))
-Chad_pdm_2021 &lt;- 
-  Chad_pdm_2021 %&gt;% dplyr::mutate(MAMPLWomen = dplyr::recode(MAMPLWomen,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2021$MAMPLWomen &lt;- labelled::labelled(Chad_pdm_2021$MAMPLWomen, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
-
-Chad_pdm_2021 &lt;- Chad_pdm_2021 %&gt;% 
-  dplyr::mutate(FARNcommunaut = case_when(
-    FARNcommunaut == &quot;1&quot; ~ &quot;1&quot;,
-    FARNcommunaut == &quot;0&quot; ~ &quot;4&quot;,
-    .default = NA
-  ))
-Chad_pdm_2021 &lt;- 
-  Chad_pdm_2021 %&gt;% dplyr::mutate(FARNcommunaut = dplyr::recode(FARNcommunaut,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2021$FARNcommunaut &lt;- labelled::labelled(Chad_pdm_2021$FARNcommunaut, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
 Chad_pdm_2021 &lt;- Chad_pdm_2021 %&gt;% 
   dplyr::mutate(FormationRenfCapacite = case_when(
     FormationRenfCapacite == &quot;1&quot; ~ &quot;1&quot;,
-    FormationRenfCapacite == &quot;0&quot; ~ &quot;4&quot;,
+    FormationRenfCapacite == &quot;0&quot; ~ &quot;3&quot;,
     .default = NA
   ))
 Chad_pdm_2021 &lt;- 
   Chad_pdm_2021 %&gt;% dplyr::mutate(FormationRenfCapacite = dplyr::recode(FormationRenfCapacite,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
 Chad_pdm_2021$FormationRenfCapacite &lt;- labelled::labelled(Chad_pdm_2021$FormationRenfCapacite, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
 
-Chad_pdm_2021 &lt;- Chad_pdm_2021 %&gt;% 
-  dplyr::mutate(CashTransfert = case_when(
-    CashTransfert == &quot;1&quot; ~ &quot;1&quot;,
-    CashTransfert == &quot;2&quot; ~ &quot;4&quot;,
-    CashTransfert == &quot;3&quot; ~ &quot;3&quot;,
-    CashTransfert == &quot;4&quot; ~ &quot;2&quot;,
-    CashTransfert == &quot;5&quot; ~ &quot;3&quot;,
-    .default = NA
-  ))
-Chad_pdm_2021 &lt;- 
-  Chad_pdm_2021 %&gt;% dplyr::mutate(CashTransfert = dplyr::recode(CashTransfert,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2021$CashTransfert &lt;- labelled::labelled(Chad_pdm_2021$CashTransfert, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
+
 
 Chad_pdm_2021 &lt;- Chad_pdm_2021 %&gt;% 
   dplyr::mutate(CantineScolaire = case_when(
     CantineScolaire == &quot;1&quot; ~ &quot;1&quot;,
-    CantineScolaire == &quot;0&quot; ~ &quot;4&quot;,
+    CantineScolaire == &quot;0&quot; ~ &quot;3&quot;,
     .default = NA
   ))
 Chad_pdm_2021 &lt;- 
   Chad_pdm_2021 %&gt;% dplyr::mutate(CantineScolaire = dplyr::recode(CantineScolaire,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2021$CantineScolaire &lt;- labelled::labelled(Chad_pdm_2021$CantineScolaire, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
-
-Chad_pdm_2021 &lt;- Chad_pdm_2021 %&gt;% 
-  dplyr::mutate(MASChildren = case_when(
-    MASChildren == &quot;1&quot; ~ &quot;1&quot;,
-    MASChildren == &quot;0&quot; ~ &quot;4&quot;,
-    .default = NA
-  ))
-Chad_pdm_2021 &lt;- 
-  Chad_pdm_2021 %&gt;% dplyr::mutate(MASChildren = dplyr::recode(MASChildren,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2021$MASChildren &lt;- labelled::labelled(Chad_pdm_2021$MASChildren, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))
-
-Chad_pdm_2021 &lt;- Chad_pdm_2021 %&gt;% 
-  dplyr::mutate(AutreTransferts = case_when(
-    AutreTransferts == &quot;1&quot; ~ &quot;1&quot;,
-    AutreTransferts == &quot;0&quot; ~ &quot;4&quot;,
-    .default = NA
-  ))
-Chad_pdm_2021 &lt;- 
-  Chad_pdm_2021 %&gt;% dplyr::mutate(AutreTransferts = dplyr::recode(AutreTransferts,&quot;1&quot;=1,&quot;2&quot;=2,&quot;3&quot;=4,&quot;4&quot;=3))
-Chad_pdm_2021$AutreTransferts &lt;- labelled::labelled(Chad_pdm_2021$AutreTransferts, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))</code></pre>
+Chad_pdm_2021$CantineScolaire &lt;- labelled::labelled(Chad_pdm_2021$CantineScolaire, c(`Oui PAM` = 1, `Oui Autre` = 2, `Ne Sait Pas`= 4, Non=3))</code></pre>
 </div>
 <div id="pdm-2022" class="section level3" number="1.4.9">
 <h3><span class="header-section-number">1.4.9</span> PDM 2022</h3>

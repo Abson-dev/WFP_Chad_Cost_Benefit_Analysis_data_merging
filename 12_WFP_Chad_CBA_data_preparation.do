@@ -2515,7 +2515,9 @@ label var HHRCSSupportPublic    "Your household can rely on the support from pub
 label var HHRCSFutureChallenge  "Your household is fully prepared for any future challenges or threats that life throws at it."
 label var HHRCSWarningAccess    "Your household receives useful information warning you about future risks in advance."
 
-label define Likert5 1 "Strongly Agree" 2 "Partially agree" 3 "Neutral" 4 "Somewhat disagree" 5 "Totally disagree"
+//label define Likert5 1 "Strongly Agree" 2 "Partially agree" 3 "Neutral" 4 "Somewhat disagree" 5 "Totally disagree"
+recode HHRCSBounce HHRCSRevenue HHRCSIncrease HHRCSFinAccess HHRCSSupportCommunity HHRCSSupportPublic HHRCSLessonsLearnt HHRCSFutureChallenge HHRCSWarningAccess (1 = 5) (5 = 1) (4 = 2) (2 = 4) (3 = 3)
+label define Likert5 5 "Totally Agree" 4 "Partially agree" 3 "Neutral" 2 "Partially disagree" 1 "Totally disagree"
 label values HHRCSBounce HHRCSRevenue HHRCSIncrease HHRCSFinAccess HHRCSSupportCommunity HHRCSSupportPublic HHRCSLessonsLearnt HHRCSFutureChallenge HHRCSWarningAccess Likert5
 //recode missing values
 
@@ -2533,7 +2535,9 @@ egen RCS= rowtotal(HHRCSBounce HHRCSRevenue HHRCSIncrease HHRCSFinAccess HHRCSSu
 tab RCS
 //replace RCS=. if temp_nonmiss_numberHHRCS==0
 //replace RCS=(100-0)*((RCS/9)-5)/(1-5) + 0 if temp_nonmiss_numberHHRCS>0 & !missing(RCS)
-replace RCS=(100-0)*((RCS/temp_nonmiss_numberHHRCS)-5)/(1-5) + 0 if temp_nonmiss_numberHHRCS>0 & !missing(RCS)
+
+//replace RCS=(100-0)*((RCS/temp_nonmiss_numberHHRCS)-5)/(1-5) + 0 if temp_nonmiss_numberHHRCS>0 & !missing(RCS)
+replace RCS=(100-0)*((RCS/temp_nonmiss_numberHHRCS)-1)/(5-1) + 0 if temp_nonmiss_numberHHRCS>0 & !missing(RCS)
 replace RCS=. if temp_nonmiss_numberHHRCS==0
 label var RCS "Resilience Capacity Score"
 sum RCS 
@@ -2561,10 +2565,16 @@ label define RCSCat2 1 "low" 2 "medium" 3 "high"
 label values RCSCat33 RCSCat
 
 *produce the scores of resilience capacities as follows:
+/*
 gen RCSAnticipatory=(100-0)*(HHRCSFutureChallenge-5)/(1-5) + 0 if temp_nonmiss_numberHHRCS>0
 gen RCSAbsorptive=(100-0)*(HHRCSBounce-5)/(1-5) + 0 if temp_nonmiss_numberHHRCS>0
 gen RCSTransformative=(100-0)*(HHRCSRevenue-5)/(1-5) + 0 if temp_nonmiss_numberHHRCS>0
 gen RCSAdaptive=(100-0)*(HHRCSIncrease-5)/(1-5) + 0 if temp_nonmiss_numberHHRCS>0
+*/
+gen RCSAnticipatory=(100-0)*(HHRCSFutureChallenge-1)/(5-1) + 0 if temp_nonmiss_numberHHRCS>0
+gen RCSAbsorptive=(100-0)*(HHRCSBounce-1)/(5-1) + 0 if temp_nonmiss_numberHHRCS>0
+gen RCSTransformative=(100-0)*(HHRCSRevenue-1)/(5-1) + 0 if temp_nonmiss_numberHHRCS>0
+gen RCSAdaptive=(100-0)*(HHRCSIncrease-1)/(5-1) + 0 if temp_nonmiss_numberHHRCS>0
 
 label var RCSAnticipatory "Resilience Capacity - Anticipatory"
 label var RCSAbsorptive "Resilience Capacity - Absorptive"
