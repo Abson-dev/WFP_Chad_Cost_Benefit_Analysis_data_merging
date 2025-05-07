@@ -122,9 +122,9 @@ var_needed = c("rCSI",
 
 ```
 
-## reduced coping strategy index OU l’indice réduit des stratégies de survie (rCSI)
+# Reduced coping strategy index ou l’indice réduit des stratégies de survie (rCSI)
 
-### rCSI : Consommer des aliments moins préférés et moins chers
+## rCSI : Consommer des aliments moins préférés et moins chers
 
 ```{r rCSILessQlty}
 Chad_baseline_2018 %>% 
@@ -147,7 +147,7 @@ Chad_pdm_2022%>%
 ```
 
 
-### rCSI : Emprunter de la nourriture ou compter sur l’aide des parents/amis
+## rCSI : Emprunter de la nourriture ou compter sur l’aide des parents/amis
 
 
 ```{r rCSIBorrow}
@@ -172,7 +172,7 @@ Chad_pdm_2022%>%
 
 
 
-### rCSI : Diminuer la quantité consommée pendant les repas
+## rCSI : Diminuer la quantité consommée pendant les repas
 
 ```{r rCSIMealSize}
 Chad_baseline_2018 %>% 
@@ -195,7 +195,7 @@ Chad_pdm_2022%>%
 ```
 
 
-### rCSI :  Restreindre la consommation des adultes  pour nourrir les enfants
+## rCSI :  Restreindre la consommation des adultes  pour nourrir les enfants
 
 ```{r rCSIMealAdult}
 Chad_baseline_2018 %>% 
@@ -218,7 +218,7 @@ Chad_pdm_2022%>%
 ```
 
 
-### rCSI : Diminuer le nombre de repas par jour
+## rCSI : Diminuer le nombre de repas par jour
 
 ```{r rCSIMealNb, eval=FALSE, include=FALSE}
 Chad_baseline_2018 %>% 
@@ -267,7 +267,7 @@ plots
 ```
 
 
-# Merging all data
+## Merging all data
 
 
 
@@ -318,6 +318,8 @@ Households are divided in four classes according to the rCSI score: 0-3, 4-18, a
 WFP_Chad = WFP_Chad %>% dplyr::select(key_vars,var_needed)
 ```
 
+
+## Export all data
 
 ```{r}
 

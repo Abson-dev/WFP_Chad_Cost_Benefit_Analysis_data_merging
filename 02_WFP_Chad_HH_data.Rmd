@@ -103,9 +103,9 @@ for (j in 1:length(lst_test)){
 Chad_pdm_2022$ID = 1:nrow(Chad_pdm_2022)
 ```
 
+# Household characteristics
 
-
-# Gender recodification
+## Gender recodification
 
 ```{r Gender recodification}
 # We need to recode gender label to:
@@ -205,7 +205,7 @@ Chad_pdm_2022 %>%
   plot_frq(coord.flip =T,HHHSex)
 ```
 
-# HH Age
+## HH Age
 
 
 ```{r eval=FALSE, include=FALSE}
@@ -223,7 +223,7 @@ Chad_pdm_2023$HHHAge
 ```
 
 
-# Household head education level
+## Household head education level
 
 
 ```{r}
@@ -295,7 +295,7 @@ expss::val_lab(Chad_pdm_2022$HHHEdu)
 
 
 
-# HHHMainActivity
+## HHHMainActivity
 
 ```{r}
 expss::val_lab(Chad_baseline_2018$HHHMainActivity)
@@ -349,7 +349,7 @@ expss::val_lab(Chad_pdm_2022$HHHMainActivity)
 ```
 
 
-# HHHMatrimonial
+## HHHMatrimonial
 
 ```{r}
 # Monogame    Polygame     Divorcé(e)   Veuf/Veuve    Célibataire 
@@ -395,7 +395,7 @@ expss::val_lab(Chad_pdm_2022$HHHMatrimonial)
 
 
 
-# HHSourceIncome
+## HHSourceIncome
 
 ```{r}
 expss::val_lab(Chad_baseline_2018$HHSourceIncome)
@@ -796,7 +796,7 @@ summary(Chad_pdm_2022$HHSourceIncome) # valeur manquantes
 
 
 
-# Merging all data
+## Merging all data
 
 
 
@@ -932,7 +932,7 @@ WFP_Chad$HHSourceIncome <- labelled::labelled(WFP_Chad$HHSourceIncome, c(`Agricu
 ```
 
 
-# Compute household size variable
+## Compute household size variable
 
 ```{r}
 hhsize_var = WFP_Chad  %>% dplyr::select(starts_with("HHSize")) %>% names()
@@ -996,7 +996,7 @@ haven::write_dta(WFP_Chad_HH,paste0(dir_output_data,"/","WFP_Chad_HH.dta"))
 
 
 
-# Export all data
+## Export all data
 
 ```{r eval=FALSE, include=FALSE}
 for (j in 1:length(lst_test)){

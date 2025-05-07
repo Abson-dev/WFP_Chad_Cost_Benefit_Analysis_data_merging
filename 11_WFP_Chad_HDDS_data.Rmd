@@ -74,7 +74,9 @@ for(i in 1:length(lst_data)) {                              # Head of for-loop
 
 ```
 
-# Data consistency  Check
+# HDDS indicator
+
+## Data consistency  Check
 
 ```{r}
 Chad_baseline_2018$ID <- Chad_baseline_2018$`@_id`

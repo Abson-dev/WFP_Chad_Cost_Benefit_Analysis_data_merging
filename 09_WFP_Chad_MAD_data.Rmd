@@ -23,6 +23,7 @@ knitr::opts_chunk$set(
 )
 ```
 
+# MAD indicator
 
 ```{r}
 library(haven)
@@ -76,7 +77,7 @@ for(i in 1:length(lst_data)) {                              # Head of for-loop
 
 ```
 
-# Data consistency  Check
+## Data consistency  Check
 
 ```{r eval=FALSE, include=FALSE}
 Chad_baseline_2018$ID <- Chad_baseline_2018$`@_id`
@@ -192,7 +193,7 @@ Chad_pdm_2022$ID = 1:nrow(Chad_pdm_2022)
 
 
 
-# EA 2021
+## EA 2021
 
 ```{r}
 
@@ -212,7 +213,7 @@ MAD_ea_2021 = MAD_ea_2021 %>%
 ```
 
 
-# EA 2022
+## EA 2022
 
 ```{r}
 df_ea_2022 = Chad_ea_2022 %>% 
@@ -232,7 +233,7 @@ MAD_ea_2022 = MAD_ea_2022 %>%
 
 
 
-# EA 2023
+## EA 2023
 
 ```{r}
 df_ea_2023 = Chad_ea_2023 %>% 
@@ -283,7 +284,7 @@ MAD_ea_2023 <- MAD_ea_2023 %>%
 
 
 
-# PDM 2022
+## PDM 2022
 
 ```{r}
 
@@ -304,7 +305,7 @@ MAD_pdm_2022 = MAD_pdm_2022 %>%
 
 
 
-# PDM 2023
+## PDM 2023
 
 
 ```{r}
@@ -323,9 +324,9 @@ MAD_pdm_2023 = MAD_pdm_2023 %>%
 ```
 
 
-# Régime alimentaire minimum acceptable (MAD)
+## Régime alimentaire minimum acceptable (MAD)
 
-# Export all data
+## Export all data
 
 ```{r}
 dir_output_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/output_data/Chad"

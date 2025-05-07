@@ -106,7 +106,7 @@ Chad_pdm_2022$ID = 1:nrow(Chad_pdm_2022)
 
 
 
-## Stratégies d'adaptation aux moyens d'existence (LhCSI)
+# Stratégies d'adaptation aux moyens d'existence (LhCSI)
 
 
 ```{r}
@@ -135,7 +135,7 @@ var_needed = c(
 ```
 
 
-### LhCSI : Vendre des actifs/biens non productifs du ménage (radio, meuble, réfrigérateur, télévision, bijoux etc.)
+## LhCSI : Vendre des actifs/biens non productifs du ménage (radio, meuble, réfrigérateur, télévision, bijoux etc.)
 
 
 
@@ -290,7 +290,7 @@ Chad_pdm_2023$LhCSIStress1 <- labelled::labelled(Chad_pdm_2023$LhCSIStress1, c(`
 ```
 
 
-### LhCSI : Vendre plus d’animaux (non-productifs) que d’habitude
+## LhCSI : Vendre plus d’animaux (non-productifs) que d’habitude
 
 ```{r LhCSIStress2}
 #View labels
@@ -423,7 +423,7 @@ Chad_pdm_2023$LhCSIStress2 <- labelled::labelled(Chad_pdm_2023$LhCSIStress2, c(`
 ```
 
 
-### LhCSI : Dépenser l’épargne en raison d'un manque de nourriture ou d'argent pour acheter de la nourriture ?
+## LhCSI : Dépenser l’épargne en raison d'un manque de nourriture ou d'argent pour acheter de la nourriture ?
 
 ```{r LhCSIStress3}
 #View labels
@@ -550,7 +550,7 @@ Chad_pdm_2023$LhCSIStress3 <- labelled::labelled(Chad_pdm_2023$LhCSIStress3, c(`
 ```
 
 
-### LhCSI : Emprunter de l’argent / nourriture auprès d’un prêteur formel /banque
+## LhCSI : Emprunter de l’argent / nourriture auprès d’un prêteur formel /banque
 
 ```{r LhCSIStress4}
 #View labels
@@ -685,7 +685,7 @@ Chad_pdm_2023$LhCSIStress4 <- labelled::labelled(Chad_pdm_2023$LhCSIStress4, c(`
 
 
 
-### LhCSI : Réduire les dépenses non alimentaires essentielles telles que l’éducation, la santé (dont de médicaments)
+## LhCSI : Réduire les dépenses non alimentaires essentielles telles que l’éducation, la santé (dont de médicaments)
 
 ```{r LhCSICrisis1}
 # #View labels
@@ -754,7 +754,7 @@ Chad_ea_2023$LhCSICrisis1 <- labelled::labelled(Chad_ea_2023$LhCSICrisis1, c(`No
 Chad_pdm_2023$LhCSICrisis1 <- labelled::labelled(Chad_pdm_2023$LhCSICrisis1, c(`Non, je n'ai pas été confronté à une insuffisance de nourriture` = 1, `Non, parce que j'ai déjà vendu ces actifs ` = 2, Oui= 3,`Non applicable`=4))
 ```
 
-### LhCSI : Vendre des biens productifs ou des moyens de transport (machine à coudre, brouette, vélo, car, etc.)
+## LhCSI : Vendre des biens productifs ou des moyens de transport (machine à coudre, brouette, vélo, car, etc.)
 
 ```{r LhCSICrisis2}
 #View labels
@@ -882,7 +882,7 @@ Chad_ea_2023$LhCSICrisis2 <- labelled::labelled(Chad_ea_2023$LhCSICrisis2, c(`No
 Chad_pdm_2023$LhCSICrisis2 <- labelled::labelled(Chad_pdm_2023$LhCSICrisis2, c(`Non, je n'ai pas été confronté à une insuffisance de nourriture` = 1, `Non, parce que j'ai déjà vendu ces actifs ` = 2, Oui= 3,`Non applicable`=4))
 ```
 
-### LhCSI : Retirer les enfants de l’école
+## LhCSI : Retirer les enfants de l’école
 
 ```{r LhCSICrisis3}
 #View labels
@@ -1012,7 +1012,7 @@ Chad_pdm_2023$LhCSICrisis3 <- labelled::labelled(Chad_pdm_2023$LhCSICrisis3, c(`
 ```
 
 
-### LhCSI : Vendre la maison ou des terrains
+## LhCSI : Vendre la maison ou des terrains
 
 ```{r LhCSIEmergency1}
 #View labels
@@ -1141,7 +1141,7 @@ Chad_pdm_2023$LhCSIEmergency1 <- labelled::labelled(Chad_pdm_2023$LhCSIEmergency
 ```
 
 
-### LhCSI : Mendier
+## LhCSI : Mendier
 
 ```{r LhCSIEmergency2}
 #View labels
@@ -1268,7 +1268,7 @@ Chad_pdm_2023$LhCSIEmergency2 <- labelled::labelled(Chad_pdm_2023$LhCSIEmergency
 ```
 
 
-### LhCSI : Vendre les derniers animaux femelles reproductrices
+## LhCSI : Vendre les derniers animaux femelles reproductrices
 
 ```{r LhCSIEmergency3}
 #View labels
@@ -1402,7 +1402,7 @@ Chad_pdm_2023$LhCSIEmergency3 <- labelled::labelled(Chad_pdm_2023$LhCSIEmergency
 
 
 
-# Merging all data
+## Merging all data
 
 
 
@@ -1472,6 +1472,8 @@ WFP_Chad <- WFP_Chad %>%
                 ~ labelled::labelled(., label_map)))
 
 ```
+
+## Export all data
 
 
 ```{r}

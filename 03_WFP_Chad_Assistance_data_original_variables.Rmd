@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-
+## Keep assistance original variables
 
 ```{r 03bis packages needed}
 library(haven)

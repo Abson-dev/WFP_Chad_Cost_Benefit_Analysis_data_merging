@@ -107,7 +107,7 @@ Chad_pdm_2022$ID = 1:nrow(Chad_pdm_2022)
 
 
 
-## ASSET BENEFIT INDICATOR (ABI) 
+# ASSET BENEFIT INDICATOR (ABI) 
 
 ```{r}
 abi_variables = Chad_baseline_2018 %>% dplyr::select(gtsummary::starts_with("ABI")) %>% names()
@@ -543,6 +543,7 @@ var_label(df_Chad$HHWorkAsset) <- "Do you think that the works undertaken in you
 var_label(df_Chad$ABIScore) <- "ASSET BENEFIT INDICATOR SCORE"
 ```
 
+## Export all data
 
 ```{r}
 df_Chad = df_Chad %>% 

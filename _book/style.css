@@ -1,0 +1,242 @@
+/* ====== Style général ====== */
+body {
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.7;
+  font-size: 17px;
+  color: #333;
+  background-color: #ffffff;
+  padding-bottom: 30px;
+}
+
+/* ====== Titres ====== */
+h1, h2, h3, h4, h5 {
+  color: #1a73e8; /* bleu moderne */
+  font-weight: 600;
+}
+
+/* ====== Liens ====== */
+a {
+  color: #1a73e8;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+/* ====== Table des matières (sidebar) ====== */
+.book .book-summary {
+  background: #f5f9ff;
+  border-right: 1px solid #dbe8fd;
+}
+.book .book-summary ul.summary li a {
+  color: #1a73e8;
+}
+.book .book-summary ul.summary li.active > a {
+  background-color: #dbe8fd;
+  font-weight: bold;
+  color: #1a73e8;
+}
+
+/* ====== Barre supérieure ====== */
+.book .book-header {
+  background-color: #1a73e8;
+  color: white;
+  border-bottom: none;
+}
+.book .book-header .btn {
+  color: white;
+}
+.book .book-header .btn:hover {
+  background-color: #145ab4;
+}
+
+/* ====== Encadrés (informations, astuces) ====== */
+.book .book-body .page-wrapper .page-inner blockquote {
+  background: #eaf3ff;
+  border-left: 4px solid #1a73e8;
+  padding: 10px 15px;
+  font-style: italic;
+}
+
+/* ====== Code ====== */
+pre {
+  background: #f3f3f3;
+  padding: 12px;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+code {
+  background: #f0f0f0;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+/* ====== Tableaux ====== */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+table th, table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+table th {
+  background-color: #f5f9ff;
+  color: #1a73e8;
+}
+/* ===== Police et lisibilité ===== */
+body {
+  font-family: "Segoe UI", Roboto, sans-serif;
+  line-height: 1.6;
+  font-size: 17px;
+  color: #2c2c2c;
+  background: #ffffff;
+}
+
+/* ===== Titres ===== */
+h1, h2, h3 {
+  color: #2166d1;
+  font-weight: 600;
+}
+
+/* ===== Table des matières (sidebar) ===== */
+.book .book-summary {
+  background-color: #f0f4ff;
+  border-right: 1px solid #d0def7;
+}
+.book .book-summary a {
+  color: #2166d1;
+}
+.book .book-summary a:hover {
+  text-decoration: underline;
+}
+.book .book-summary .active > a {
+  background-color: #d0def7;
+  color: #2166d1;
+  font-weight: bold;
+}
+
+/* ===== En-tête (header bar) ===== */
+.book .book-header {
+  background-color: #2166d1;
+  color: white;
+}
+.book .book-header .btn {
+  color: white;
+}
+.book .book-header .btn:hover {
+  background-color: #1b4ea0;
+}
+
+/* ===== Encadrés de citation ===== */
+blockquote {
+  background: #e8f0fe;
+  border-left: 5px solid #2166d1;
+  padding: 10px 15px;
+  font-style: italic;
+}
+
+/* ===== Code et blocs R ===== */
+pre {
+  background-color: #f6f6f6;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+code {
+  background-color: #f0f0f0;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-size: 90%;
+}
+
+/* ===== Tableaux ===== */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+th {
+  background-color: #d0def7;
+  color: #1b4ea0;
+  padding: 8px;
+}
+td {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+
+/* ===== Liens ===== */
+a {
+  color: #2166d1;
+}
+a:hover {
+  color: #1742a6;
+  text-decoration: underline;
+}
+.book .book-header .btn {
+  color: white !important;
+  opacity: 1 !important;
+}
+
+.book .book-header .btn:hover {
+  background-color: #1742a6;
+  opacity: 1;
+}
+.book .book-header h1 {
+  color: white;
+}
+
+/* ===== En-tête (Header bar) ===== */
+.book .book-header {
+  background-color: #2166d1 !important; /* bleu moderne */
+  color: white !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.book .book-header .btn,
+.book .book-header .toggle-nav,
+.book .book-header h1,
+.book .book-header .dropdown-toggle {
+  color: white !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  text-shadow: none !important;
+}
+
+/* Empêche la disparition au survol */
+.book .book-header .btn:hover {
+  background-color: #1742a6 !important;
+  color: white !important;
+  opacity: 1 !important;
+}
+
+/* === Hover sur les liens du sommaire (table des matières) === */
+.book .book-summary ul.summary li a:hover {
+  background-color: #d0def7; /* Couleur bleu clair au survol */
+  color: #1742a6;             /* Texte bleu foncé */
+  text-decoration: none;
+  border-radius: 4px;
+  padding-left: 10px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.book .book-summary ul.summary li.active > a {
+  background-color: #2166d1;
+  color: white;
+  font-weight: bold;
+  border-radius: 4px;
+}
+
+/* === Style personnalisé pour les titres de paragraphe (##) === */
+.book .book-body h2 {
+  border-left: 4px solid #a0d6b4; /* couleur verte pâle */
+  padding-left: 10px;
+  margin-top: 2em;
+  margin-bottom: 1em;
+  color: #0077cc;
+  font-weight: 600;
+  background-color: #ffffff;
+  box-shadow: 0px 2px 2px rgba(0,0,0,0.03);
+  transition: all 0.3s ease;
+}
+

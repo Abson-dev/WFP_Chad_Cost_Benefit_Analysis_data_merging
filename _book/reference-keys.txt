@@ -1,3 +1,4 @@
+overview
 administrative-check
 sitevillage
 baseline-2018
@@ -13,6 +14,7 @@ pdm-2023
 date-format-check
 merging-all-data
 export-all-data
+household-characteristics
 gender-recodification
 hh-age
 household-head-education-level
@@ -39,6 +41,7 @@ pdm-2022-1
 pdm-2023-1
 merging-all-data-2
 export-all-data-2
+keep-assistance-original-variables
 food-consumption-score
 fcs-céréales-et-tubercules
 fcs-céréales-et-tubercules---sources
@@ -64,6 +67,7 @@ fsc-sucre-ou-sucreries-tels-que-sucre-miel-confiture-gâteau-bonbons-biscuits-vi
 fcs-condimentsépices-tels-que-thé-cafécacao-sel-ail-épices-levurelevure-chimique-tomatesauce-viande-ou-poisson-comme-condiment-condiments-incluant-des-petites-quantités-de-laitthé-café.
 merging-all-data-3
 fcs-computation
+export-all-data-3
 stratégies-dadaptation-aux-moyens-dexistence-lhcsi
 lhcsi-vendre-des-actifsbiens-non-productifs-du-ménage-radio-meuble-réfrigérateur-télévision-bijoux-etc.
 lhcsi-vendre-plus-danimaux-non-productifs-que-dhabitude
@@ -76,6 +80,7 @@ lhcsi-vendre-la-maison-ou-des-terrains
 lhcsi-mendier
 lhcsi-vendre-les-derniers-animaux-femelles-reproductrices
 merging-all-data-4
+export-all-data-4
 reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi
 rcsi-consommer-des-aliments-moins-préférés-et-moins-chers
 rcsi-emprunter-de-la-nourriture-ou-compter-sur-laide-des-parentsamis
@@ -83,6 +88,7 @@ rcsi-diminuer-la-quantité-consommée-pendant-les-repas
 rcsi-restreindre-la-consommation-des-adultes-pour-nourrir-les-enfants
 rcsi-diminuer-le-nombre-de-repas-par-jour
 merging-all-data-5
+export-all-data-5
 asset-benefit-indicator-abi
 ea-2019-2
 ea-2020-2
@@ -94,6 +100,7 @@ pdm-2021-2
 pdm-2022-2
 pdm-2023-2
 merging-all-data-6
+export-all-data-6
 self-evaluated-resilience-score-sers
 ea-2020-3
 ea-2021-3
@@ -102,6 +109,8 @@ ea-2023-3
 pdm-2022-3
 pdm-2023-3
 merging-all-data-7
+export-all-data-7
+mad-indicator
 data-consistency-check
 drop-duplicated-observations
 consent-check
@@ -112,7 +121,8 @@ ea-2023-4
 pdm-2022-4
 pdm-2023-4
 régime-alimentaire-minimum-acceptable-mad
-export-all-data-3
+export-all-data-8
+mddw-indicator
 data-consistency-check-1
 drop-duplicated-observations-1
 consent-check-1
@@ -122,10 +132,13 @@ ea-2022-5
 ea-2023-5
 pdm-2022-5
 pdm-2023-5
-export-all-data-4
+export-all-data-9
+hdds-indicator
 data-consistency-check-2
 drop-duplicated-observations-2
 consent-check-2
 id-check-2
 hdds-check
-export-all-data-5
+export-all-data-10
+wfp-chad-cba-data-preparation-i
+wfp-chad-cba-data-preparation-ii

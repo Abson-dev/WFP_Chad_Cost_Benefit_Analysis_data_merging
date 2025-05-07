@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | WFP datasets wrangling - Chad : HDDS</title>
-  <meta name="description" content="Page not found | WFP datasets wrangling - Chad : HDDS" />
+  <title>11 MDDW indicator | WFP datasets wrangling - Chad : HDDS</title>
+  <meta name="description" content="11 MDDW indicator | WFP datasets wrangling - Chad : HDDS" />
   <meta name="generator" content="bookdown 0.37 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | WFP datasets wrangling - Chad : HDDS" />
+  <meta property="og:title" content="11 MDDW indicator | WFP datasets wrangling - Chad : HDDS" />
   <meta property="og:type" content="book" />
   
   
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | WFP datasets wrangling - Chad : HDDS" />
+  <meta name="twitter:title" content="11 MDDW indicator | WFP datasets wrangling - Chad : HDDS" />
   
   
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="mad-indicator.html"/>
+<link rel="next" href="hdds-indicator.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -328,19 +328,210 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="mddw-indicator" class="section level1 hasAnchor" number="11">
+<h1><span class="header-section-number">11</span> MDDW indicator<a href="mddw-indicator.html#mddw-indicator" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="data-consistency-check-1" class="section level2 hasAnchor" number="11.1">
+<h2><span class="header-section-number">11.1</span> Data consistency Check<a href="mddw-indicator.html#data-consistency-check-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+</div>
+<div id="drop-duplicated-observations-1" class="section level2 hasAnchor" number="11.2">
+<h2><span class="header-section-number">11.2</span> Drop duplicated observations<a href="mddw-indicator.html#drop-duplicated-observations-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+</div>
+<div id="consent-check-1" class="section level2 hasAnchor" number="11.3">
+<h2><span class="header-section-number">11.3</span> Consent check<a href="mddw-indicator.html#consent-check-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+</div>
+<div id="id-check-1" class="section level2 hasAnchor" number="11.4">
+<h2><span class="header-section-number">11.4</span> ID Check<a href="mddw-indicator.html#id-check-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb666"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb666-1"><a href="mddw-indicator.html#cb666-1" tabindex="-1"></a>path <span class="ot">=</span> <span class="st">&quot;C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb667"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb667-1"><a href="mddw-indicator.html#cb667-1" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb667-2"><a href="mddw-indicator.html#cb667-2" tabindex="-1"></a>MDDW_ea_2021 <span class="ot">&lt;-</span> <span class="fu">read_sav</span>(<span class="fu">paste0</span>(path,<span class="st">&quot;/data/input_data/Chad/MAD_MDDW data/consent_HHSize1549F_MDDW_rpt_Decembre_2021.sav&quot;</span>))</span>
+<span id="cb667-3"><a href="mddw-indicator.html#cb667-3" tabindex="-1"></a>MDDW_ea_2022 <span class="ot">&lt;-</span> <span class="fu">read_sav</span>(<span class="fu">paste0</span>(path,<span class="st">&quot;data/input_data/Chad/MAD_MDDW data/consent_HHSize1549F_MDDW_rpt_Decembre_2022.sav&quot;</span>))</span>
+<span id="cb667-4"><a href="mddw-indicator.html#cb667-4" tabindex="-1"></a>MDDW_ea_2023 <span class="ot">&lt;-</span> <span class="fu">read_sav</span>(<span class="fu">paste0</span>(path,<span class="st">&quot;data/input_data/Chad/MAD_MDDW data/consent_HHSize1549F_MDDW_rpt_Decembre_2023.sav&quot;</span>))</span>
+<span id="cb667-5"><a href="mddw-indicator.html#cb667-5" tabindex="-1"></a>MDDW_pdm_2022 <span class="ot">&lt;-</span> <span class="fu">read_sav</span>(<span class="fu">paste0</span>(path,<span class="st">&quot;data/input_data/Chad/MAD_MDDW data/consent_HHSize1549F_MDDW_rpt_Juillet_2022.sav&quot;</span>))</span>
+<span id="cb667-6"><a href="mddw-indicator.html#cb667-6" tabindex="-1"></a>MDDW_pdm_2023 <span class="ot">&lt;-</span> <span class="fu">read_sav</span>(<span class="fu">paste0</span>(path,<span class="st">&quot;data/input_data/Chad/MAD_MDDW data/consent_HHSize1549F_MDDW_rpt_Juillet_2023.sav&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb668"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb668-1"><a href="mddw-indicator.html#cb668-1" tabindex="-1"></a>Chad_pdm_2022<span class="sc">$</span>ID <span class="ot">=</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(Chad_pdm_2022)</span></code></pre></div>
+</div>
+<div id="ea-2021-5" class="section level2 hasAnchor" number="11.5">
+<h2><span class="header-section-number">11.5</span> EA 2021<a href="mddw-indicator.html#ea-2021-5" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb669"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb669-1"><a href="mddw-indicator.html#cb669-1" tabindex="-1"></a>df_ea_2021 <span class="ot">=</span> Chad_ea_2021 <span class="sc">%&gt;%</span> </span>
+<span id="cb669-2"><a href="mddw-indicator.html#cb669-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">`</span><span class="at">@_id</span><span class="st">`</span>,<span class="st">`</span><span class="at">@_index</span><span class="st">`</span>)</span>
+<span id="cb669-3"><a href="mddw-indicator.html#cb669-3" tabindex="-1"></a></span>
+<span id="cb669-4"><a href="mddw-indicator.html#cb669-4" tabindex="-1"></a><span class="fu">names</span>(df_ea_2021) <span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">&quot;ID&quot;</span>,<span class="st">&quot;Key_with_subset_data&quot;</span>)</span>
+<span id="cb669-5"><a href="mddw-indicator.html#cb669-5" tabindex="-1"></a>MDDW_ea_2021<span class="sc">$</span>Key_with_subset_data <span class="ot">&lt;-</span> MDDW_ea_2021<span class="sc">$</span><span class="st">`</span><span class="at">@_parent_index</span><span class="st">`</span></span>
+<span id="cb669-6"><a href="mddw-indicator.html#cb669-6" tabindex="-1"></a>MDDW_ea_2021 <span class="ot">=</span> dplyr<span class="sc">::</span><span class="fu">left_join</span>(df_ea_2021, MDDW_ea_2021, <span class="at">by =</span> <span class="st">&quot;Key_with_subset_data&quot;</span>)</span>
+<span id="cb669-7"><a href="mddw-indicator.html#cb669-7" tabindex="-1"></a></span>
+<span id="cb669-8"><a href="mddw-indicator.html#cb669-8" tabindex="-1"></a>mddw_variables <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;MDDW_resp_age&quot;</span>,<span class="st">&quot;HHSize1549F_MDDW_calc&quot;</span>,MDDW_ea_2021 <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(gtsummary<span class="sc">::</span><span class="fu">starts_with</span>(<span class="st">&quot;PWMDD&quot;</span>)) <span class="sc">%&gt;%</span> <span class="fu">names</span>())</span>
+<span id="cb669-9"><a href="mddw-indicator.html#cb669-9" tabindex="-1"></a>MDDW_ea_2021 <span class="ot">=</span> MDDW_ea_2021 <span class="sc">%&gt;%</span> </span>
+<span id="cb669-10"><a href="mddw-indicator.html#cb669-10" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">&quot;ID&quot;</span>,mddw_variables)</span>
+<span id="cb669-11"><a href="mddw-indicator.html#cb669-11" tabindex="-1"></a></span>
+<span id="cb669-12"><a href="mddw-indicator.html#cb669-12" tabindex="-1"></a></span>
+<span id="cb669-13"><a href="mddw-indicator.html#cb669-13" tabindex="-1"></a>MDDW_ea_2021 <span class="ot">=</span> MDDW_ea_2021 <span class="sc">%&gt;%</span> </span>
+<span id="cb669-14"><a href="mddw-indicator.html#cb669-14" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(MDDW_resp_age))</span>
+<span id="cb669-15"><a href="mddw-indicator.html#cb669-15" tabindex="-1"></a><span class="co"># MDDW_ea_2021 = MDDW_ea_2021 %&gt;%</span></span>
+<span id="cb669-16"><a href="mddw-indicator.html#cb669-16" tabindex="-1"></a><span class="co">#   dplyr::group_by(ID) %&gt;% </span></span>
+<span id="cb669-17"><a href="mddw-indicator.html#cb669-17" tabindex="-1"></a><span class="co">#   dplyr::summarise_at(mddw_variables,max, na.rm = TRUE)</span></span></code></pre></div>
+</div>
+<div id="ea-2022-5" class="section level2 hasAnchor" number="11.6">
+<h2><span class="header-section-number">11.6</span> EA 2022<a href="mddw-indicator.html#ea-2022-5" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb670"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb670-1"><a href="mddw-indicator.html#cb670-1" tabindex="-1"></a>df_ea_2022 <span class="ot">=</span> Chad_ea_2022 <span class="sc">%&gt;%</span> </span>
+<span id="cb670-2"><a href="mddw-indicator.html#cb670-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">`</span><span class="at">@_id</span><span class="st">`</span>,<span class="st">`</span><span class="at">@_index</span><span class="st">`</span>)</span>
+<span id="cb670-3"><a href="mddw-indicator.html#cb670-3" tabindex="-1"></a></span>
+<span id="cb670-4"><a href="mddw-indicator.html#cb670-4" tabindex="-1"></a><span class="fu">names</span>(df_ea_2022) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;ID&quot;</span>,<span class="st">&quot;Key_with_subset_data&quot;</span>)</span>
+<span id="cb670-5"><a href="mddw-indicator.html#cb670-5" tabindex="-1"></a>MDDW_ea_2022<span class="sc">$</span>Key_with_subset_data <span class="ot">&lt;-</span> MDDW_ea_2022<span class="sc">$</span><span class="st">`</span><span class="at">@_parent_index</span><span class="st">`</span></span>
+<span id="cb670-6"><a href="mddw-indicator.html#cb670-6" tabindex="-1"></a>MDDW_ea_2022 <span class="ot">=</span> dplyr<span class="sc">::</span><span class="fu">left_join</span>(df_ea_2022, MDDW_ea_2022, <span class="at">by =</span> <span class="st">&quot;Key_with_subset_data&quot;</span>)</span>
+<span id="cb670-7"><a href="mddw-indicator.html#cb670-7" tabindex="-1"></a></span>
+<span id="cb670-8"><a href="mddw-indicator.html#cb670-8" tabindex="-1"></a>mddw_variables <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;MDDW_resp_age&quot;</span>,<span class="st">&quot;HHSize1549F_MDDW_calc&quot;</span>,MDDW_ea_2022 <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(gtsummary<span class="sc">::</span><span class="fu">starts_with</span>(<span class="st">&quot;PWMDD&quot;</span>)) <span class="sc">%&gt;%</span> <span class="fu">names</span>())</span>
+<span id="cb670-9"><a href="mddw-indicator.html#cb670-9" tabindex="-1"></a>MDDW_ea_2022 <span class="ot">=</span> MDDW_ea_2022 <span class="sc">%&gt;%</span> </span>
+<span id="cb670-10"><a href="mddw-indicator.html#cb670-10" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">&quot;ID&quot;</span>,mddw_variables)</span>
+<span id="cb670-11"><a href="mddw-indicator.html#cb670-11" tabindex="-1"></a>MDDW_ea_2022 <span class="ot">=</span> MDDW_ea_2022 <span class="sc">%&gt;%</span> </span>
+<span id="cb670-12"><a href="mddw-indicator.html#cb670-12" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(MDDW_resp_age))</span>
+<span id="cb670-13"><a href="mddw-indicator.html#cb670-13" tabindex="-1"></a><span class="co"># MDDW_ea_2022 = MDDW_ea_2022 %&gt;%</span></span>
+<span id="cb670-14"><a href="mddw-indicator.html#cb670-14" tabindex="-1"></a><span class="co">#   dplyr::group_by(ID) %&gt;% </span></span>
+<span id="cb670-15"><a href="mddw-indicator.html#cb670-15" tabindex="-1"></a><span class="co">#   dplyr::summarise_at(mddw_variables,max, na.rm = TRUE)</span></span></code></pre></div>
+</div>
+<div id="ea-2023-5" class="section level2 hasAnchor" number="11.7">
+<h2><span class="header-section-number">11.7</span> EA 2023<a href="mddw-indicator.html#ea-2023-5" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb671"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb671-1"><a href="mddw-indicator.html#cb671-1" tabindex="-1"></a>df_ea_2023 <span class="ot">=</span> Chad_ea_2023 <span class="sc">%&gt;%</span> </span>
+<span id="cb671-2"><a href="mddw-indicator.html#cb671-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">`</span><span class="at">@_id</span><span class="st">`</span>,<span class="st">`</span><span class="at">@_index</span><span class="st">`</span>)</span>
+<span id="cb671-3"><a href="mddw-indicator.html#cb671-3" tabindex="-1"></a></span>
+<span id="cb671-4"><a href="mddw-indicator.html#cb671-4" tabindex="-1"></a><span class="fu">names</span>(df_ea_2023) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;ID&quot;</span>,<span class="st">&quot;Key_with_subset_data&quot;</span>)</span>
+<span id="cb671-5"><a href="mddw-indicator.html#cb671-5" tabindex="-1"></a>MDDW_ea_2023<span class="sc">$</span>Key_with_subset_data <span class="ot">&lt;-</span> MDDW_ea_2023<span class="sc">$</span><span class="st">`</span><span class="at">@_parent_index</span><span class="st">`</span></span>
+<span id="cb671-6"><a href="mddw-indicator.html#cb671-6" tabindex="-1"></a>MDDW_ea_2023 <span class="ot">=</span> dplyr<span class="sc">::</span><span class="fu">left_join</span>(df_ea_2023, MDDW_ea_2023, <span class="at">by =</span> <span class="st">&quot;Key_with_subset_data&quot;</span>)</span>
+<span id="cb671-7"><a href="mddw-indicator.html#cb671-7" tabindex="-1"></a></span>
+<span id="cb671-8"><a href="mddw-indicator.html#cb671-8" tabindex="-1"></a>mddw_variables <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;MDDW_resp_age&quot;</span>,<span class="st">&quot;HHSize1549F_MDDW_calc&quot;</span>,MDDW_ea_2023 <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(gtsummary<span class="sc">::</span><span class="fu">starts_with</span>(<span class="st">&quot;PWMDD&quot;</span>)) <span class="sc">%&gt;%</span> <span class="fu">names</span>())</span>
+<span id="cb671-9"><a href="mddw-indicator.html#cb671-9" tabindex="-1"></a>MDDW_ea_2023 <span class="ot">=</span> MDDW_ea_2023 <span class="sc">%&gt;%</span> </span>
+<span id="cb671-10"><a href="mddw-indicator.html#cb671-10" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">&quot;ID&quot;</span>,mddw_variables)</span>
+<span id="cb671-11"><a href="mddw-indicator.html#cb671-11" tabindex="-1"></a>MDDW_ea_2023 <span class="ot">=</span> MDDW_ea_2023 <span class="sc">%&gt;%</span> </span>
+<span id="cb671-12"><a href="mddw-indicator.html#cb671-12" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(MDDW_resp_age))</span>
+<span id="cb671-13"><a href="mddw-indicator.html#cb671-13" tabindex="-1"></a><span class="co"># MDDW_ea_2023 = MDDW_ea_2023 %&gt;%</span></span>
+<span id="cb671-14"><a href="mddw-indicator.html#cb671-14" tabindex="-1"></a><span class="co">#   dplyr::group_by(ID) %&gt;% </span></span>
+<span id="cb671-15"><a href="mddw-indicator.html#cb671-15" tabindex="-1"></a><span class="co">#   dplyr::summarise_at(mddw_variables,max, na.rm = TRUE)</span></span></code></pre></div>
+</div>
+<div id="pdm-2022-5" class="section level2 hasAnchor" number="11.8">
+<h2><span class="header-section-number">11.8</span> PDM 2022<a href="mddw-indicator.html#pdm-2022-5" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb672"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb672-1"><a href="mddw-indicator.html#cb672-1" tabindex="-1"></a>df_pdm_2022 <span class="ot">=</span> Chad_pdm_2022 <span class="sc">%&gt;%</span> </span>
+<span id="cb672-2"><a href="mddw-indicator.html#cb672-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">&quot;ID&quot;</span>,<span class="st">`</span><span class="at">@_index</span><span class="st">`</span>)</span>
+<span id="cb672-3"><a href="mddw-indicator.html#cb672-3" tabindex="-1"></a></span>
+<span id="cb672-4"><a href="mddw-indicator.html#cb672-4" tabindex="-1"></a><span class="fu">names</span>(df_pdm_2022) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;ID&quot;</span>,<span class="st">&quot;Key_with_subset_data&quot;</span>)</span>
+<span id="cb672-5"><a href="mddw-indicator.html#cb672-5" tabindex="-1"></a></span>
+<span id="cb672-6"><a href="mddw-indicator.html#cb672-6" tabindex="-1"></a>MDDW_pdm_2022<span class="sc">$</span>Key_with_subset_data <span class="ot">&lt;-</span> MDDW_pdm_2022<span class="sc">$</span><span class="st">`</span><span class="at">@_parent_index</span><span class="st">`</span></span>
+<span id="cb672-7"><a href="mddw-indicator.html#cb672-7" tabindex="-1"></a>MDDW_pdm_2022 <span class="ot">=</span> dplyr<span class="sc">::</span><span class="fu">left_join</span>(df_pdm_2022, MDDW_pdm_2022, <span class="at">by =</span> <span class="st">&quot;Key_with_subset_data&quot;</span>)</span>
+<span id="cb672-8"><a href="mddw-indicator.html#cb672-8" tabindex="-1"></a></span>
+<span id="cb672-9"><a href="mddw-indicator.html#cb672-9" tabindex="-1"></a>mddw_variables <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;MDDW_resp_age&quot;</span>,<span class="st">&quot;HHSize1549F_MDDW_calc&quot;</span>,MDDW_pdm_2022 <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(gtsummary<span class="sc">::</span><span class="fu">starts_with</span>(<span class="st">&quot;PWMDD&quot;</span>)) <span class="sc">%&gt;%</span> <span class="fu">names</span>())</span>
+<span id="cb672-10"><a href="mddw-indicator.html#cb672-10" tabindex="-1"></a>MDDW_pdm_2022 <span class="ot">=</span> MDDW_pdm_2022 <span class="sc">%&gt;%</span> </span>
+<span id="cb672-11"><a href="mddw-indicator.html#cb672-11" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">&quot;ID&quot;</span>,mddw_variables)</span>
+<span id="cb672-12"><a href="mddw-indicator.html#cb672-12" tabindex="-1"></a>MDDW_pdm_2022 <span class="ot">=</span> MDDW_pdm_2022 <span class="sc">%&gt;%</span> </span>
+<span id="cb672-13"><a href="mddw-indicator.html#cb672-13" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(MDDW_resp_age))</span>
+<span id="cb672-14"><a href="mddw-indicator.html#cb672-14" tabindex="-1"></a><span class="co"># MDDW_pdm_2022 = MDDW_pdm_2022 %&gt;%</span></span>
+<span id="cb672-15"><a href="mddw-indicator.html#cb672-15" tabindex="-1"></a><span class="co">#   dplyr::group_by(ID) %&gt;% </span></span>
+<span id="cb672-16"><a href="mddw-indicator.html#cb672-16" tabindex="-1"></a><span class="co">#   dplyr::summarise_at(mddw_variables,max, na.rm = TRUE)</span></span></code></pre></div>
+</div>
+<div id="pdm-2023-5" class="section level2 hasAnchor" number="11.9">
+<h2><span class="header-section-number">11.9</span> PDM 2023<a href="mddw-indicator.html#pdm-2023-5" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb673"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb673-1"><a href="mddw-indicator.html#cb673-1" tabindex="-1"></a>df_pdm_2023 <span class="ot">=</span> Chad_pdm_2023 <span class="sc">%&gt;%</span> </span>
+<span id="cb673-2"><a href="mddw-indicator.html#cb673-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">`</span><span class="at">@_id</span><span class="st">`</span>,<span class="st">`</span><span class="at">@_index</span><span class="st">`</span>)</span>
+<span id="cb673-3"><a href="mddw-indicator.html#cb673-3" tabindex="-1"></a></span>
+<span id="cb673-4"><a href="mddw-indicator.html#cb673-4" tabindex="-1"></a><span class="fu">names</span>(df_pdm_2023) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;ID&quot;</span>,<span class="st">&quot;Key_with_subset_data&quot;</span>)</span>
+<span id="cb673-5"><a href="mddw-indicator.html#cb673-5" tabindex="-1"></a>MDDW_pdm_2023<span class="sc">$</span>Key_with_subset_data <span class="ot">&lt;-</span> MDDW_pdm_2023<span class="sc">$</span><span class="st">`</span><span class="at">@_parent_index</span><span class="st">`</span></span>
+<span id="cb673-6"><a href="mddw-indicator.html#cb673-6" tabindex="-1"></a>MDDW_pdm_2023 <span class="ot">=</span> dplyr<span class="sc">::</span><span class="fu">left_join</span>(df_pdm_2023, MDDW_pdm_2023, <span class="at">by =</span> <span class="st">&quot;Key_with_subset_data&quot;</span>)</span>
+<span id="cb673-7"><a href="mddw-indicator.html#cb673-7" tabindex="-1"></a></span>
+<span id="cb673-8"><a href="mddw-indicator.html#cb673-8" tabindex="-1"></a></span>
+<span id="cb673-9"><a href="mddw-indicator.html#cb673-9" tabindex="-1"></a>mddw_variables <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;MDDW_resp_age&quot;</span>,<span class="st">&quot;HHSize1549F_MDDW_calc&quot;</span>,MDDW_pdm_2023 <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(gtsummary<span class="sc">::</span><span class="fu">starts_with</span>(<span class="st">&quot;PWMDD&quot;</span>)) <span class="sc">%&gt;%</span> <span class="fu">names</span>())</span>
+<span id="cb673-10"><a href="mddw-indicator.html#cb673-10" tabindex="-1"></a>MDDW_pdm_2023 <span class="ot">=</span> MDDW_pdm_2023 <span class="sc">%&gt;%</span> </span>
+<span id="cb673-11"><a href="mddw-indicator.html#cb673-11" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">&quot;ID&quot;</span>,mddw_variables)</span>
+<span id="cb673-12"><a href="mddw-indicator.html#cb673-12" tabindex="-1"></a></span>
+<span id="cb673-13"><a href="mddw-indicator.html#cb673-13" tabindex="-1"></a>mddw_variables <span class="ot">=</span> MDDW_pdm_2023 <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(gtsummary<span class="sc">::</span><span class="fu">starts_with</span>(<span class="st">&quot;PWMDD&quot;</span>)) <span class="sc">%&gt;%</span> <span class="fu">names</span>()</span>
+<span id="cb673-14"><a href="mddw-indicator.html#cb673-14" tabindex="-1"></a></span>
+<span id="cb673-15"><a href="mddw-indicator.html#cb673-15" tabindex="-1"></a>MDDW_pdm_2023 <span class="ot">&lt;-</span> MDDW_pdm_2023 <span class="sc">%&gt;%</span></span>
+<span id="cb673-16"><a href="mddw-indicator.html#cb673-16" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(mddw_variables, <span class="sc">~</span><span class="fu">ifelse</span>(.<span class="sc">==</span><span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>)))</span>
+<span id="cb673-17"><a href="mddw-indicator.html#cb673-17" tabindex="-1"></a></span>
+<span id="cb673-18"><a href="mddw-indicator.html#cb673-18" tabindex="-1"></a>MDDW_pdm_2023 <span class="ot">=</span> MDDW_pdm_2023 <span class="sc">%&gt;%</span> </span>
+<span id="cb673-19"><a href="mddw-indicator.html#cb673-19" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(MDDW_resp_age))</span>
+<span id="cb673-20"><a href="mddw-indicator.html#cb673-20" tabindex="-1"></a><span class="co"># Labels mapping</span></span>
+<span id="cb673-21"><a href="mddw-indicator.html#cb673-21" tabindex="-1"></a>label_map <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb673-22"><a href="mddw-indicator.html#cb673-22" tabindex="-1"></a>  <span class="at">Non =</span> <span class="dv">1</span>,</span>
+<span id="cb673-23"><a href="mddw-indicator.html#cb673-23" tabindex="-1"></a>  <span class="at">Oui =</span> <span class="dv">2</span></span>
+<span id="cb673-24"><a href="mddw-indicator.html#cb673-24" tabindex="-1"></a>)</span>
+<span id="cb673-25"><a href="mddw-indicator.html#cb673-25" tabindex="-1"></a></span>
+<span id="cb673-26"><a href="mddw-indicator.html#cb673-26" tabindex="-1"></a><span class="co"># Apply labels using mutate() and across()</span></span>
+<span id="cb673-27"><a href="mddw-indicator.html#cb673-27" tabindex="-1"></a>MDDW_pdm_2023 <span class="ot">&lt;-</span> MDDW_pdm_2023 <span class="sc">%&gt;%</span></span>
+<span id="cb673-28"><a href="mddw-indicator.html#cb673-28" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(mddw_variables,</span>
+<span id="cb673-29"><a href="mddw-indicator.html#cb673-29" tabindex="-1"></a>                <span class="sc">~</span> labelled<span class="sc">::</span><span class="fu">labelled</span>(., label_map)))</span>
+<span id="cb673-30"><a href="mddw-indicator.html#cb673-30" tabindex="-1"></a></span>
+<span id="cb673-31"><a href="mddw-indicator.html#cb673-31" tabindex="-1"></a><span class="co"># MDDW_pdm_2023 = MDDW_pdm_2023 %&gt;%</span></span>
+<span id="cb673-32"><a href="mddw-indicator.html#cb673-32" tabindex="-1"></a><span class="co">#   dplyr::group_by(ID) %&gt;% </span></span>
+<span id="cb673-33"><a href="mddw-indicator.html#cb673-33" tabindex="-1"></a><span class="co">#   dplyr::summarise_at(mddw_variables,max, na.rm = TRUE)</span></span></code></pre></div>
+</div>
+<div id="export-all-data-9" class="section level2 hasAnchor" number="11.10">
+<h2><span class="header-section-number">11.10</span> Export all data<a href="mddw-indicator.html#export-all-data-9" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb674"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb674-1"><a href="mddw-indicator.html#cb674-1" tabindex="-1"></a>dir_output_data <span class="ot">=</span> <span class="st">&quot;C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/output_data/Chad&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb675"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb675-1"><a href="mddw-indicator.html#cb675-1" tabindex="-1"></a>WFP_Chad_MDDW<span class="ot">&lt;-</span>plyr<span class="sc">::</span><span class="fu">rbind.fill</span>(MDDW_ea_2021,</span>
+<span id="cb675-2"><a href="mddw-indicator.html#cb675-2" tabindex="-1"></a>MDDW_ea_2022,</span>
+<span id="cb675-3"><a href="mddw-indicator.html#cb675-3" tabindex="-1"></a>MDDW_ea_2023,</span>
+<span id="cb675-4"><a href="mddw-indicator.html#cb675-4" tabindex="-1"></a>MDDW_pdm_2022,</span>
+<span id="cb675-5"><a href="mddw-indicator.html#cb675-5" tabindex="-1"></a>MDDW_pdm_2023)</span>
+<span id="cb675-6"><a href="mddw-indicator.html#cb675-6" tabindex="-1"></a></span>
+<span id="cb675-7"><a href="mddw-indicator.html#cb675-7" tabindex="-1"></a>mddw_variables <span class="ot">=</span> WFP_Chad_MDDW <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(gtsummary<span class="sc">::</span><span class="fu">starts_with</span>(<span class="st">&quot;PWMDD&quot;</span>)) <span class="sc">%&gt;%</span> <span class="fu">names</span>()</span>
+<span id="cb675-8"><a href="mddw-indicator.html#cb675-8" tabindex="-1"></a></span>
+<span id="cb675-9"><a href="mddw-indicator.html#cb675-9" tabindex="-1"></a>WFP_Chad_MDDW <span class="ot">&lt;-</span> WFP_Chad_MDDW <span class="sc">%&gt;%</span></span>
+<span id="cb675-10"><a href="mddw-indicator.html#cb675-10" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(mddw_variables, <span class="sc">~</span><span class="fu">ifelse</span>(<span class="fu">is.na</span>(.),<span class="cn">NA</span>,<span class="fu">ifelse</span>(.<span class="sc">==</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>))))</span>
+<span id="cb675-11"><a href="mddw-indicator.html#cb675-11" tabindex="-1"></a></span>
+<span id="cb675-12"><a href="mddw-indicator.html#cb675-12" tabindex="-1"></a></span>
+<span id="cb675-13"><a href="mddw-indicator.html#cb675-13" tabindex="-1"></a><span class="co"># Labels mapping</span></span>
+<span id="cb675-14"><a href="mddw-indicator.html#cb675-14" tabindex="-1"></a>label_map <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb675-15"><a href="mddw-indicator.html#cb675-15" tabindex="-1"></a>  <span class="at">Non =</span> <span class="dv">0</span>,</span>
+<span id="cb675-16"><a href="mddw-indicator.html#cb675-16" tabindex="-1"></a>  <span class="at">Oui =</span> <span class="dv">1</span></span>
+<span id="cb675-17"><a href="mddw-indicator.html#cb675-17" tabindex="-1"></a>)</span>
+<span id="cb675-18"><a href="mddw-indicator.html#cb675-18" tabindex="-1"></a></span>
+<span id="cb675-19"><a href="mddw-indicator.html#cb675-19" tabindex="-1"></a><span class="co"># Apply labels using mutate() and across()</span></span>
+<span id="cb675-20"><a href="mddw-indicator.html#cb675-20" tabindex="-1"></a>WFP_Chad_MDDW <span class="ot">&lt;-</span> WFP_Chad_MDDW <span class="sc">%&gt;%</span></span>
+<span id="cb675-21"><a href="mddw-indicator.html#cb675-21" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(mddw_variables,</span>
+<span id="cb675-22"><a href="mddw-indicator.html#cb675-22" tabindex="-1"></a>                <span class="sc">~</span> labelled<span class="sc">::</span><span class="fu">labelled</span>(., label_map)))</span>
+<span id="cb675-23"><a href="mddw-indicator.html#cb675-23" tabindex="-1"></a>WFP_Chad_MDDW<span class="sc">$</span>HHSize1549F_MDDW_calc <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(WFP_Chad_MDDW<span class="sc">$</span>HHSize1549F_MDDW_calc)</span>
+<span id="cb675-24"><a href="mddw-indicator.html#cb675-24" tabindex="-1"></a>WFP_Chad_MDDW<span class="sc">$</span>ID <span class="ot">&lt;-</span> <span class="fu">as.character</span>(WFP_Chad_MDDW<span class="sc">$</span>ID)</span>
+<span id="cb675-25"><a href="mddw-indicator.html#cb675-25" tabindex="-1"></a></span>
+<span id="cb675-26"><a href="mddw-indicator.html#cb675-26" tabindex="-1"></a>WFP_Chad_MDDW <span class="ot">&lt;-</span> WFP_Chad_MDDW <span class="sc">%&gt;%</span> </span>
+<span id="cb675-27"><a href="mddw-indicator.html#cb675-27" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">&quot;ID&quot;</span>,<span class="st">&quot;MDDW_resp_age&quot;</span>,mddw_variables)</span>
+<span id="cb675-28"><a href="mddw-indicator.html#cb675-28" tabindex="-1"></a><span class="fu">write_sav</span>(WFP_Chad_MDDW, <span class="fu">paste0</span>(dir_output_data,<span class="st">&quot;/WFP_Chad_MDDW.sav&quot;</span>))</span>
+<span id="cb675-29"><a href="mddw-indicator.html#cb675-29" tabindex="-1"></a><span class="fu">write_dta</span>(WFP_Chad_MDDW, <span class="fu">paste0</span>(dir_output_data,<span class="st">&quot;/WFP_Chad_MDDW.dta&quot;</span>))</span></code></pre></div>
+
+<div class="sourceCode" id="cb676"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb676-1"><a href="mddw-indicator.html#cb676-1" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb676-2"><a href="mddw-indicator.html#cb676-2" tabindex="-1"></a><span class="fu">library</span>(labelled) <span class="co"># for general functions to work with labelled data</span></span>
+<span id="cb676-3"><a href="mddw-indicator.html#cb676-3" tabindex="-1"></a><span class="fu">library</span>(tidyverse) <span class="co"># general wrangling</span></span>
+<span id="cb676-4"><a href="mddw-indicator.html#cb676-4" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb676-5"><a href="mddw-indicator.html#cb676-5" tabindex="-1"></a><span class="fu">library</span>(Hmisc)</span>
+<span id="cb676-6"><a href="mddw-indicator.html#cb676-6" tabindex="-1"></a><span class="fu">library</span>(gtsummary) <span class="co"># to demonstrate automatic use of variable labels in summary tables</span></span>
+<span id="cb676-7"><a href="mddw-indicator.html#cb676-7" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
+<span id="cb676-8"><a href="mddw-indicator.html#cb676-8" tabindex="-1"></a><span class="fu">library</span>(foreign)</span>
+<span id="cb676-9"><a href="mddw-indicator.html#cb676-9" tabindex="-1"></a><span class="fu">library</span>(sjPlot)</span>
+<span id="cb676-10"><a href="mddw-indicator.html#cb676-10" tabindex="-1"></a><span class="fu">library</span>(sjmisc)</span>
+<span id="cb676-11"><a href="mddw-indicator.html#cb676-11" tabindex="-1"></a><span class="fu">library</span>(sjlabelled) <span class="co"># for example efc data set with variable labels</span></span>
+<span id="cb676-12"><a href="mddw-indicator.html#cb676-12" tabindex="-1"></a><span class="fu">library</span>(stringr)</span></code></pre></div>
+<div class="sourceCode" id="cb677"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb677-1"><a href="mddw-indicator.html#cb677-1" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span></code></pre></div>
+<div class="sourceCode" id="cb678"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb678-1"><a href="mddw-indicator.html#cb678-1" tabindex="-1"></a>dir_input_data <span class="ot">=</span> <span class="st">&quot;C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/input_data/Chad&quot;</span></span>
+<span id="cb678-2"><a href="mddw-indicator.html#cb678-2" tabindex="-1"></a>dir_output_data <span class="ot">=</span> <span class="st">&quot;C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/output_data/Chad&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb679"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb679-1"><a href="mddw-indicator.html#cb679-1" tabindex="-1"></a>Chad_Harmonization_variables <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="fu">paste0</span>(dir_input_data,<span class="st">&quot;/Chad_Harmonization.xlsx&quot;</span>), </span>
+<span id="cb679-2"><a href="mddw-indicator.html#cb679-2" tabindex="-1"></a>    <span class="at">sheet =</span> <span class="st">&quot;variables_harmonization&quot;</span>)</span>
+<span id="cb679-3"><a href="mddw-indicator.html#cb679-3" tabindex="-1"></a><span class="co">#View(Chad_Harmonization_variables)</span></span>
+<span id="cb679-4"><a href="mddw-indicator.html#cb679-4" tabindex="-1"></a></span>
+<span id="cb679-5"><a href="mddw-indicator.html#cb679-5" tabindex="-1"></a>Chad_Harmonization_description <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="fu">paste0</span>(dir_input_data,<span class="st">&quot;/Chad_Harmonization.xlsx&quot;</span>), </span>
+<span id="cb679-6"><a href="mddw-indicator.html#cb679-6" tabindex="-1"></a>    <span class="at">sheet =</span> <span class="st">&quot;description&quot;</span>)</span>
+<span id="cb679-7"><a href="mddw-indicator.html#cb679-7" tabindex="-1"></a><span class="co">#View(Chad_Harmonization_description)</span></span></code></pre></div>
+<div class="sourceCode" id="cb680"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb680-1"><a href="mddw-indicator.html#cb680-1" tabindex="-1"></a>lst_data <span class="ot">=</span> Chad_Harmonization_description<span class="sc">$</span>Data</span>
+<span id="cb680-2"><a href="mddw-indicator.html#cb680-2" tabindex="-1"></a>lst_test <span class="ot">=</span> Chad_Harmonization_description<span class="sc">$</span>Name</span>
+<span id="cb680-3"><a href="mddw-indicator.html#cb680-3" tabindex="-1"></a></span>
+<span id="cb680-4"><a href="mddw-indicator.html#cb680-4" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(lst_data)) {                              <span class="co"># Head of for-loop</span></span>
+<span id="cb680-5"><a href="mddw-indicator.html#cb680-5" tabindex="-1"></a>  <span class="fu">assign</span>(lst_test[i],                                   <span class="co"># Read and store data frames</span></span>
+<span id="cb680-6"><a href="mddw-indicator.html#cb680-6" tabindex="-1"></a>         <span class="fu">read_sav</span>(<span class="fu">paste0</span>(dir_input_data,<span class="st">&quot;/&quot;</span>,lst_data[i])))</span>
+<span id="cb680-7"><a href="mddw-indicator.html#cb680-7" tabindex="-1"></a>}</span></code></pre></div>
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="mad-indicator.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="hdds-indicator.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -371,7 +562,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/USERNAME/REPO/edit/BRANCH/%s",
+"link": "https://github.com/USERNAME/REPO/edit/BRANCH/10_WFP_Chad_MDDW_data.Rmd",
 "text": "Edit"
 },
 "history": {

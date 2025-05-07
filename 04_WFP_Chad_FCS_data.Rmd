@@ -100,7 +100,7 @@ for (j in 1:length(lst_test)){
 Chad_pdm_2022$ID = 1:nrow(Chad_pdm_2022)
 ```
 
-## Food consumption score
+# Food consumption score
 
 The Food consumption Score (FCS) is an index that aggregates household-level data on the diversity and frequency of food groups consumed over the last 7 days. It is then weighted according to the relative nutritional value of the consumed food groups. Food groups containing nutritionally dense foods (e.g. animal based products) are given greater weight than those containing less nutritional value (e.g. tubers) as follows: (main staples:2, pulses:3, vegetables:1, fruit:1, meat or fish:4, milk:4, sugar:0.5, oil:0.5).
 
@@ -183,7 +183,7 @@ var_needed = c("SCA",
 
 
 
-### FCS : Céréales et tubercules
+## FCS : Céréales et tubercules
 
 ```{r FCS Staple}
 #expss::val_lab(Chad_baseline_2018$FCSStap)
@@ -215,7 +215,7 @@ Chad_pdm_2023%>%
 ```
 
 
-### FCS : Céréales et tubercules - Sources
+## FCS : Céréales et tubercules - Sources
 
 ```{r FCS  Source ref }
 # Codes d’acquisition des aliments 
@@ -281,7 +281,7 @@ Chad_pdm_2023%>%
 ```
 
 
-### FCS : Légumineuses
+## FCS : Légumineuses
 
 ```{r FCS Pulses}
 Chad_baseline_2018 %>% 
@@ -311,7 +311,7 @@ Chad_pdm_2023%>%
 ```
 
 
-### FCS : Légumineuses - Sources
+## FCS : Légumineuses - Sources
 
 ```{r FCS Pulses Sources}
 expss::val_lab(Chad_baseline_2018$FCSPulseSRf)
@@ -371,7 +371,7 @@ Chad_pdm_2023%>%
 ```
 
 
-### FCS : Lait et produits laitiers
+## FCS : Lait et produits laitiers
 
 ```{r FCS Dairy}
 Chad_baseline_2018 %>% 
@@ -402,7 +402,7 @@ Chad_pdm_2023%>%
 ```
 
 
-### FCS : Lait et produits laitiers - Sources
+## FCS : Lait et produits laitiers - Sources
 
 ```{r FCS Dairy Sources}
 expss::val_lab(Chad_baseline_2018$FCSDairySRf)
@@ -462,7 +462,7 @@ Chad_pdm_2023%>%
 ```
 
 
-### FCS: Viande, poisson et oeufs
+## FCS: Viande, poisson et oeufs
 
 ```{r FCSPr}
 Chad_baseline_2018 %>% 
@@ -495,7 +495,7 @@ Chad_pdm_2023%>%
 
 
 
-### FCS: Viande, poisson et oeufs - Sources
+## FCS: Viande, poisson et oeufs - Sources
 
 ```{r FCSPr Sources}
 expss::val_lab(Chad_baseline_2018$FCSPrSRf)
@@ -543,7 +543,7 @@ Chad_pdm_2022%>%
 
 
 
-### FCS : Chair/viande rouge
+## FCS : Chair/viande rouge
 
 ```{r FCS PrMeatF}
 Chad_baseline_2018 %>% 
@@ -565,7 +565,7 @@ Chad_pdm_2022%>%
   sjPlot::plot_frq(coord.flip =T,FCSPrMeatF,show.na = T)
 ```
 
-### FCS : Viande d'organe, telle que: (foie, reins, coeur et / ou autres abats) 
+## FCS : Viande d'organe, telle que: (foie, reins, coeur et / ou autres abats) 
 
 
 ```{r FCS PrMeatO}
@@ -588,7 +588,7 @@ Chad_pdm_2022%>%
   sjPlot::plot_frq(coord.flip =T,FCSPrMeatO,show.na = T)
 ```
 
-### FCS : Poissons et coquillage, tels que: (poissons, y compris le thon en conserve, les escargots et / ou d'autres fruits de mer remplacer par des exemples localement pertinents )
+## FCS : Poissons et coquillage, tels que: (poissons, y compris le thon en conserve, les escargots et / ou d'autres fruits de mer remplacer par des exemples localement pertinents )
 
 
 ```{r FCS PrFish}
@@ -612,7 +612,7 @@ Chad_pdm_2022%>%
 ```
 
 
-### FCS : Oeufs
+## FCS : Oeufs
 
 ```{r}
 Chad_baseline_2018 %>% 
@@ -635,7 +635,7 @@ Chad_pdm_2022%>%
 ```
 
 
-### FCS : Légumes et feuilles , tels que : (épinards, oignons, tomates, carottes, poivrons, haricots verts, laitue, etc)
+## FCS : Légumes et feuilles , tels que : (épinards, oignons, tomates, carottes, poivrons, haricots verts, laitue, etc)
 
 ```{r FCSVeg}
 Chad_baseline_2018 %>% 
@@ -657,7 +657,7 @@ Chad_pdm_2022%>%
   sjPlot::plot_frq(coord.flip =T,FCSVeg,show.na = T)
 ```
 
-### FCS : Légumes et feuilles , tels que : (épinards, oignons, tomates, carottes, poivrons, haricots verts, laitue, etc) - Sources
+## FCS : Légumes et feuilles , tels que : (épinards, oignons, tomates, carottes, poivrons, haricots verts, laitue, etc) - Sources
 
 ```{r FCSVeg Sources}
 expss::val_lab(Chad_baseline_2018$FCSVegSRf)
@@ -706,7 +706,7 @@ Chad_pdm_2022%>%
 ```
 
 
-### FCS : Légumes oranges (légumes riches en Vitamine A)
+## FCS : Légumes oranges (légumes riches en Vitamine A)
 
 ```{r FCSVegOrg}
 Chad_baseline_2018 %>% 
@@ -729,7 +729,7 @@ Chad_pdm_2022%>%
 ```
 
 
-### FCS : Légumes à feuilles vertes,,  tels que : ( épinards, brocoli, amarante et/ou autres feuilles vert foncé , feuilles de manioc )
+## FCS : Légumes à feuilles vertes,,  tels que : ( épinards, brocoli, amarante et/ou autres feuilles vert foncé , feuilles de manioc )
 
 ```{r FCSVegGre}
 Chad_baseline_2018 %>% 
@@ -753,7 +753,7 @@ Chad_pdm_2022%>%
 
 
 
-### FCS : Fruits,  tels que : (banane, pomme, citron, mangue, papaye, abricot, pêche, etc)
+## FCS : Fruits,  tels que : (banane, pomme, citron, mangue, papaye, abricot, pêche, etc)
 
 ```{r FCSFruit}
 Chad_baseline_2018 %>% 
@@ -774,7 +774,7 @@ Chad_pdm_2021%>%
 Chad_pdm_2022%>% 
   sjPlot::plot_frq(coord.flip =T,FCSFruit,show.na = T)
 ```
-### FCS : Fruits,  tels que : (banane, pomme, citron, mangue, papaye, abricot, pêche, etc) - Sources
+## FCS : Fruits,  tels que : (banane, pomme, citron, mangue, papaye, abricot, pêche, etc) - Sources
 
 ```{r FCSFruit Sources}
 expss::val_lab(Chad_baseline_2018$FCSFruitSRf)
@@ -823,7 +823,7 @@ Chad_pdm_2022%>%
 ```
 
 
-### FCS : Huile/matières grasses/beurre: tels que (huile végétale, huile de palme, beurre de karité, margarine, autres huiles / matières grasses)
+## FCS : Huile/matières grasses/beurre: tels que (huile végétale, huile de palme, beurre de karité, margarine, autres huiles / matières grasses)
 
 ```{r FCSFat}
 Chad_baseline_2018 %>% 
@@ -845,7 +845,7 @@ Chad_pdm_2022%>%
   sjPlot::plot_frq(coord.flip =T,FCSFat,show.na = T)
 ```
 
-### FCS : Huile/matières grasses/beurre: tels que (huile végétale, huile de palme, beurre de karité, margarine, autres huiles / matières grasses) - Sources
+## FCS : Huile/matières grasses/beurre: tels que (huile végétale, huile de palme, beurre de karité, margarine, autres huiles / matières grasses) - Sources
 
 ```{r FCSFat Sources}
 expss::val_lab(Chad_baseline_2018$FCSFatSRf)
@@ -895,7 +895,7 @@ Chad_pdm_2022%>%
 
 
 
-### FSC : Sucre ou sucreries, tels que (sucre, miel, confiture, gâteau, bonbons, biscuits, viennoiserie et autres produits sucrés (boissons sucrées)  )
+## FSC : Sucre ou sucreries, tels que (sucre, miel, confiture, gâteau, bonbons, biscuits, viennoiserie et autres produits sucrés (boissons sucrées)  )
 
 ```{r FCSSugar}
 Chad_baseline_2018 %>% 
@@ -917,7 +917,7 @@ Chad_pdm_2022%>%
   sjPlot::plot_frq(coord.flip =T,FCSSugar,show.na = T)
 ```
 
-### FSC : Sucre ou sucreries, tels que (sucre, miel, confiture, gâteau, bonbons, biscuits, viennoiserie et autres produits sucrés (boissons sucrées)  ) - Sources
+## FSC : Sucre ou sucreries, tels que (sucre, miel, confiture, gâteau, bonbons, biscuits, viennoiserie et autres produits sucrés (boissons sucrées)  ) - Sources
 
 ```{r FCSSugar Sources}
 expss::val_lab(Chad_baseline_2018$FCSSugarSRf)
@@ -967,7 +967,7 @@ Chad_pdm_2022%>%
 
 
 
-### FCS : Condiments/épices: tels que (thé, café/cacao, sel, ail, épices, levure/levure chimique, tomate/sauce, viande ou poisson comme condiment, condiments incluant des petites quantités de lait/thé, café.) ?
+## FCS : Condiments/épices: tels que (thé, café/cacao, sel, ail, épices, levure/levure chimique, tomate/sauce, viande ou poisson comme condiment, condiments incluant des petites quantités de lait/thé, café.) ?
 
 ```{r FCSCond}
 Chad_baseline_2018 %>% 
@@ -988,7 +988,7 @@ Chad_pdm_2021%>%
 Chad_pdm_2022%>% 
   sjPlot::plot_frq(coord.flip =T,FCSCond,show.na = T)
 ```
-### FCS : Condiments/épices: tels que (thé, café/cacao, sel, ail, épices, levure/levure chimique, tomate/sauce, viande ou poisson comme condiment, condiments incluant des petites quantités de lait/thé, café.) ? - Sources
+## FCS : Condiments/épices: tels que (thé, café/cacao, sel, ail, épices, levure/levure chimique, tomate/sauce, viande ou poisson comme condiment, condiments incluant des petites quantités de lait/thé, café.) ? - Sources
 
 ```{r FCSCond Sources}
 expss::val_lab(Chad_baseline_2018$FCSCondSRf)
@@ -1038,7 +1038,7 @@ Chad_pdm_2022%>%
 ```
 
 
-### Merging all data
+## Merging all data
 
 
 
@@ -1185,7 +1185,7 @@ WFP_Chad <-
 
 WFP_Chad$FCSVegSRf <- labelled::labelled(WFP_Chad$FCSVegSRf, c(`Production propre (récoltes, élevage)` = 1, `Pêche / Chasse` = 2, Cueillette= 3,`Prêts`=4,`Marché (achat avec des espèces)`=5,`Marché (achat à crédit)`=6,`Mendicité`=7,`Troc travail ou biens contre des aliments`=8,`Dons (aliments) de membres de la famille ou d’amis`=9,`Aide alimentaire de la société civile, ONG, gouvernement, PAM, etc`=10))
 
-###
+##
 WFP_Chad <- WFP_Chad %>% 
   dplyr::mutate(FCSFruitSRf = case_when(
     FCSFruitSRf == "Production propre (récoltes, élevage)" ~ "1",
@@ -1207,7 +1207,7 @@ WFP_Chad <-
 
 WFP_Chad$FCSFruitSRf <- labelled::labelled(WFP_Chad$FCSFruitSRf, c(`Production propre (récoltes, élevage)` = 1, `Pêche / Chasse` = 2, Cueillette= 3,`Prêts`=4,`Marché (achat avec des espèces)`=5,`Marché (achat à crédit)`=6,`Mendicité`=7,`Troc travail ou biens contre des aliments`=8,`Dons (aliments) de membres de la famille ou d’amis`=9,`Aide alimentaire de la société civile, ONG, gouvernement, PAM, etc`=10))
 
-###
+##
 WFP_Chad <- WFP_Chad %>% 
   dplyr::mutate(FCSFatSRf = case_when(
     FCSFatSRf == "Production propre (récoltes, élevage)" ~ "1",
@@ -1229,7 +1229,7 @@ WFP_Chad <-
 
 WFP_Chad$FCSFatSRf <- labelled::labelled(WFP_Chad$FCSFatSRf, c(`Production propre (récoltes, élevage)` = 1, `Pêche / Chasse` = 2, Cueillette= 3,`Prêts`=4,`Marché (achat avec des espèces)`=5,`Marché (achat à crédit)`=6,`Mendicité`=7,`Troc travail ou biens contre des aliments`=8,`Dons (aliments) de membres de la famille ou d’amis`=9,`Aide alimentaire de la société civile, ONG, gouvernement, PAM, etc`=10))
 
-###
+##
 WFP_Chad <- WFP_Chad %>% 
   dplyr::mutate(FCSSugarSRf = case_when(
     FCSSugarSRf == "Production propre (récoltes, élevage)" ~ "1",
@@ -1279,7 +1279,7 @@ WFP_Chad$FCSCondSRf <- labelled::labelled(WFP_Chad$FCSCondSRf, c(`Production pro
 
 
 
-### FCS computation
+## FCS computation
 
 ```{r}
 WFP_Chad <- WFP_Chad %>% 
@@ -1350,6 +1350,7 @@ var_needed = c("SCA",
 
 ```
 
+## Export all data
 
 ```{r}
 WFP_Chad$SCA<-as.numeric(WFP_Chad$SCA)

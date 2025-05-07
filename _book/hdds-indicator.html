@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | WFP datasets wrangling - Chad : HDDS</title>
-  <meta name="description" content="Page not found | WFP datasets wrangling - Chad : HDDS" />
+  <title>12 HDDS indicator | WFP datasets wrangling - Chad : HDDS</title>
+  <meta name="description" content="12 HDDS indicator | WFP datasets wrangling - Chad : HDDS" />
   <meta name="generator" content="bookdown 0.37 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | WFP datasets wrangling - Chad : HDDS" />
+  <meta property="og:title" content="12 HDDS indicator | WFP datasets wrangling - Chad : HDDS" />
   <meta property="og:type" content="book" />
   
   
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | WFP datasets wrangling - Chad : HDDS" />
+  <meta name="twitter:title" content="12 HDDS indicator | WFP datasets wrangling - Chad : HDDS" />
   
   
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-
+<link rel="prev" href="mddw-indicator.html"/>
+<link rel="next" href="wfp-chad-cba-data-preparation-i.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -328,19 +328,172 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<div id="hdds-indicator" class="section level1 hasAnchor" number="12">
+<h1><span class="header-section-number">12</span> HDDS indicator<a href="hdds-indicator.html#hdds-indicator" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="data-consistency-check-2" class="section level2 hasAnchor" number="12.1">
+<h2><span class="header-section-number">12.1</span> Data consistency Check<a href="hdds-indicator.html#data-consistency-check-2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb681"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb681-1"><a href="hdds-indicator.html#cb681-1" tabindex="-1"></a>Chad_baseline_2018<span class="sc">$</span>ID <span class="ot">&lt;-</span> Chad_baseline_2018<span class="sc">$</span><span class="st">`</span><span class="at">@_id</span><span class="st">`</span></span>
+<span id="cb681-2"><a href="hdds-indicator.html#cb681-2" tabindex="-1"></a>Chad_ea_2019<span class="sc">$</span>ID <span class="ot">&lt;-</span> Chad_ea_2019<span class="sc">$</span><span class="st">`</span><span class="at">@_id</span><span class="st">`</span></span>
+<span id="cb681-3"><a href="hdds-indicator.html#cb681-3" tabindex="-1"></a>Chad_ea_2020<span class="sc">$</span>ID <span class="ot">&lt;-</span> Chad_ea_2020<span class="sc">$</span>Identifiant</span>
+<span id="cb681-4"><a href="hdds-indicator.html#cb681-4" tabindex="-1"></a>Chad_pdm_2020<span class="sc">$</span>ID <span class="ot">&lt;-</span> Chad_pdm_2020<span class="sc">$</span>Identifiant</span>
+<span id="cb681-5"><a href="hdds-indicator.html#cb681-5" tabindex="-1"></a>Chad_ea_2021<span class="sc">$</span>ID <span class="ot">&lt;-</span> Chad_ea_2021<span class="sc">$</span><span class="st">`</span><span class="at">@_id</span><span class="st">`</span></span>
+<span id="cb681-6"><a href="hdds-indicator.html#cb681-6" tabindex="-1"></a>Chad_pdm_2021<span class="sc">$</span>ID <span class="ot">&lt;-</span> Chad_pdm_2021<span class="sc">$</span>Identifiant</span>
+<span id="cb681-7"><a href="hdds-indicator.html#cb681-7" tabindex="-1"></a>Chad_ea_2022<span class="sc">$</span>ID <span class="ot">&lt;-</span> Chad_ea_2022<span class="sc">$</span><span class="st">`</span><span class="at">@_id</span><span class="st">`</span></span>
+<span id="cb681-8"><a href="hdds-indicator.html#cb681-8" tabindex="-1"></a>Chad_pdm_2023<span class="sc">$</span>ID <span class="ot">&lt;-</span> Chad_pdm_2023<span class="sc">$</span><span class="st">`</span><span class="at">@_id</span><span class="st">`</span></span>
+<span id="cb681-9"><a href="hdds-indicator.html#cb681-9" tabindex="-1"></a>Chad_ea_2023<span class="sc">$</span>ID <span class="ot">&lt;-</span> Chad_ea_2023<span class="sc">$</span><span class="st">`</span><span class="at">@_id</span><span class="st">`</span></span>
+<span id="cb681-10"><a href="hdds-indicator.html#cb681-10" tabindex="-1"></a>Chad_pdm_2022<span class="sc">$</span>ID <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(Chad_pdm_2022)</span>
+<span id="cb681-11"><a href="hdds-indicator.html#cb681-11" tabindex="-1"></a></span>
+<span id="cb681-12"><a href="hdds-indicator.html#cb681-12" tabindex="-1"></a>Chad_baseline_2018<span class="sc">$</span>RESPConsent <span class="ot">&lt;-</span> Chad_baseline_2018<span class="sc">$</span>resultat_enquete</span>
+<span id="cb681-13"><a href="hdds-indicator.html#cb681-13" tabindex="-1"></a>Chad_ea_2019<span class="sc">$</span>RESPConsent <span class="ot">&lt;-</span> Chad_ea_2019<span class="sc">$</span><span class="st">`</span><span class="at">@2.1.2Linterviewéavalidélanotedeconsentement</span><span class="st">`</span></span>
+<span id="cb681-14"><a href="hdds-indicator.html#cb681-14" tabindex="-1"></a>Chad_ea_2020<span class="sc">$</span>RESPConsent <span class="ot">&lt;-</span> Chad_ea_2020<span class="sc">$</span>q212_notevld</span>
+<span id="cb681-15"><a href="hdds-indicator.html#cb681-15" tabindex="-1"></a><span class="co">#Chad_pdm_2020$RESPConsent &lt;- Chad_pdm_2020</span></span>
+<span id="cb681-16"><a href="hdds-indicator.html#cb681-16" tabindex="-1"></a><span class="co">#Chad_ea_2021$RESPConsent &lt;- Chad_ea_2021$`@_RESPConsent`</span></span>
+<span id="cb681-17"><a href="hdds-indicator.html#cb681-17" tabindex="-1"></a>Chad_pdm_2021<span class="sc">$</span>RESPConsent <span class="ot">&lt;-</span> Chad_pdm_2021<span class="sc">$</span>q212_notevld</span>
+<span id="cb681-18"><a href="hdds-indicator.html#cb681-18" tabindex="-1"></a>Chad_ea_2022<span class="sc">$</span>RESPConsent <span class="ot">&lt;-</span> Chad_ea_2022<span class="sc">$</span>RESPConsent</span>
+<span id="cb681-19"><a href="hdds-indicator.html#cb681-19" tabindex="-1"></a>Chad_pdm_2022<span class="sc">$</span>RESPConsent <span class="ot">&lt;-</span> Chad_pdm_2022<span class="sc">$</span>RESPConsent</span>
+<span id="cb681-20"><a href="hdds-indicator.html#cb681-20" tabindex="-1"></a>Chad_pdm_2023<span class="sc">$</span>RESPConsent <span class="ot">&lt;-</span> Chad_pdm_2023<span class="sc">$</span>RESPConsent</span>
+<span id="cb681-21"><a href="hdds-indicator.html#cb681-21" tabindex="-1"></a>Chad_ea_2023<span class="sc">$</span>RESPConsent <span class="ot">&lt;-</span> Chad_ea_2023<span class="sc">$</span>RESPConsent</span>
+<span id="cb681-22"><a href="hdds-indicator.html#cb681-22" tabindex="-1"></a></span>
+<span id="cb681-23"><a href="hdds-indicator.html#cb681-23" tabindex="-1"></a>Chad_baseline_2018<span class="sc">$</span>ADMIN1Name <span class="ot">&lt;-</span> Chad_baseline_2018<span class="sc">$</span>region</span>
+<span id="cb681-24"><a href="hdds-indicator.html#cb681-24" tabindex="-1"></a>Chad_ea_2019<span class="sc">$</span>ADMIN1Name <span class="ot">&lt;-</span> Chad_ea_2019<span class="sc">$</span><span class="st">`</span><span class="at">@1.02NomdelaProvince</span><span class="st">`</span></span>
+<span id="cb681-25"><a href="hdds-indicator.html#cb681-25" tabindex="-1"></a>Chad_ea_2020<span class="sc">$</span>ADMIN1Name <span class="ot">&lt;-</span> Chad_ea_2020<span class="sc">$</span>province</span>
+<span id="cb681-26"><a href="hdds-indicator.html#cb681-26" tabindex="-1"></a>Chad_pdm_2020<span class="sc">$</span>ADMIN1Name <span class="ot">&lt;-</span> Chad_pdm_2020<span class="sc">$</span>q4_provinces</span>
+<span id="cb681-27"><a href="hdds-indicator.html#cb681-27" tabindex="-1"></a>Chad_ea_2021<span class="sc">$</span>ADMIN1Name <span class="ot">&lt;-</span> Chad_ea_2021<span class="sc">$</span>ADMIN1Name</span>
+<span id="cb681-28"><a href="hdds-indicator.html#cb681-28" tabindex="-1"></a>Chad_pdm_2021<span class="sc">$</span>ADMIN1Name <span class="ot">&lt;-</span> Chad_pdm_2021<span class="sc">$</span>province</span>
+<span id="cb681-29"><a href="hdds-indicator.html#cb681-29" tabindex="-1"></a>Chad_ea_2022<span class="sc">$</span>ADMIN1Name <span class="ot">&lt;-</span> Chad_ea_2022<span class="sc">$</span>ADMIN1Name</span>
+<span id="cb681-30"><a href="hdds-indicator.html#cb681-30" tabindex="-1"></a>Chad_pdm_2022<span class="sc">$</span>ADMIN1Name <span class="ot">&lt;-</span> Chad_pdm_2022<span class="sc">$</span>ADMIN1Name</span>
+<span id="cb681-31"><a href="hdds-indicator.html#cb681-31" tabindex="-1"></a>Chad_pdm_2023<span class="sc">$</span>ADMIN1Name <span class="ot">&lt;-</span> Chad_pdm_2023<span class="sc">$</span>ADMIN1Name</span>
+<span id="cb681-32"><a href="hdds-indicator.html#cb681-32" tabindex="-1"></a>Chad_ea_2023<span class="sc">$</span>ADMIN1Name <span class="ot">&lt;-</span> Chad_ea_2023<span class="sc">$</span>ADMIN1Name</span></code></pre></div>
+</div>
+<div id="drop-duplicated-observations-2" class="section level2 hasAnchor" number="12.2">
+<h2><span class="header-section-number">12.2</span> Drop duplicated observations<a href="hdds-indicator.html#drop-duplicated-observations-2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+</div>
+<div id="consent-check-2" class="section level2 hasAnchor" number="12.3">
+<h2><span class="header-section-number">12.3</span> Consent check<a href="hdds-indicator.html#consent-check-2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+</div>
+<div id="id-check-2" class="section level2 hasAnchor" number="12.4">
+<h2><span class="header-section-number">12.4</span> ID Check<a href="hdds-indicator.html#id-check-2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+</div>
+<div id="hdds-check" class="section level2 hasAnchor" number="12.5">
+<h2><span class="header-section-number">12.5</span> HDDS Check<a href="hdds-indicator.html#hdds-check" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb682"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb682-1"><a href="hdds-indicator.html#cb682-1" tabindex="-1"></a>df_Chad_pdm_2023<span class="ot">=</span>Chad_pdm_2023 <span class="sc">%&gt;%</span></span>
+<span id="cb682-2"><a href="hdds-indicator.html#cb682-2" tabindex="-1"></a> dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">&quot;ID&quot;</span>,<span class="fu">starts_with</span>(<span class="st">&quot;HDDS&quot;</span>))</span>
+<span id="cb682-3"><a href="hdds-indicator.html#cb682-3" tabindex="-1"></a></span>
+<span id="cb682-4"><a href="hdds-indicator.html#cb682-4" tabindex="-1"></a></span>
+<span id="cb682-5"><a href="hdds-indicator.html#cb682-5" tabindex="-1"></a></span>
+<span id="cb682-6"><a href="hdds-indicator.html#cb682-6" tabindex="-1"></a>df_Chad_pdm_2022<span class="ot">=</span>Chad_pdm_2022 <span class="sc">%&gt;%</span> </span>
+<span id="cb682-7"><a href="hdds-indicator.html#cb682-7" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">&quot;ID&quot;</span>,<span class="fu">starts_with</span>(<span class="st">&quot;HDDS&quot;</span>))</span>
+<span id="cb682-8"><a href="hdds-indicator.html#cb682-8" tabindex="-1"></a></span>
+<span id="cb682-9"><a href="hdds-indicator.html#cb682-9" tabindex="-1"></a><span class="co"># Chad_pdm_2021 %&gt;% </span></span>
+<span id="cb682-10"><a href="hdds-indicator.html#cb682-10" tabindex="-1"></a><span class="co">#   dplyr::select(starts_with(&quot;HDDS&quot;)) %&gt;% names()</span></span>
+<span id="cb682-11"><a href="hdds-indicator.html#cb682-11" tabindex="-1"></a></span>
+<span id="cb682-12"><a href="hdds-indicator.html#cb682-12" tabindex="-1"></a><span class="co"># Chad_pdm_2020 %&gt;% </span></span>
+<span id="cb682-13"><a href="hdds-indicator.html#cb682-13" tabindex="-1"></a><span class="co">#   dplyr::select(starts_with(&quot;HDDS&quot;)) %&gt;% names()</span></span>
+<span id="cb682-14"><a href="hdds-indicator.html#cb682-14" tabindex="-1"></a></span>
+<span id="cb682-15"><a href="hdds-indicator.html#cb682-15" tabindex="-1"></a></span>
+<span id="cb682-16"><a href="hdds-indicator.html#cb682-16" tabindex="-1"></a>df_Chad_ea_2023<span class="ot">=</span>Chad_ea_2023 <span class="sc">%&gt;%</span> </span>
+<span id="cb682-17"><a href="hdds-indicator.html#cb682-17" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">&quot;ID&quot;</span>,<span class="fu">starts_with</span>(<span class="st">&quot;HDDS&quot;</span>))</span>
+<span id="cb682-18"><a href="hdds-indicator.html#cb682-18" tabindex="-1"></a></span>
+<span id="cb682-19"><a href="hdds-indicator.html#cb682-19" tabindex="-1"></a></span>
+<span id="cb682-20"><a href="hdds-indicator.html#cb682-20" tabindex="-1"></a>Chad_ea_2022<span class="sc">$</span>ID <span class="ot">&lt;-</span> Chad_ea_2022<span class="sc">$</span><span class="st">`</span><span class="at">@_id</span><span class="st">`</span></span>
+<span id="cb682-21"><a href="hdds-indicator.html#cb682-21" tabindex="-1"></a>df_Chad_ea_2022<span class="ot">=</span>Chad_ea_2022 <span class="sc">%&gt;%</span> </span>
+<span id="cb682-22"><a href="hdds-indicator.html#cb682-22" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">&quot;ID&quot;</span>,<span class="fu">starts_with</span>(<span class="st">&quot;HDDS&quot;</span>))</span>
+<span id="cb682-23"><a href="hdds-indicator.html#cb682-23" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb682-24"><a href="hdds-indicator.html#cb682-24" tabindex="-1"></a><span class="co"># Chad_ea_2021 %&gt;% </span></span>
+<span id="cb682-25"><a href="hdds-indicator.html#cb682-25" tabindex="-1"></a><span class="co">#   dplyr::select(starts_with(&quot;HDDS&quot;)) %&gt;% names()</span></span>
+<span id="cb682-26"><a href="hdds-indicator.html#cb682-26" tabindex="-1"></a></span>
+<span id="cb682-27"><a href="hdds-indicator.html#cb682-27" tabindex="-1"></a><span class="co"># Chad_ea_2020 %&gt;% </span></span>
+<span id="cb682-28"><a href="hdds-indicator.html#cb682-28" tabindex="-1"></a><span class="co">#   dplyr::select(starts_with(&quot;HDDS&quot;)) %&gt;% names()</span></span></code></pre></div>
+<div class="sourceCode" id="cb683"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb683-1"><a href="hdds-indicator.html#cb683-1" tabindex="-1"></a>hdds_var <span class="ot">=</span> df_Chad_ea_2022 <span class="sc">%&gt;%</span> </span>
+<span id="cb683-2"><a href="hdds-indicator.html#cb683-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="fu">starts_with</span>(<span class="st">&quot;HDDS&quot;</span>)) <span class="sc">%&gt;%</span> <span class="fu">names</span>()</span>
+<span id="cb683-3"><a href="hdds-indicator.html#cb683-3" tabindex="-1"></a></span>
+<span id="cb683-4"><a href="hdds-indicator.html#cb683-4" tabindex="-1"></a>hdds_var <span class="ot">&lt;-</span> hdds_var[<span class="sc">!</span> hdds_var <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;HDDS&quot;</span>,<span class="st">&quot;HDDS_CH&quot;</span>,<span class="st">&quot;HDDSCat_IPC&quot;</span>)]</span>
+<span id="cb683-5"><a href="hdds-indicator.html#cb683-5" tabindex="-1"></a></span>
+<span id="cb683-6"><a href="hdds-indicator.html#cb683-6" tabindex="-1"></a>df_Chad_ea_2022 <span class="ot">&lt;-</span> df_Chad_ea_2022 <span class="sc">%&gt;%</span></span>
+<span id="cb683-7"><a href="hdds-indicator.html#cb683-7" tabindex="-1"></a>  <span class="fu">mutate_at</span>(hdds_var, as.numeric)</span>
+<span id="cb683-8"><a href="hdds-indicator.html#cb683-8" tabindex="-1"></a></span>
+<span id="cb683-9"><a href="hdds-indicator.html#cb683-9" tabindex="-1"></a>df_Chad_pdm_2022 <span class="ot">&lt;-</span> df_Chad_pdm_2022 <span class="sc">%&gt;%</span></span>
+<span id="cb683-10"><a href="hdds-indicator.html#cb683-10" tabindex="-1"></a>  <span class="fu">mutate_at</span>(hdds_var, as.numeric)</span>
+<span id="cb683-11"><a href="hdds-indicator.html#cb683-11" tabindex="-1"></a></span>
+<span id="cb683-12"><a href="hdds-indicator.html#cb683-12" tabindex="-1"></a>df_Chad_ea_2023 <span class="ot">&lt;-</span> df_Chad_ea_2023 <span class="sc">%&gt;%</span></span>
+<span id="cb683-13"><a href="hdds-indicator.html#cb683-13" tabindex="-1"></a>  <span class="fu">mutate_at</span>(<span class="fu">c</span>(hdds_var[<span class="sc">!</span> hdds_var <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;HDDSVegAll&quot;</span>,<span class="st">&quot;HDDSFruitAll&quot;</span>,<span class="st">&quot;HDDSPrMeatAll&quot;</span>)]), as.numeric)</span>
+<span id="cb683-14"><a href="hdds-indicator.html#cb683-14" tabindex="-1"></a></span>
+<span id="cb683-15"><a href="hdds-indicator.html#cb683-15" tabindex="-1"></a>df_Chad_pdm_2023 <span class="ot">&lt;-</span> df_Chad_pdm_2023 <span class="sc">%&gt;%</span></span>
+<span id="cb683-16"><a href="hdds-indicator.html#cb683-16" tabindex="-1"></a>  <span class="fu">mutate_at</span>(<span class="fu">c</span>(hdds_var[<span class="sc">!</span> hdds_var <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;HDDSVegAll&quot;</span>,<span class="st">&quot;HDDSFruitAll&quot;</span>,<span class="st">&quot;HDDSPrMeatAll&quot;</span>)]), as.numeric)</span></code></pre></div>
+<div class="sourceCode" id="cb684"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb684-1"><a href="hdds-indicator.html#cb684-1" tabindex="-1"></a>selected_var <span class="ot">&lt;-</span> df_Chad_ea_2022 <span class="sc">%&gt;%</span></span>
+<span id="cb684-2"><a href="hdds-indicator.html#cb684-2" tabindex="-1"></a>  <span class="fu">select_if</span>(<span class="sc">~</span> <span class="fu">any</span>(. <span class="sc">==</span> <span class="dv">2</span>)) <span class="sc">%&gt;%</span> <span class="fu">names</span>()</span>
+<span id="cb684-3"><a href="hdds-indicator.html#cb684-3" tabindex="-1"></a></span>
+<span id="cb684-4"><a href="hdds-indicator.html#cb684-4" tabindex="-1"></a></span>
+<span id="cb684-5"><a href="hdds-indicator.html#cb684-5" tabindex="-1"></a></span>
+<span id="cb684-6"><a href="hdds-indicator.html#cb684-6" tabindex="-1"></a>df_Chad_ea_2022 <span class="ot">&lt;-</span> df_Chad_ea_2022 <span class="sc">%&gt;%</span></span>
+<span id="cb684-7"><a href="hdds-indicator.html#cb684-7" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(selected_var[<span class="sc">!</span> selected_var <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;ID&quot;</span>,<span class="st">&quot;HDDS&quot;</span>,<span class="st">&quot;HDDS_CH&quot;</span>,<span class="st">&quot;HDDSCat_IPC&quot;</span>)], <span class="sc">~</span><span class="fu">ifelse</span>(<span class="fu">is.na</span>(.),<span class="cn">NA</span>,<span class="fu">ifelse</span>(.<span class="sc">==</span><span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">0</span>))))</span>
+<span id="cb684-8"><a href="hdds-indicator.html#cb684-8" tabindex="-1"></a></span>
+<span id="cb684-9"><a href="hdds-indicator.html#cb684-9" tabindex="-1"></a></span>
+<span id="cb684-10"><a href="hdds-indicator.html#cb684-10" tabindex="-1"></a>selected_var <span class="ot">&lt;-</span> df_Chad_pdm_2022 <span class="sc">%&gt;%</span></span>
+<span id="cb684-11"><a href="hdds-indicator.html#cb684-11" tabindex="-1"></a>  <span class="fu">select_if</span>(<span class="sc">~</span> <span class="fu">any</span>(. <span class="sc">==</span> <span class="dv">2</span>)) <span class="sc">%&gt;%</span> <span class="fu">names</span>()</span>
+<span id="cb684-12"><a href="hdds-indicator.html#cb684-12" tabindex="-1"></a></span>
+<span id="cb684-13"><a href="hdds-indicator.html#cb684-13" tabindex="-1"></a>df_Chad_pdm_2022 <span class="ot">&lt;-</span> df_Chad_pdm_2022 <span class="sc">%&gt;%</span></span>
+<span id="cb684-14"><a href="hdds-indicator.html#cb684-14" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(selected_var[<span class="sc">!</span> selected_var <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;ID&quot;</span>,<span class="st">&quot;HDDS&quot;</span>,<span class="st">&quot;HDDS_CH&quot;</span>,<span class="st">&quot;HDDSCat_IPC&quot;</span>)], <span class="sc">~</span><span class="fu">ifelse</span>(<span class="fu">is.na</span>(.),<span class="cn">NA</span>,<span class="fu">ifelse</span>(.<span class="sc">==</span><span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">0</span>))))</span>
+<span id="cb684-15"><a href="hdds-indicator.html#cb684-15" tabindex="-1"></a></span>
+<span id="cb684-16"><a href="hdds-indicator.html#cb684-16" tabindex="-1"></a></span>
+<span id="cb684-17"><a href="hdds-indicator.html#cb684-17" tabindex="-1"></a><span class="co"># Labels mapping</span></span>
+<span id="cb684-18"><a href="hdds-indicator.html#cb684-18" tabindex="-1"></a>label_map <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb684-19"><a href="hdds-indicator.html#cb684-19" tabindex="-1"></a>  <span class="at">Non =</span> <span class="dv">0</span>,</span>
+<span id="cb684-20"><a href="hdds-indicator.html#cb684-20" tabindex="-1"></a>  <span class="at">Oui =</span> <span class="dv">1</span></span>
+<span id="cb684-21"><a href="hdds-indicator.html#cb684-21" tabindex="-1"></a>)</span>
+<span id="cb684-22"><a href="hdds-indicator.html#cb684-22" tabindex="-1"></a></span>
+<span id="cb684-23"><a href="hdds-indicator.html#cb684-23" tabindex="-1"></a><span class="co"># Apply labels using mutate() and across()</span></span>
+<span id="cb684-24"><a href="hdds-indicator.html#cb684-24" tabindex="-1"></a>df_Chad_ea_2022 <span class="ot">&lt;-</span> df_Chad_ea_2022 <span class="sc">%&gt;%</span></span>
+<span id="cb684-25"><a href="hdds-indicator.html#cb684-25" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(hdds_var,</span>
+<span id="cb684-26"><a href="hdds-indicator.html#cb684-26" tabindex="-1"></a>                <span class="sc">~</span> labelled<span class="sc">::</span><span class="fu">labelled</span>(., label_map)))</span>
+<span id="cb684-27"><a href="hdds-indicator.html#cb684-27" tabindex="-1"></a>df_Chad_pdm_2022 <span class="ot">&lt;-</span> df_Chad_pdm_2022 <span class="sc">%&gt;%</span></span>
+<span id="cb684-28"><a href="hdds-indicator.html#cb684-28" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(hdds_var,</span>
+<span id="cb684-29"><a href="hdds-indicator.html#cb684-29" tabindex="-1"></a>                <span class="sc">~</span> labelled<span class="sc">::</span><span class="fu">labelled</span>(., label_map)))</span></code></pre></div>
+<div class="sourceCode" id="cb685"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb685-1"><a href="hdds-indicator.html#cb685-1" tabindex="-1"></a>WFP_Chad_HDDS<span class="ot">&lt;-</span>plyr<span class="sc">::</span><span class="fu">rbind.fill</span>(df_Chad_ea_2022,</span>
+<span id="cb685-2"><a href="hdds-indicator.html#cb685-2" tabindex="-1"></a>                                df_Chad_ea_2023,</span>
+<span id="cb685-3"><a href="hdds-indicator.html#cb685-3" tabindex="-1"></a>                                df_Chad_pdm_2022,</span>
+<span id="cb685-4"><a href="hdds-indicator.html#cb685-4" tabindex="-1"></a>                                df_Chad_pdm_2023)</span>
+<span id="cb685-5"><a href="hdds-indicator.html#cb685-5" tabindex="-1"></a></span>
+<span id="cb685-6"><a href="hdds-indicator.html#cb685-6" tabindex="-1"></a></span>
+<span id="cb685-7"><a href="hdds-indicator.html#cb685-7" tabindex="-1"></a></span>
+<span id="cb685-8"><a href="hdds-indicator.html#cb685-8" tabindex="-1"></a><span class="co"># WFP_Chad_HDDS &lt;- WFP_Chad_HDDS %&gt;% </span></span>
+<span id="cb685-9"><a href="hdds-indicator.html#cb685-9" tabindex="-1"></a><span class="co">#   dplyr::select(&quot;ID&quot;,hdds_var)</span></span>
+<span id="cb685-10"><a href="hdds-indicator.html#cb685-10" tabindex="-1"></a></span>
+<span id="cb685-11"><a href="hdds-indicator.html#cb685-11" tabindex="-1"></a>WFP_Chad_HDDS<span class="sc">$</span>ID <span class="ot">&lt;-</span> <span class="fu">as.character</span>(WFP_Chad_HDDS<span class="sc">$</span>ID)</span>
+<span id="cb685-12"><a href="hdds-indicator.html#cb685-12" tabindex="-1"></a>WFP_Chad_HDDS<span class="sc">$</span>HDDS <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(WFP_Chad_HDDS<span class="sc">$</span>HDDS)</span></code></pre></div>
+<div class="sourceCode" id="cb686"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb686-1"><a href="hdds-indicator.html#cb686-1" tabindex="-1"></a><span class="co">#calculate HDDS first by creating the 12 groups based on the 16 questions</span></span>
+<span id="cb686-2"><a href="hdds-indicator.html#cb686-2" tabindex="-1"></a>WFP_Chad_HDDS <span class="ot">&lt;-</span> WFP_Chad_HDDS <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(</span>
+<span id="cb686-3"><a href="hdds-indicator.html#cb686-3" tabindex="-1"></a>  <span class="at">HDDSStapCer_calc =</span> <span class="fu">case_when</span>(HDDSStapCer <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="dv">1</span>, <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">0</span>),</span>
+<span id="cb686-4"><a href="hdds-indicator.html#cb686-4" tabindex="-1"></a>  <span class="at">HDDSStapRoot_calc =</span> <span class="fu">case_when</span>(HDDSStapRoot  <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="dv">1</span>, <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">0</span>),</span>
+<span id="cb686-5"><a href="hdds-indicator.html#cb686-5" tabindex="-1"></a>  <span class="at">HDDSVeg_calc =</span> <span class="fu">case_when</span>(HDDSVegOrg  <span class="sc">==</span> <span class="dv">1</span> <span class="sc">|</span> HDDSVegGre <span class="sc">==</span> <span class="dv">1</span> <span class="sc">|</span> HDDSVegOth <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="dv">1</span>, <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">0</span>),</span>
+<span id="cb686-6"><a href="hdds-indicator.html#cb686-6" tabindex="-1"></a>  <span class="at">HDDSFruit_calc =</span> <span class="fu">case_when</span>(HDDSFruitOrg <span class="sc">==</span> <span class="dv">1</span> <span class="sc">|</span> HDDSFruitOth <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="dv">1</span>, <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">0</span>),</span>
+<span id="cb686-7"><a href="hdds-indicator.html#cb686-7" tabindex="-1"></a>  <span class="at">HDDSPrMeat_calc =</span> <span class="fu">case_when</span>(HDDSPrMeatF <span class="sc">==</span> <span class="dv">1</span> <span class="sc">|</span> HDDSPrMeatO <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="dv">1</span>, <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">0</span>),</span>
+<span id="cb686-8"><a href="hdds-indicator.html#cb686-8" tabindex="-1"></a>  <span class="at">HDDSPrEgg_calc =</span> <span class="fu">case_when</span>(HDDSPrEgg  <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="dv">1</span>, <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">0</span>),</span>
+<span id="cb686-9"><a href="hdds-indicator.html#cb686-9" tabindex="-1"></a>  <span class="at">HDDSPrFish_calc =</span> <span class="fu">case_when</span>(HDDSPrFish <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="dv">1</span>, <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">0</span>),</span>
+<span id="cb686-10"><a href="hdds-indicator.html#cb686-10" tabindex="-1"></a>  <span class="at">HDDSPulse_calc =</span> <span class="fu">case_when</span>(HDDSPulse <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="dv">1</span>, <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">0</span>),</span>
+<span id="cb686-11"><a href="hdds-indicator.html#cb686-11" tabindex="-1"></a>  <span class="at">HDDSDairy_calc =</span> <span class="fu">case_when</span>(HDDSDairy <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="dv">1</span>, <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">0</span>),</span>
+<span id="cb686-12"><a href="hdds-indicator.html#cb686-12" tabindex="-1"></a>  <span class="at">HDDSFat_calc =</span> <span class="fu">case_when</span>(HDDSFat <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="dv">1</span>, <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">0</span>),</span>
+<span id="cb686-13"><a href="hdds-indicator.html#cb686-13" tabindex="-1"></a>  <span class="at">HDDSSugar_calc =</span> <span class="fu">case_when</span>(HDDSSugar <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="dv">1</span>, <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">0</span>),</span>
+<span id="cb686-14"><a href="hdds-indicator.html#cb686-14" tabindex="-1"></a>  <span class="at">HDDSCond_calc =</span> <span class="fu">case_when</span>(HDDSCond <span class="sc">==</span> <span class="dv">1</span><span class="sc">~</span> <span class="dv">1</span>, <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">0</span>))</span>
+<span id="cb686-15"><a href="hdds-indicator.html#cb686-15" tabindex="-1"></a></span>
+<span id="cb686-16"><a href="hdds-indicator.html#cb686-16" tabindex="-1"></a><span class="co">#Calculate HDDS and Cadre Harmonise Phases</span></span>
+<span id="cb686-17"><a href="hdds-indicator.html#cb686-17" tabindex="-1"></a>WFP_Chad_HDDS <span class="ot">&lt;-</span> WFP_Chad_HDDS <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">HDDS_hema =</span> HDDSStapCer_calc <span class="sc">+</span>HDDSStapRoot_calc <span class="sc">+</span>HDDSVeg_calc <span class="sc">+</span>HDDSFruit_calc <span class="sc">+</span>HDDSPrMeat_calc <span class="sc">+</span>HDDSPrEgg_calc <span class="sc">+</span>HDDSPrFish_calc <span class="sc">+</span>HDDSPulse_calc <span class="sc">+</span>HDDSDairy_calc <span class="sc">+</span>HDDSFat_calc <span class="sc">+</span>HDDSSugar_calc <span class="sc">+</span>HDDSCond_calc)</span>
+<span id="cb686-18"><a href="hdds-indicator.html#cb686-18" tabindex="-1"></a><span class="fu">var_label</span>(WFP_Chad_HDDS<span class="sc">$</span>HDDS_hema) <span class="ot">&lt;-</span> <span class="st">&quot;Hosehold Dietary Diversity Score&quot;</span></span></code></pre></div>
+</div>
+<div id="export-all-data-10" class="section level2 hasAnchor" number="12.6">
+<h2><span class="header-section-number">12.6</span> Export all data<a href="hdds-indicator.html#export-all-data-10" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb687"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb687-1"><a href="hdds-indicator.html#cb687-1" tabindex="-1"></a><span class="fu">write_sav</span>(WFP_Chad_HDDS, <span class="fu">paste0</span>(dir_output_data,<span class="st">&quot;/WFP_Chad_HDDS.sav&quot;</span>))</span>
+<span id="cb687-2"><a href="hdds-indicator.html#cb687-2" tabindex="-1"></a><span class="fu">write_dta</span>(WFP_Chad_HDDS, <span class="fu">paste0</span>(dir_output_data,<span class="st">&quot;/WFP_Chad_HDDS.dta&quot;</span>))</span></code></pre></div>
+
+</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-
-
+<a href="mddw-indicator.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="wfp-chad-cba-data-preparation-i.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -371,7 +524,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/USERNAME/REPO/edit/BRANCH/%s",
+"link": "https://github.com/USERNAME/REPO/edit/BRANCH/11_WFP_Chad_HDDS_data.Rmd",
 "text": "Edit"
 },
 "history": {

@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>10 MAD indicator | WFP datasets wrangling - Chad : HDDS</title>
+  <meta name="description" content="10 MAD indicator | WFP datasets wrangling - Chad : HDDS" />
+  <meta name="generator" content="bookdown 0.37 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="10 MAD indicator | WFP datasets wrangling - Chad : HDDS" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="10 MAD indicator | WFP datasets wrangling - Chad : HDDS" />
+  
+  
+  
+
+<meta name="author" content="Aboubacar HEMA" />
+
+
+<meta name="date" content="2025-05-07" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="self-evaluated-resilience-score-sers.html"/>
+<link rel="next" href="mddw-indicator.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">A Minimal Book Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="overview.html"><a href="overview.html"><i class="fa fa-check"></i><b>1</b> Overview</a></li>
+<li class="chapter" data-level="2" data-path="administrative-check.html"><a href="administrative-check.html"><i class="fa fa-check"></i><b>2</b> Administrative check</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="administrative-check.html"><a href="administrative-check.html#sitevillage"><i class="fa fa-check"></i><b>2.1</b> Site/Village</a></li>
+<li class="chapter" data-level="2.2" data-path="administrative-check.html"><a href="administrative-check.html#baseline-2018"><i class="fa fa-check"></i><b>2.2</b> Baseline 2018</a></li>
+<li class="chapter" data-level="2.3" data-path="administrative-check.html"><a href="administrative-check.html#ea-2019"><i class="fa fa-check"></i><b>2.3</b> EA 2019</a></li>
+<li class="chapter" data-level="2.4" data-path="administrative-check.html"><a href="administrative-check.html#ea-2020"><i class="fa fa-check"></i><b>2.4</b> EA 2020</a></li>
+<li class="chapter" data-level="2.5" data-path="administrative-check.html"><a href="administrative-check.html#ea-2021"><i class="fa fa-check"></i><b>2.5</b> EA 2021</a></li>
+<li class="chapter" data-level="2.6" data-path="administrative-check.html"><a href="administrative-check.html#ea-2022"><i class="fa fa-check"></i><b>2.6</b> EA 2022</a></li>
+<li class="chapter" data-level="2.7" data-path="administrative-check.html"><a href="administrative-check.html#ea-2023"><i class="fa fa-check"></i><b>2.7</b> EA 2023</a></li>
+<li class="chapter" data-level="2.8" data-path="administrative-check.html"><a href="administrative-check.html#pdm-2020"><i class="fa fa-check"></i><b>2.8</b> PDM 2020</a></li>
+<li class="chapter" data-level="2.9" data-path="administrative-check.html"><a href="administrative-check.html#pdm-2021"><i class="fa fa-check"></i><b>2.9</b> PDM 2021</a></li>
+<li class="chapter" data-level="2.10" data-path="administrative-check.html"><a href="administrative-check.html#pdm-2022"><i class="fa fa-check"></i><b>2.10</b> PDM 2022</a></li>
+<li class="chapter" data-level="2.11" data-path="administrative-check.html"><a href="administrative-check.html#pdm-2023"><i class="fa fa-check"></i><b>2.11</b> PDM 2023</a></li>
+<li class="chapter" data-level="2.12" data-path="administrative-check.html"><a href="administrative-check.html#date-format-check"><i class="fa fa-check"></i><b>2.12</b> Date format check</a></li>
+<li class="chapter" data-level="2.13" data-path="administrative-check.html"><a href="administrative-check.html#merging-all-data"><i class="fa fa-check"></i><b>2.13</b> Merging all data</a></li>
+<li class="chapter" data-level="2.14" data-path="administrative-check.html"><a href="administrative-check.html#export-all-data"><i class="fa fa-check"></i><b>2.14</b> Export all data</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="household-characteristics.html"><a href="household-characteristics.html"><i class="fa fa-check"></i><b>3</b> Household characteristics</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="household-characteristics.html"><a href="household-characteristics.html#gender-recodification"><i class="fa fa-check"></i><b>3.1</b> Gender recodification</a></li>
+<li class="chapter" data-level="3.2" data-path="household-characteristics.html"><a href="household-characteristics.html#hh-age"><i class="fa fa-check"></i><b>3.2</b> HH Age</a></li>
+<li class="chapter" data-level="3.3" data-path="household-characteristics.html"><a href="household-characteristics.html#household-head-education-level"><i class="fa fa-check"></i><b>3.3</b> Household head education level</a></li>
+<li class="chapter" data-level="3.4" data-path="household-characteristics.html"><a href="household-characteristics.html#hhhmainactivity"><i class="fa fa-check"></i><b>3.4</b> HHHMainActivity</a></li>
+<li class="chapter" data-level="3.5" data-path="household-characteristics.html"><a href="household-characteristics.html#hhhmatrimonial"><i class="fa fa-check"></i><b>3.5</b> HHHMatrimonial</a></li>
+<li class="chapter" data-level="3.6" data-path="household-characteristics.html"><a href="household-characteristics.html#hhsourceincome"><i class="fa fa-check"></i><b>3.6</b> HHSourceIncome</a></li>
+<li class="chapter" data-level="3.7" data-path="household-characteristics.html"><a href="household-characteristics.html#merging-all-data-1"><i class="fa fa-check"></i><b>3.7</b> Merging all data</a></li>
+<li class="chapter" data-level="3.8" data-path="household-characteristics.html"><a href="household-characteristics.html#compute-household-size-variable"><i class="fa fa-check"></i><b>3.8</b> Compute household size variable</a></li>
+<li class="chapter" data-level="3.9" data-path="household-characteristics.html"><a href="household-characteristics.html#export-all-data-1"><i class="fa fa-check"></i><b>3.9</b> Export all data</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="assistance.html"><a href="assistance.html"><i class="fa fa-check"></i><b>4</b> Assistance</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="assistance.html"><a href="assistance.html#date-assistance-check"><i class="fa fa-check"></i><b>4.1</b> Date assistance check</a></li>
+<li class="chapter" data-level="4.2" data-path="assistance.html"><a href="assistance.html#date-last-assistance-check"><i class="fa fa-check"></i><b>4.2</b> Date last assistance check</a></li>
+<li class="chapter" data-level="4.3" data-path="assistance.html"><a href="assistance.html#montant"><i class="fa fa-check"></i><b>4.3</b> Montant</a></li>
+<li class="chapter" data-level="4.4" data-path="assistance.html"><a href="assistance.html#type-dassistance"><i class="fa fa-check"></i><b>4.4</b> Type d’assistance</a>
+<ul>
+<li class="chapter" data-level="4.4.1" data-path="assistance.html"><a href="assistance.html#baseline-2018-1"><i class="fa fa-check"></i><b>4.4.1</b> Baseline 2018</a></li>
+<li class="chapter" data-level="4.4.2" data-path="assistance.html"><a href="assistance.html#ea-2019-1"><i class="fa fa-check"></i><b>4.4.2</b> EA 2019</a></li>
+<li class="chapter" data-level="4.4.3" data-path="assistance.html"><a href="assistance.html#ea-2020-1"><i class="fa fa-check"></i><b>4.4.3</b> EA 2020</a></li>
+<li class="chapter" data-level="4.4.4" data-path="assistance.html"><a href="assistance.html#ea-2021-1"><i class="fa fa-check"></i><b>4.4.4</b> EA 2021</a></li>
+<li class="chapter" data-level="4.4.5" data-path="assistance.html"><a href="assistance.html#ea-2022-1"><i class="fa fa-check"></i><b>4.4.5</b> EA 2022</a></li>
+<li class="chapter" data-level="4.4.6" data-path="assistance.html"><a href="assistance.html#ea-2023-1"><i class="fa fa-check"></i><b>4.4.6</b> EA 2023</a></li>
+<li class="chapter" data-level="4.4.7" data-path="assistance.html"><a href="assistance.html#pdm-2020-1"><i class="fa fa-check"></i><b>4.4.7</b> PDM 2020</a></li>
+<li class="chapter" data-level="4.4.8" data-path="assistance.html"><a href="assistance.html#pdm-2021-1"><i class="fa fa-check"></i><b>4.4.8</b> PDM 2021</a></li>
+<li class="chapter" data-level="4.4.9" data-path="assistance.html"><a href="assistance.html#pdm-2022-1"><i class="fa fa-check"></i><b>4.4.9</b> PDM 2022</a></li>
+<li class="chapter" data-level="4.4.10" data-path="assistance.html"><a href="assistance.html#pdm-2023-1"><i class="fa fa-check"></i><b>4.4.10</b> PDM 2023</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="assistance.html"><a href="assistance.html#merging-all-data-2"><i class="fa fa-check"></i><b>4.5</b> Merging all data</a></li>
+<li class="chapter" data-level="4.6" data-path="assistance.html"><a href="assistance.html#export-all-data-2"><i class="fa fa-check"></i><b>4.6</b> Export all data</a></li>
+<li class="chapter" data-level="4.7" data-path="assistance.html"><a href="assistance.html#keep-assistance-original-variables"><i class="fa fa-check"></i><b>4.7</b> Keep assistance original variables</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="food-consumption-score.html"><a href="food-consumption-score.html"><i class="fa fa-check"></i><b>5</b> Food consumption score</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-céréales-et-tubercules"><i class="fa fa-check"></i><b>5.1</b> FCS : Céréales et tubercules</a></li>
+<li class="chapter" data-level="5.2" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-céréales-et-tubercules---sources"><i class="fa fa-check"></i><b>5.2</b> FCS : Céréales et tubercules - Sources</a></li>
+<li class="chapter" data-level="5.3" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-légumineuses"><i class="fa fa-check"></i><b>5.3</b> FCS : Légumineuses</a></li>
+<li class="chapter" data-level="5.4" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-légumineuses---sources"><i class="fa fa-check"></i><b>5.4</b> FCS : Légumineuses - Sources</a></li>
+<li class="chapter" data-level="5.5" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-lait-et-produits-laitiers"><i class="fa fa-check"></i><b>5.5</b> FCS : Lait et produits laitiers</a></li>
+<li class="chapter" data-level="5.6" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-lait-et-produits-laitiers---sources"><i class="fa fa-check"></i><b>5.6</b> FCS : Lait et produits laitiers - Sources</a></li>
+<li class="chapter" data-level="5.7" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-viande-poisson-et-oeufs"><i class="fa fa-check"></i><b>5.7</b> FCS: Viande, poisson et oeufs</a></li>
+<li class="chapter" data-level="5.8" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-viande-poisson-et-oeufs---sources"><i class="fa fa-check"></i><b>5.8</b> FCS: Viande, poisson et oeufs - Sources</a></li>
+<li class="chapter" data-level="5.9" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-chairviande-rouge"><i class="fa fa-check"></i><b>5.9</b> FCS : Chair/viande rouge</a></li>
+<li class="chapter" data-level="5.10" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-viande-dorgane-telle-que-foie-reins-coeur-et-ou-autres-abats"><i class="fa fa-check"></i><b>5.10</b> FCS : Viande d’organe, telle que: (foie, reins, coeur et / ou autres abats)</a></li>
+<li class="chapter" data-level="5.11" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-poissons-et-coquillage-tels-que-poissons-y-compris-le-thon-en-conserve-les-escargots-et-ou-dautres-fruits-de-mer-remplacer-par-des-exemples-localement-pertinents"><i class="fa fa-check"></i><b>5.11</b> FCS : Poissons et coquillage, tels que: (poissons, y compris le thon en conserve, les escargots et / ou d’autres fruits de mer remplacer par des exemples localement pertinents )</a></li>
+<li class="chapter" data-level="5.12" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-oeufs"><i class="fa fa-check"></i><b>5.12</b> FCS : Oeufs</a></li>
+<li class="chapter" data-level="5.13" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-légumes-et-feuilles-tels-que-épinards-oignons-tomates-carottes-poivrons-haricots-verts-laitue-etc"><i class="fa fa-check"></i><b>5.13</b> FCS : Légumes et feuilles , tels que : (épinards, oignons, tomates, carottes, poivrons, haricots verts, laitue, etc)</a></li>
+<li class="chapter" data-level="5.14" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-légumes-et-feuilles-tels-que-épinards-oignons-tomates-carottes-poivrons-haricots-verts-laitue-etc---sources"><i class="fa fa-check"></i><b>5.14</b> FCS : Légumes et feuilles , tels que : (épinards, oignons, tomates, carottes, poivrons, haricots verts, laitue, etc) - Sources</a></li>
+<li class="chapter" data-level="5.15" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-légumes-oranges-légumes-riches-en-vitamine-a"><i class="fa fa-check"></i><b>5.15</b> FCS : Légumes oranges (légumes riches en Vitamine A)</a></li>
+<li class="chapter" data-level="5.16" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-légumes-à-feuilles-vertes-tels-que-épinards-brocoli-amarante-etou-autres-feuilles-vert-foncé-feuilles-de-manioc"><i class="fa fa-check"></i><b>5.16</b> FCS : Légumes à feuilles vertes,, tels que : ( épinards, brocoli, amarante et/ou autres feuilles vert foncé , feuilles de manioc )</a></li>
+<li class="chapter" data-level="5.17" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-fruits-tels-que-banane-pomme-citron-mangue-papaye-abricot-pêche-etc"><i class="fa fa-check"></i><b>5.17</b> FCS : Fruits, tels que : (banane, pomme, citron, mangue, papaye, abricot, pêche, etc)</a></li>
+<li class="chapter" data-level="5.18" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-huilematières-grassesbeurre-tels-que-huile-végétale-huile-de-palme-beurre-de-karité-margarine-autres-huiles-matières-grasses"><i class="fa fa-check"></i><b>5.18</b> FCS : Huile/matières grasses/beurre: tels que (huile végétale, huile de palme, beurre de karité, margarine, autres huiles / matières grasses)</a></li>
+<li class="chapter" data-level="5.19" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-huilematières-grassesbeurre-tels-que-huile-végétale-huile-de-palme-beurre-de-karité-margarine-autres-huiles-matières-grasses---sources"><i class="fa fa-check"></i><b>5.19</b> FCS : Huile/matières grasses/beurre: tels que (huile végétale, huile de palme, beurre de karité, margarine, autres huiles / matières grasses) - Sources</a></li>
+<li class="chapter" data-level="5.20" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fsc-sucre-ou-sucreries-tels-que-sucre-miel-confiture-gâteau-bonbons-biscuits-viennoiserie-et-autres-produits-sucrés-boissons-sucrées"><i class="fa fa-check"></i><b>5.20</b> FSC : Sucre ou sucreries, tels que (sucre, miel, confiture, gâteau, bonbons, biscuits, viennoiserie et autres produits sucrés (boissons sucrées) )</a></li>
+<li class="chapter" data-level="5.21" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fsc-sucre-ou-sucreries-tels-que-sucre-miel-confiture-gâteau-bonbons-biscuits-viennoiserie-et-autres-produits-sucrés-boissons-sucrées---sources"><i class="fa fa-check"></i><b>5.21</b> FSC : Sucre ou sucreries, tels que (sucre, miel, confiture, gâteau, bonbons, biscuits, viennoiserie et autres produits sucrés (boissons sucrées) ) - Sources</a></li>
+<li class="chapter" data-level="5.22" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-condimentsépices-tels-que-thé-cafécacao-sel-ail-épices-levurelevure-chimique-tomatesauce-viande-ou-poisson-comme-condiment-condiments-incluant-des-petites-quantités-de-laitthé-café."><i class="fa fa-check"></i><b>5.22</b> FCS : Condiments/épices: tels que (thé, café/cacao, sel, ail, épices, levure/levure chimique, tomate/sauce, viande ou poisson comme condiment, condiments incluant des petites quantités de lait/thé, café.) ?</a></li>
+<li class="chapter" data-level="5.23" data-path="food-consumption-score.html"><a href="food-consumption-score.html#merging-all-data-3"><i class="fa fa-check"></i><b>5.23</b> Merging all data</a></li>
+<li class="chapter" data-level="5.24" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-computation"><i class="fa fa-check"></i><b>5.24</b> FCS computation</a></li>
+<li class="chapter" data-level="5.25" data-path="food-consumption-score.html"><a href="food-consumption-score.html#export-all-data-3"><i class="fa fa-check"></i><b>5.25</b> Export all data</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html"><a href="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html"><i class="fa fa-check"></i><b>6</b> Stratégies d’adaptation aux moyens d’existence (LhCSI)</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html"><a href="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html#lhcsi-vendre-des-actifsbiens-non-productifs-du-ménage-radio-meuble-réfrigérateur-télévision-bijoux-etc."><i class="fa fa-check"></i><b>6.1</b> LhCSI : Vendre des actifs/biens non productifs du ménage (radio, meuble, réfrigérateur, télévision, bijoux etc.)</a></li>
+<li class="chapter" data-level="6.2" data-path="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html"><a href="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html#lhcsi-vendre-plus-danimaux-non-productifs-que-dhabitude"><i class="fa fa-check"></i><b>6.2</b> LhCSI : Vendre plus d’animaux (non-productifs) que d’habitude</a></li>
+<li class="chapter" data-level="6.3" data-path="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html"><a href="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html#lhcsi-dépenser-lépargne-en-raison-dun-manque-de-nourriture-ou-dargent-pour-acheter-de-la-nourriture"><i class="fa fa-check"></i><b>6.3</b> LhCSI : Dépenser l’épargne en raison d’un manque de nourriture ou d’argent pour acheter de la nourriture ?</a></li>
+<li class="chapter" data-level="6.4" data-path="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html"><a href="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html#lhcsi-emprunter-de-largent-nourriture-auprès-dun-prêteur-formel-banque"><i class="fa fa-check"></i><b>6.4</b> LhCSI : Emprunter de l’argent / nourriture auprès d’un prêteur formel /banque</a></li>
+<li class="chapter" data-level="6.5" data-path="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html"><a href="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html#lhcsi-réduire-les-dépenses-non-alimentaires-essentielles-telles-que-léducation-la-santé-dont-de-médicaments"><i class="fa fa-check"></i><b>6.5</b> LhCSI : Réduire les dépenses non alimentaires essentielles telles que l’éducation, la santé (dont de médicaments)</a></li>
+<li class="chapter" data-level="6.6" data-path="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html"><a href="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html#lhcsi-vendre-des-biens-productifs-ou-des-moyens-de-transport-machine-à-coudre-brouette-vélo-car-etc."><i class="fa fa-check"></i><b>6.6</b> LhCSI : Vendre des biens productifs ou des moyens de transport (machine à coudre, brouette, vélo, car, etc.)</a></li>
+<li class="chapter" data-level="6.7" data-path="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html"><a href="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html#lhcsi-retirer-les-enfants-de-lécole"><i class="fa fa-check"></i><b>6.7</b> LhCSI : Retirer les enfants de l’école</a></li>
+<li class="chapter" data-level="6.8" data-path="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html"><a href="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html#lhcsi-vendre-la-maison-ou-des-terrains"><i class="fa fa-check"></i><b>6.8</b> LhCSI : Vendre la maison ou des terrains</a></li>
+<li class="chapter" data-level="6.9" data-path="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html"><a href="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html#lhcsi-mendier"><i class="fa fa-check"></i><b>6.9</b> LhCSI : Mendier</a></li>
+<li class="chapter" data-level="6.10" data-path="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html"><a href="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html#lhcsi-vendre-les-derniers-animaux-femelles-reproductrices"><i class="fa fa-check"></i><b>6.10</b> LhCSI : Vendre les derniers animaux femelles reproductrices</a></li>
+<li class="chapter" data-level="6.11" data-path="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html"><a href="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html#merging-all-data-4"><i class="fa fa-check"></i><b>6.11</b> Merging all data</a></li>
+<li class="chapter" data-level="6.12" data-path="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html"><a href="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html#export-all-data-4"><i class="fa fa-check"></i><b>6.12</b> Export all data</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html"><a href="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html"><i class="fa fa-check"></i><b>7</b> Reduced coping strategy index ou l’indice réduit des stratégies de survie (rCSI)</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html"><a href="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html#rcsi-consommer-des-aliments-moins-préférés-et-moins-chers"><i class="fa fa-check"></i><b>7.1</b> rCSI : Consommer des aliments moins préférés et moins chers</a></li>
+<li class="chapter" data-level="7.2" data-path="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html"><a href="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html#rcsi-emprunter-de-la-nourriture-ou-compter-sur-laide-des-parentsamis"><i class="fa fa-check"></i><b>7.2</b> rCSI : Emprunter de la nourriture ou compter sur l’aide des parents/amis</a></li>
+<li class="chapter" data-level="7.3" data-path="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html"><a href="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html#rcsi-diminuer-la-quantité-consommée-pendant-les-repas"><i class="fa fa-check"></i><b>7.3</b> rCSI : Diminuer la quantité consommée pendant les repas</a></li>
+<li class="chapter" data-level="7.4" data-path="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html"><a href="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html#rcsi-restreindre-la-consommation-des-adultes-pour-nourrir-les-enfants"><i class="fa fa-check"></i><b>7.4</b> rCSI : Restreindre la consommation des adultes pour nourrir les enfants</a></li>
+<li class="chapter" data-level="7.5" data-path="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html"><a href="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html#rcsi-diminuer-le-nombre-de-repas-par-jour"><i class="fa fa-check"></i><b>7.5</b> rCSI : Diminuer le nombre de repas par jour</a></li>
+<li class="chapter" data-level="7.6" data-path="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html"><a href="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html#merging-all-data-5"><i class="fa fa-check"></i><b>7.6</b> Merging all data</a></li>
+<li class="chapter" data-level="7.7" data-path="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html"><a href="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html#export-all-data-5"><i class="fa fa-check"></i><b>7.7</b> Export all data</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="asset-benefit-indicator-abi.html"><a href="asset-benefit-indicator-abi.html"><i class="fa fa-check"></i><b>8</b> ASSET BENEFIT INDICATOR (ABI)</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="asset-benefit-indicator-abi.html"><a href="asset-benefit-indicator-abi.html#ea-2019-2"><i class="fa fa-check"></i><b>8.1</b> EA 2019</a></li>
+<li class="chapter" data-level="8.2" data-path="asset-benefit-indicator-abi.html"><a href="asset-benefit-indicator-abi.html#ea-2020-2"><i class="fa fa-check"></i><b>8.2</b> EA 2020</a></li>
+<li class="chapter" data-level="8.3" data-path="asset-benefit-indicator-abi.html"><a href="asset-benefit-indicator-abi.html#ea-2021-2"><i class="fa fa-check"></i><b>8.3</b> EA 2021</a></li>
+<li class="chapter" data-level="8.4" data-path="asset-benefit-indicator-abi.html"><a href="asset-benefit-indicator-abi.html#ea-2022-2"><i class="fa fa-check"></i><b>8.4</b> EA 2022</a></li>
+<li class="chapter" data-level="8.5" data-path="asset-benefit-indicator-abi.html"><a href="asset-benefit-indicator-abi.html#ea-2023-2"><i class="fa fa-check"></i><b>8.5</b> EA 2023</a></li>
+<li class="chapter" data-level="8.6" data-path="asset-benefit-indicator-abi.html"><a href="asset-benefit-indicator-abi.html#pdm-2020-2"><i class="fa fa-check"></i><b>8.6</b> PDM 2020</a></li>
+<li class="chapter" data-level="8.7" data-path="asset-benefit-indicator-abi.html"><a href="asset-benefit-indicator-abi.html#pdm-2021-2"><i class="fa fa-check"></i><b>8.7</b> PDM 2021</a></li>
+<li class="chapter" data-level="8.8" data-path="asset-benefit-indicator-abi.html"><a href="asset-benefit-indicator-abi.html#pdm-2022-2"><i class="fa fa-check"></i><b>8.8</b> PDM 2022</a></li>
+<li class="chapter" data-level="8.9" data-path="asset-benefit-indicator-abi.html"><a href="asset-benefit-indicator-abi.html#pdm-2023-2"><i class="fa fa-check"></i><b>8.9</b> PDM 2023</a></li>
+<li class="chapter" data-level="8.10" data-path="asset-benefit-indicator-abi.html"><a href="asset-benefit-indicator-abi.html#merging-all-data-6"><i class="fa fa-check"></i><b>8.10</b> Merging all data</a></li>
+<li class="chapter" data-level="8.11" data-path="asset-benefit-indicator-abi.html"><a href="asset-benefit-indicator-abi.html#export-all-data-6"><i class="fa fa-check"></i><b>8.11</b> Export all data</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="self-evaluated-resilience-score-sers.html"><a href="self-evaluated-resilience-score-sers.html"><i class="fa fa-check"></i><b>9</b> Self-evaluated resilience score (SERS)</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="self-evaluated-resilience-score-sers.html"><a href="self-evaluated-resilience-score-sers.html#ea-2020-3"><i class="fa fa-check"></i><b>9.1</b> EA 2020</a></li>
+<li class="chapter" data-level="9.2" data-path="self-evaluated-resilience-score-sers.html"><a href="self-evaluated-resilience-score-sers.html#ea-2021-3"><i class="fa fa-check"></i><b>9.2</b> EA 2021</a></li>
+<li class="chapter" data-level="9.3" data-path="self-evaluated-resilience-score-sers.html"><a href="self-evaluated-resilience-score-sers.html#ea-2022-3"><i class="fa fa-check"></i><b>9.3</b> EA 2022</a></li>
+<li class="chapter" data-level="9.4" data-path="self-evaluated-resilience-score-sers.html"><a href="self-evaluated-resilience-score-sers.html#ea-2023-3"><i class="fa fa-check"></i><b>9.4</b> EA 2023</a></li>
+<li class="chapter" data-level="9.5" data-path="self-evaluated-resilience-score-sers.html"><a href="self-evaluated-resilience-score-sers.html#pdm-2022-3"><i class="fa fa-check"></i><b>9.5</b> PDM 2022</a></li>
+<li class="chapter" data-level="9.6" data-path="self-evaluated-resilience-score-sers.html"><a href="self-evaluated-resilience-score-sers.html#pdm-2023-3"><i class="fa fa-check"></i><b>9.6</b> PDM 2023</a></li>
+<li class="chapter" data-level="9.7" data-path="self-evaluated-resilience-score-sers.html"><a href="self-evaluated-resilience-score-sers.html#merging-all-data-7"><i class="fa fa-check"></i><b>9.7</b> Merging all data</a></li>
+<li class="chapter" data-level="9.8" data-path="self-evaluated-resilience-score-sers.html"><a href="self-evaluated-resilience-score-sers.html#export-all-data-7"><i class="fa fa-check"></i><b>9.8</b> Export all data</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="mad-indicator.html"><a href="mad-indicator.html"><i class="fa fa-check"></i><b>10</b> MAD indicator</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="mad-indicator.html"><a href="mad-indicator.html#data-consistency-check"><i class="fa fa-check"></i><b>10.1</b> Data consistency Check</a></li>
+<li class="chapter" data-level="10.2" data-path="mad-indicator.html"><a href="mad-indicator.html#drop-duplicated-observations"><i class="fa fa-check"></i><b>10.2</b> Drop duplicated observations</a></li>
+<li class="chapter" data-level="10.3" data-path="mad-indicator.html"><a href="mad-indicator.html#consent-check"><i class="fa fa-check"></i><b>10.3</b> Consent check</a></li>
+<li class="chapter" data-level="10.4" data-path="mad-indicator.html"><a href="mad-indicator.html#id-check"><i class="fa fa-check"></i><b>10.4</b> ID Check</a></li>
+<li class="chapter" data-level="10.5" data-path="mad-indicator.html"><a href="mad-indicator.html#ea-2021-4"><i class="fa fa-check"></i><b>10.5</b> EA 2021</a></li>
+<li class="chapter" data-level="10.6" data-path="mad-indicator.html"><a href="mad-indicator.html#ea-2022-4"><i class="fa fa-check"></i><b>10.6</b> EA 2022</a></li>
+<li class="chapter" data-level="10.7" data-path="mad-indicator.html"><a href="mad-indicator.html#ea-2023-4"><i class="fa fa-check"></i><b>10.7</b> EA 2023</a></li>
+<li class="chapter" data-level="10.8" data-path="mad-indicator.html"><a href="mad-indicator.html#pdm-2022-4"><i class="fa fa-check"></i><b>10.8</b> PDM 2022</a></li>
+<li class="chapter" data-level="10.9" data-path="mad-indicator.html"><a href="mad-indicator.html#pdm-2023-4"><i class="fa fa-check"></i><b>10.9</b> PDM 2023</a></li>
+<li class="chapter" data-level="10.10" data-path="mad-indicator.html"><a href="mad-indicator.html#régime-alimentaire-minimum-acceptable-mad"><i class="fa fa-check"></i><b>10.10</b> Régime alimentaire minimum acceptable (MAD)</a></li>
+<li class="chapter" data-level="10.11" data-path="mad-indicator.html"><a href="mad-indicator.html#export-all-data-8"><i class="fa fa-check"></i><b>10.11</b> Export all data</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="mddw-indicator.html"><a href="mddw-indicator.html"><i class="fa fa-check"></i><b>11</b> MDDW indicator</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="mddw-indicator.html"><a href="mddw-indicator.html#data-consistency-check-1"><i class="fa fa-check"></i><b>11.1</b> Data consistency Check</a></li>
+<li class="chapter" data-level="11.2" data-path="mddw-indicator.html"><a href="mddw-indicator.html#drop-duplicated-observations-1"><i class="fa fa-check"></i><b>11.2</b> Drop duplicated observations</a></li>
+<li class="chapter" data-level="11.3" data-path="mddw-indicator.html"><a href="mddw-indicator.html#consent-check-1"><i class="fa fa-check"></i><b>11.3</b> Consent check</a></li>
+<li class="chapter" data-level="11.4" data-path="mddw-indicator.html"><a href="mddw-indicator.html#id-check-1"><i class="fa fa-check"></i><b>11.4</b> ID Check</a></li>
+<li class="chapter" data-level="11.5" data-path="mddw-indicator.html"><a href="mddw-indicator.html#ea-2021-5"><i class="fa fa-check"></i><b>11.5</b> EA 2021</a></li>
+<li class="chapter" data-level="11.6" data-path="mddw-indicator.html"><a href="mddw-indicator.html#ea-2022-5"><i class="fa fa-check"></i><b>11.6</b> EA 2022</a></li>
+<li class="chapter" data-level="11.7" data-path="mddw-indicator.html"><a href="mddw-indicator.html#ea-2023-5"><i class="fa fa-check"></i><b>11.7</b> EA 2023</a></li>
+<li class="chapter" data-level="11.8" data-path="mddw-indicator.html"><a href="mddw-indicator.html#pdm-2022-5"><i class="fa fa-check"></i><b>11.8</b> PDM 2022</a></li>
+<li class="chapter" data-level="11.9" data-path="mddw-indicator.html"><a href="mddw-indicator.html#pdm-2023-5"><i class="fa fa-check"></i><b>11.9</b> PDM 2023</a></li>
+<li class="chapter" data-level="11.10" data-path="mddw-indicator.html"><a href="mddw-indicator.html#export-all-data-9"><i class="fa fa-check"></i><b>11.10</b> Export all data</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="hdds-indicator.html"><a href="hdds-indicator.html"><i class="fa fa-check"></i><b>12</b> HDDS indicator</a>
+<ul>
+<li class="chapter" data-level="12.1" data-path="hdds-indicator.html"><a href="hdds-indicator.html#data-consistency-check-2"><i class="fa fa-check"></i><b>12.1</b> Data consistency Check</a></li>
+<li class="chapter" data-level="12.2" data-path="hdds-indicator.html"><a href="hdds-indicator.html#drop-duplicated-observations-2"><i class="fa fa-check"></i><b>12.2</b> Drop duplicated observations</a></li>
+<li class="chapter" data-level="12.3" data-path="hdds-indicator.html"><a href="hdds-indicator.html#consent-check-2"><i class="fa fa-check"></i><b>12.3</b> Consent check</a></li>
+<li class="chapter" data-level="12.4" data-path="hdds-indicator.html"><a href="hdds-indicator.html#id-check-2"><i class="fa fa-check"></i><b>12.4</b> ID Check</a></li>
+<li class="chapter" data-level="12.5" data-path="hdds-indicator.html"><a href="hdds-indicator.html#hdds-check"><i class="fa fa-check"></i><b>12.5</b> HDDS Check</a></li>
+<li class="chapter" data-level="12.6" data-path="hdds-indicator.html"><a href="hdds-indicator.html#export-all-data-10"><i class="fa fa-check"></i><b>12.6</b> Export all data</a></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="wfp-chad-cba-data-preparation-i.html"><a href="wfp-chad-cba-data-preparation-i.html"><i class="fa fa-check"></i><b>13</b> WFP Chad CBA data preparation I</a></li>
+<li class="chapter" data-level="14" data-path="wfp-chad-cba-data-preparation-ii.html"><a href="wfp-chad-cba-data-preparation-ii.html"><i class="fa fa-check"></i><b>14</b> WFP Chad CBA data preparation II</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">WFP datasets wrangling - Chad : HDDS</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="mad-indicator" class="section level1 hasAnchor" number="10">
+<h1><span class="header-section-number">10</span> MAD indicator<a href="mad-indicator.html#mad-indicator" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div class="sourceCode" id="cb645"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb645-1"><a href="mad-indicator.html#cb645-1" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb645-2"><a href="mad-indicator.html#cb645-2" tabindex="-1"></a><span class="fu">library</span>(labelled) <span class="co"># for general functions to work with labelled data</span></span>
+<span id="cb645-3"><a href="mad-indicator.html#cb645-3" tabindex="-1"></a><span class="fu">library</span>(tidyverse) <span class="co"># general wrangling</span></span>
+<span id="cb645-4"><a href="mad-indicator.html#cb645-4" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb645-5"><a href="mad-indicator.html#cb645-5" tabindex="-1"></a><span class="fu">library</span>(Hmisc)</span>
+<span id="cb645-6"><a href="mad-indicator.html#cb645-6" tabindex="-1"></a><span class="fu">library</span>(gtsummary) <span class="co"># to demonstrate automatic use of variable labels in summary tables</span></span>
+<span id="cb645-7"><a href="mad-indicator.html#cb645-7" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
+<span id="cb645-8"><a href="mad-indicator.html#cb645-8" tabindex="-1"></a><span class="fu">library</span>(foreign)</span>
+<span id="cb645-9"><a href="mad-indicator.html#cb645-9" tabindex="-1"></a><span class="fu">library</span>(sjPlot)</span>
+<span id="cb645-10"><a href="mad-indicator.html#cb645-10" tabindex="-1"></a><span class="fu">library</span>(sjmisc)</span>
+<span id="cb645-11"><a href="mad-indicator.html#cb645-11" tabindex="-1"></a><span class="fu">library</span>(sjlabelled) <span class="co"># for example efc data set with variable labels</span></span>
+<span id="cb645-12"><a href="mad-indicator.html#cb645-12" tabindex="-1"></a><span class="fu">library</span>(stringr)</span></code></pre></div>
+<div class="sourceCode" id="cb646"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb646-1"><a href="mad-indicator.html#cb646-1" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span></code></pre></div>
+<div class="sourceCode" id="cb647"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb647-1"><a href="mad-indicator.html#cb647-1" tabindex="-1"></a>dir_input_data <span class="ot">=</span> <span class="st">&quot;C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/input_data/Chad&quot;</span></span>
+<span id="cb647-2"><a href="mad-indicator.html#cb647-2" tabindex="-1"></a>dir_output_data <span class="ot">=</span> <span class="st">&quot;C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/output_data/Chad&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb648"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb648-1"><a href="mad-indicator.html#cb648-1" tabindex="-1"></a>Chad_Harmonization_variables <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="fu">paste0</span>(dir_input_data,<span class="st">&quot;/Chad_Harmonization.xlsx&quot;</span>), </span>
+<span id="cb648-2"><a href="mad-indicator.html#cb648-2" tabindex="-1"></a>    <span class="at">sheet =</span> <span class="st">&quot;variables_harmonization&quot;</span>)</span>
+<span id="cb648-3"><a href="mad-indicator.html#cb648-3" tabindex="-1"></a><span class="co">#View(Chad_Harmonization_variables)</span></span>
+<span id="cb648-4"><a href="mad-indicator.html#cb648-4" tabindex="-1"></a></span>
+<span id="cb648-5"><a href="mad-indicator.html#cb648-5" tabindex="-1"></a>Chad_Harmonization_description <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="fu">paste0</span>(dir_input_data,<span class="st">&quot;/Chad_Harmonization.xlsx&quot;</span>), </span>
+<span id="cb648-6"><a href="mad-indicator.html#cb648-6" tabindex="-1"></a>    <span class="at">sheet =</span> <span class="st">&quot;description&quot;</span>)</span>
+<span id="cb648-7"><a href="mad-indicator.html#cb648-7" tabindex="-1"></a><span class="co">#View(Chad_Harmonization_description)</span></span></code></pre></div>
+<div class="sourceCode" id="cb649"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb649-1"><a href="mad-indicator.html#cb649-1" tabindex="-1"></a>lst_data <span class="ot">=</span> Chad_Harmonization_description<span class="sc">$</span>Data</span>
+<span id="cb649-2"><a href="mad-indicator.html#cb649-2" tabindex="-1"></a>lst_test <span class="ot">=</span> Chad_Harmonization_description<span class="sc">$</span>Name</span>
+<span id="cb649-3"><a href="mad-indicator.html#cb649-3" tabindex="-1"></a></span>
+<span id="cb649-4"><a href="mad-indicator.html#cb649-4" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(lst_data)) {                              <span class="co"># Head of for-loop</span></span>
+<span id="cb649-5"><a href="mad-indicator.html#cb649-5" tabindex="-1"></a>  <span class="fu">assign</span>(lst_test[i],                                   <span class="co"># Read and store data frames</span></span>
+<span id="cb649-6"><a href="mad-indicator.html#cb649-6" tabindex="-1"></a>         <span class="fu">read_sav</span>(<span class="fu">paste0</span>(dir_input_data,<span class="st">&quot;/&quot;</span>,lst_data[i])))</span>
+<span id="cb649-7"><a href="mad-indicator.html#cb649-7" tabindex="-1"></a>}</span></code></pre></div>
+<div id="data-consistency-check" class="section level2 hasAnchor" number="10.1">
+<h2><span class="header-section-number">10.1</span> Data consistency Check<a href="mad-indicator.html#data-consistency-check" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+</div>
+<div id="drop-duplicated-observations" class="section level2 hasAnchor" number="10.2">
+<h2><span class="header-section-number">10.2</span> Drop duplicated observations<a href="mad-indicator.html#drop-duplicated-observations" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+</div>
+<div id="consent-check" class="section level2 hasAnchor" number="10.3">
+<h2><span class="header-section-number">10.3</span> Consent check<a href="mad-indicator.html#consent-check" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+</div>
+<div id="id-check" class="section level2 hasAnchor" number="10.4">
+<h2><span class="header-section-number">10.4</span> ID Check<a href="mad-indicator.html#id-check" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb650"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb650-1"><a href="mad-indicator.html#cb650-1" tabindex="-1"></a>path <span class="ot">=</span> <span class="st">&quot;C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb651"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb651-1"><a href="mad-indicator.html#cb651-1" tabindex="-1"></a>MAD_ea_2021 <span class="ot">&lt;-</span> <span class="fu">read_sav</span>(<span class="fu">paste0</span>(path,<span class="st">&quot;data/input_data/Chad/MAD_MDDW data/consent_PCMADRepeat623_Decembre_2021.sav&quot;</span>))</span>
+<span id="cb651-2"><a href="mad-indicator.html#cb651-2" tabindex="-1"></a>MAD_ea_2022 <span class="ot">&lt;-</span> <span class="fu">read_sav</span>(<span class="fu">paste0</span>(path,<span class="st">&quot;data/input_data/Chad/MAD_MDDW data/consent_PCMADRepeat623_Decembre_2022.sav&quot;</span>))</span>
+<span id="cb651-3"><a href="mad-indicator.html#cb651-3" tabindex="-1"></a>MAD_ea_2023 <span class="ot">&lt;-</span> <span class="fu">read_sav</span>(<span class="fu">paste0</span>(path,<span class="st">&quot;data/input_data/Chad/MAD_MDDW data/consent_PCMADRepeat623_Decembre_2023.sav&quot;</span>))</span>
+<span id="cb651-4"><a href="mad-indicator.html#cb651-4" tabindex="-1"></a>MAD_pdm_2022 <span class="ot">&lt;-</span> <span class="fu">read_sav</span>(<span class="fu">paste0</span>(path,<span class="st">&quot;data/input_data/Chad/MAD_MDDW data/consent_PCMADRepeat623_Juillet_2022.sav&quot;</span>))</span>
+<span id="cb651-5"><a href="mad-indicator.html#cb651-5" tabindex="-1"></a>MAD_pdm_2023 <span class="ot">&lt;-</span> <span class="fu">read_sav</span>(<span class="fu">paste0</span>(path,<span class="st">&quot;data/input_data/Chad/MAD_MDDW data/consent_PCMADRepeat623_Juillet_2023.sav&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb652"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb652-1"><a href="mad-indicator.html#cb652-1" tabindex="-1"></a>Chad_pdm_2022<span class="sc">$</span>ID <span class="ot">=</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(Chad_pdm_2022)</span></code></pre></div>
+</div>
+<div id="ea-2021-4" class="section level2 hasAnchor" number="10.5">
+<h2><span class="header-section-number">10.5</span> EA 2021<a href="mad-indicator.html#ea-2021-4" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb653"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb653-1"><a href="mad-indicator.html#cb653-1" tabindex="-1"></a>df_ea_2021 <span class="ot">=</span> Chad_ea_2021 <span class="sc">%&gt;%</span> </span>
+<span id="cb653-2"><a href="mad-indicator.html#cb653-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">`</span><span class="at">@_id</span><span class="st">`</span>,<span class="st">`</span><span class="at">@_index</span><span class="st">`</span>)</span>
+<span id="cb653-3"><a href="mad-indicator.html#cb653-3" tabindex="-1"></a></span>
+<span id="cb653-4"><a href="mad-indicator.html#cb653-4" tabindex="-1"></a><span class="fu">names</span>(df_ea_2021) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;ID&quot;</span>,<span class="st">&quot;Key_with_subset_data&quot;</span>)</span>
+<span id="cb653-5"><a href="mad-indicator.html#cb653-5" tabindex="-1"></a></span>
+<span id="cb653-6"><a href="mad-indicator.html#cb653-6" tabindex="-1"></a>MAD_ea_2021<span class="sc">$</span>Key_with_subset_data <span class="ot">&lt;-</span> MAD_ea_2021<span class="sc">$</span><span class="st">`</span><span class="at">@_parent_index</span><span class="st">`</span></span>
+<span id="cb653-7"><a href="mad-indicator.html#cb653-7" tabindex="-1"></a>MAD_ea_2021 <span class="ot">=</span> dplyr<span class="sc">::</span><span class="fu">left_join</span>(df_ea_2021, MAD_ea_2021, <span class="at">by =</span> <span class="st">&quot;Key_with_subset_data&quot;</span>)</span>
+<span id="cb653-8"><a href="mad-indicator.html#cb653-8" tabindex="-1"></a></span>
+<span id="cb653-9"><a href="mad-indicator.html#cb653-9" tabindex="-1"></a>MAD_ea_2021 <span class="ot">=</span> MAD_ea_2021 <span class="sc">%&gt;%</span> </span>
+<span id="cb653-10"><a href="mad-indicator.html#cb653-10" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">!</span><span class="fu">starts_with</span>(<span class="st">&quot;@&quot;</span>))</span>
+<span id="cb653-11"><a href="mad-indicator.html#cb653-11" tabindex="-1"></a></span>
+<span id="cb653-12"><a href="mad-indicator.html#cb653-12" tabindex="-1"></a>MAD_ea_2021 <span class="ot">=</span> MAD_ea_2021 <span class="sc">%&gt;%</span> </span>
+<span id="cb653-13"><a href="mad-indicator.html#cb653-13" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(PCMAD_childnumber))</span></code></pre></div>
+</div>
+<div id="ea-2022-4" class="section level2 hasAnchor" number="10.6">
+<h2><span class="header-section-number">10.6</span> EA 2022<a href="mad-indicator.html#ea-2022-4" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb654"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb654-1"><a href="mad-indicator.html#cb654-1" tabindex="-1"></a>df_ea_2022 <span class="ot">=</span> Chad_ea_2022 <span class="sc">%&gt;%</span> </span>
+<span id="cb654-2"><a href="mad-indicator.html#cb654-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">`</span><span class="at">@_id</span><span class="st">`</span>,<span class="st">`</span><span class="at">@_index</span><span class="st">`</span>)</span>
+<span id="cb654-3"><a href="mad-indicator.html#cb654-3" tabindex="-1"></a></span>
+<span id="cb654-4"><a href="mad-indicator.html#cb654-4" tabindex="-1"></a><span class="fu">names</span>(df_ea_2022) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;ID&quot;</span>,<span class="st">&quot;Key_with_subset_data&quot;</span>)</span>
+<span id="cb654-5"><a href="mad-indicator.html#cb654-5" tabindex="-1"></a></span>
+<span id="cb654-6"><a href="mad-indicator.html#cb654-6" tabindex="-1"></a>MAD_ea_2022<span class="sc">$</span>Key_with_subset_data <span class="ot">&lt;-</span> MAD_ea_2022<span class="sc">$</span><span class="st">`</span><span class="at">@_parent_index</span><span class="st">`</span></span>
+<span id="cb654-7"><a href="mad-indicator.html#cb654-7" tabindex="-1"></a>MAD_ea_2022 <span class="ot">=</span> dplyr<span class="sc">::</span><span class="fu">left_join</span>(df_ea_2022, MAD_ea_2022, <span class="at">by =</span> <span class="st">&quot;Key_with_subset_data&quot;</span>)</span>
+<span id="cb654-8"><a href="mad-indicator.html#cb654-8" tabindex="-1"></a></span>
+<span id="cb654-9"><a href="mad-indicator.html#cb654-9" tabindex="-1"></a>MAD_ea_2022 <span class="ot">=</span> MAD_ea_2022 <span class="sc">%&gt;%</span> </span>
+<span id="cb654-10"><a href="mad-indicator.html#cb654-10" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">!</span><span class="fu">starts_with</span>(<span class="st">&quot;@&quot;</span>))</span>
+<span id="cb654-11"><a href="mad-indicator.html#cb654-11" tabindex="-1"></a></span>
+<span id="cb654-12"><a href="mad-indicator.html#cb654-12" tabindex="-1"></a>MAD_ea_2022 <span class="ot">=</span> MAD_ea_2022 <span class="sc">%&gt;%</span> </span>
+<span id="cb654-13"><a href="mad-indicator.html#cb654-13" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(PCMAD_childnumber))</span></code></pre></div>
+</div>
+<div id="ea-2023-4" class="section level2 hasAnchor" number="10.7">
+<h2><span class="header-section-number">10.7</span> EA 2023<a href="mad-indicator.html#ea-2023-4" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb655"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb655-1"><a href="mad-indicator.html#cb655-1" tabindex="-1"></a>df_ea_2023 <span class="ot">=</span> Chad_ea_2023 <span class="sc">%&gt;%</span> </span>
+<span id="cb655-2"><a href="mad-indicator.html#cb655-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">`</span><span class="at">@_id</span><span class="st">`</span>,<span class="st">`</span><span class="at">@_index</span><span class="st">`</span>)</span>
+<span id="cb655-3"><a href="mad-indicator.html#cb655-3" tabindex="-1"></a></span>
+<span id="cb655-4"><a href="mad-indicator.html#cb655-4" tabindex="-1"></a><span class="fu">names</span>(df_ea_2023) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;ID&quot;</span>,<span class="st">&quot;Key_with_subset_data&quot;</span>)</span>
+<span id="cb655-5"><a href="mad-indicator.html#cb655-5" tabindex="-1"></a></span>
+<span id="cb655-6"><a href="mad-indicator.html#cb655-6" tabindex="-1"></a>MAD_ea_2023<span class="sc">$</span>Key_with_subset_data <span class="ot">&lt;-</span> MAD_ea_2023<span class="sc">$</span><span class="st">`</span><span class="at">@_parent_index</span><span class="st">`</span></span>
+<span id="cb655-7"><a href="mad-indicator.html#cb655-7" tabindex="-1"></a>MAD_ea_2023 <span class="ot">=</span> dplyr<span class="sc">::</span><span class="fu">left_join</span>(df_ea_2023, MAD_ea_2023, <span class="at">by =</span> <span class="st">&quot;Key_with_subset_data&quot;</span>)</span>
+<span id="cb655-8"><a href="mad-indicator.html#cb655-8" tabindex="-1"></a></span>
+<span id="cb655-9"><a href="mad-indicator.html#cb655-9" tabindex="-1"></a>MAD_ea_2023 <span class="ot">=</span> MAD_ea_2023 <span class="sc">%&gt;%</span> </span>
+<span id="cb655-10"><a href="mad-indicator.html#cb655-10" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">!</span><span class="fu">starts_with</span>(<span class="st">&quot;@&quot;</span>))</span>
+<span id="cb655-11"><a href="mad-indicator.html#cb655-11" tabindex="-1"></a></span>
+<span id="cb655-12"><a href="mad-indicator.html#cb655-12" tabindex="-1"></a>MAD_ea_2023 <span class="ot">=</span> MAD_ea_2023 <span class="sc">%&gt;%</span> </span>
+<span id="cb655-13"><a href="mad-indicator.html#cb655-13" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(PCMAD_childnumber))</span>
+<span id="cb655-14"><a href="mad-indicator.html#cb655-14" tabindex="-1"></a></span>
+<span id="cb655-15"><a href="mad-indicator.html#cb655-15" tabindex="-1"></a>MAD_ea_2023 <span class="ot">&lt;-</span> MAD_ea_2023 <span class="sc">%&gt;%</span></span>
+<span id="cb655-16"><a href="mad-indicator.html#cb655-16" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(MAD_sex, <span class="sc">~</span><span class="fu">ifelse</span>(.<span class="sc">==</span><span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>)))</span>
+<span id="cb655-17"><a href="mad-indicator.html#cb655-17" tabindex="-1"></a></span>
+<span id="cb655-18"><a href="mad-indicator.html#cb655-18" tabindex="-1"></a></span>
+<span id="cb655-19"><a href="mad-indicator.html#cb655-19" tabindex="-1"></a><span class="co"># Labels mapping</span></span>
+<span id="cb655-20"><a href="mad-indicator.html#cb655-20" tabindex="-1"></a>label_map <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb655-21"><a href="mad-indicator.html#cb655-21" tabindex="-1"></a>  <span class="at">Femme =</span> <span class="dv">1</span>,</span>
+<span id="cb655-22"><a href="mad-indicator.html#cb655-22" tabindex="-1"></a>  <span class="at">Homme =</span> <span class="dv">2</span></span>
+<span id="cb655-23"><a href="mad-indicator.html#cb655-23" tabindex="-1"></a>)</span>
+<span id="cb655-24"><a href="mad-indicator.html#cb655-24" tabindex="-1"></a></span>
+<span id="cb655-25"><a href="mad-indicator.html#cb655-25" tabindex="-1"></a><span class="co"># Apply labels using mutate() and across()</span></span>
+<span id="cb655-26"><a href="mad-indicator.html#cb655-26" tabindex="-1"></a>MAD_ea_2023 <span class="ot">&lt;-</span> MAD_ea_2023 <span class="sc">%&gt;%</span></span>
+<span id="cb655-27"><a href="mad-indicator.html#cb655-27" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(MAD_sex,</span>
+<span id="cb655-28"><a href="mad-indicator.html#cb655-28" tabindex="-1"></a>                <span class="sc">~</span> labelled<span class="sc">::</span><span class="fu">labelled</span>(., label_map)))</span>
+<span id="cb655-29"><a href="mad-indicator.html#cb655-29" tabindex="-1"></a></span>
+<span id="cb655-30"><a href="mad-indicator.html#cb655-30" tabindex="-1"></a></span>
+<span id="cb655-31"><a href="mad-indicator.html#cb655-31" tabindex="-1"></a></span>
+<span id="cb655-32"><a href="mad-indicator.html#cb655-32" tabindex="-1"></a>MAD_ea_2023 <span class="ot">&lt;-</span> MAD_ea_2023 <span class="sc">%&gt;%</span></span>
+<span id="cb655-33"><a href="mad-indicator.html#cb655-33" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(EverBreastF,PCIYCBreastF,PCMADStapCer,PCMADVegOrg,PCMADStapRoo,PCMADVegGre,PCMADFruitOrg,PCMADVegFruitOth,PCMADPrMeatO,PCMADPrMeatF,PCMADPrEgg,PCMADPrFish,PCMADPulse,PCMADDairy,PCMADFatRpalm,PCMADSnfChild,PCMADSnfPowd,PCMADSnfLns), <span class="sc">~</span><span class="fu">ifelse</span>(<span class="fu">is.na</span>(.),<span class="cn">NA</span>,<span class="fu">ifelse</span>(.<span class="sc">==</span><span class="dv">0</span>, <span class="dv">1</span>, <span class="fu">ifelse</span>(.<span class="sc">==</span><span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>)))))</span>
+<span id="cb655-34"><a href="mad-indicator.html#cb655-34" tabindex="-1"></a><span class="co"># Labels mapping</span></span>
+<span id="cb655-35"><a href="mad-indicator.html#cb655-35" tabindex="-1"></a>label_map <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb655-36"><a href="mad-indicator.html#cb655-36" tabindex="-1"></a>  <span class="at">Non =</span> <span class="dv">1</span>,</span>
+<span id="cb655-37"><a href="mad-indicator.html#cb655-37" tabindex="-1"></a>  <span class="at">Oui =</span> <span class="dv">2</span>,</span>
+<span id="cb655-38"><a href="mad-indicator.html#cb655-38" tabindex="-1"></a>  <span class="st">`</span><span class="at">Ne sait pas</span><span class="st">`</span> <span class="ot">=</span> <span class="dv">3</span></span>
+<span id="cb655-39"><a href="mad-indicator.html#cb655-39" tabindex="-1"></a>)</span>
+<span id="cb655-40"><a href="mad-indicator.html#cb655-40" tabindex="-1"></a></span>
+<span id="cb655-41"><a href="mad-indicator.html#cb655-41" tabindex="-1"></a><span class="co"># Apply labels using mutate() and across()</span></span>
+<span id="cb655-42"><a href="mad-indicator.html#cb655-42" tabindex="-1"></a>MAD_ea_2023 <span class="ot">&lt;-</span> MAD_ea_2023 <span class="sc">%&gt;%</span></span>
+<span id="cb655-43"><a href="mad-indicator.html#cb655-43" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(EverBreastF,PCIYCBreastF,PCMADStapCer,PCMADVegOrg,PCMADStapRoo,PCMADVegGre,PCMADFruitOrg,PCMADVegFruitOth,PCMADPrMeatO,PCMADPrMeatF,PCMADPrEgg,PCMADPrFish,PCMADPulse,PCMADDairy,PCMADFatRpalm,PCMADSnfChild,PCMADSnfPowd,PCMADSnfLns),</span>
+<span id="cb655-44"><a href="mad-indicator.html#cb655-44" tabindex="-1"></a>                <span class="sc">~</span> labelled<span class="sc">::</span><span class="fu">labelled</span>(., label_map)))</span></code></pre></div>
+</div>
+<div id="pdm-2022-4" class="section level2 hasAnchor" number="10.8">
+<h2><span class="header-section-number">10.8</span> PDM 2022<a href="mad-indicator.html#pdm-2022-4" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb656"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb656-1"><a href="mad-indicator.html#cb656-1" tabindex="-1"></a>df_pdm_2022 <span class="ot">=</span> Chad_pdm_2022 <span class="sc">%&gt;%</span> </span>
+<span id="cb656-2"><a href="mad-indicator.html#cb656-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">&quot;ID&quot;</span>,<span class="st">`</span><span class="at">@_index</span><span class="st">`</span>)</span>
+<span id="cb656-3"><a href="mad-indicator.html#cb656-3" tabindex="-1"></a></span>
+<span id="cb656-4"><a href="mad-indicator.html#cb656-4" tabindex="-1"></a><span class="fu">names</span>(df_pdm_2022) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;ID&quot;</span>,<span class="st">&quot;Key_with_subset_data&quot;</span>)</span>
+<span id="cb656-5"><a href="mad-indicator.html#cb656-5" tabindex="-1"></a></span>
+<span id="cb656-6"><a href="mad-indicator.html#cb656-6" tabindex="-1"></a>MAD_pdm_2022<span class="sc">$</span>Key_with_subset_data <span class="ot">&lt;-</span> MAD_pdm_2022<span class="sc">$</span><span class="st">`</span><span class="at">@_parent_index</span><span class="st">`</span></span>
+<span id="cb656-7"><a href="mad-indicator.html#cb656-7" tabindex="-1"></a>MAD_pdm_2022 <span class="ot">=</span> dplyr<span class="sc">::</span><span class="fu">left_join</span>(df_pdm_2022, MAD_pdm_2022, <span class="at">by =</span> <span class="st">&quot;Key_with_subset_data&quot;</span>)</span>
+<span id="cb656-8"><a href="mad-indicator.html#cb656-8" tabindex="-1"></a></span>
+<span id="cb656-9"><a href="mad-indicator.html#cb656-9" tabindex="-1"></a>MAD_pdm_2022 <span class="ot">=</span> MAD_pdm_2022 <span class="sc">%&gt;%</span> </span>
+<span id="cb656-10"><a href="mad-indicator.html#cb656-10" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">!</span><span class="fu">starts_with</span>(<span class="st">&quot;@&quot;</span>))</span>
+<span id="cb656-11"><a href="mad-indicator.html#cb656-11" tabindex="-1"></a></span>
+<span id="cb656-12"><a href="mad-indicator.html#cb656-12" tabindex="-1"></a>MAD_pdm_2022 <span class="ot">=</span> MAD_pdm_2022 <span class="sc">%&gt;%</span> </span>
+<span id="cb656-13"><a href="mad-indicator.html#cb656-13" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(PCMAD_childnumber))</span></code></pre></div>
+</div>
+<div id="pdm-2023-4" class="section level2 hasAnchor" number="10.9">
+<h2><span class="header-section-number">10.9</span> PDM 2023<a href="mad-indicator.html#pdm-2023-4" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb657"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb657-1"><a href="mad-indicator.html#cb657-1" tabindex="-1"></a>df_pdm_2023 <span class="ot">=</span> Chad_pdm_2023 <span class="sc">%&gt;%</span> </span>
+<span id="cb657-2"><a href="mad-indicator.html#cb657-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="st">`</span><span class="at">@_id</span><span class="st">`</span>,<span class="st">`</span><span class="at">@_index</span><span class="st">`</span>)</span>
+<span id="cb657-3"><a href="mad-indicator.html#cb657-3" tabindex="-1"></a></span>
+<span id="cb657-4"><a href="mad-indicator.html#cb657-4" tabindex="-1"></a><span class="fu">names</span>(df_pdm_2023) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;ID&quot;</span>,<span class="st">&quot;Key_with_subset_data&quot;</span>)</span>
+<span id="cb657-5"><a href="mad-indicator.html#cb657-5" tabindex="-1"></a>MAD_pdm_2023<span class="sc">$</span>Key_with_subset_data <span class="ot">&lt;-</span> MAD_pdm_2023<span class="sc">$</span><span class="st">`</span><span class="at">@_parent_index</span><span class="st">`</span></span>
+<span id="cb657-6"><a href="mad-indicator.html#cb657-6" tabindex="-1"></a>MAD_pdm_2023 <span class="ot">=</span> dplyr<span class="sc">::</span><span class="fu">left_join</span>(df_pdm_2023, MAD_pdm_2023, <span class="at">by =</span> <span class="st">&quot;Key_with_subset_data&quot;</span>)</span>
+<span id="cb657-7"><a href="mad-indicator.html#cb657-7" tabindex="-1"></a></span>
+<span id="cb657-8"><a href="mad-indicator.html#cb657-8" tabindex="-1"></a>MAD_pdm_2023 <span class="ot">=</span> MAD_pdm_2023 <span class="sc">%&gt;%</span> </span>
+<span id="cb657-9"><a href="mad-indicator.html#cb657-9" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">!</span><span class="fu">starts_with</span>(<span class="st">&quot;@&quot;</span>))</span>
+<span id="cb657-10"><a href="mad-indicator.html#cb657-10" tabindex="-1"></a></span>
+<span id="cb657-11"><a href="mad-indicator.html#cb657-11" tabindex="-1"></a>MAD_pdm_2023 <span class="ot">=</span> MAD_pdm_2023 <span class="sc">%&gt;%</span> </span>
+<span id="cb657-12"><a href="mad-indicator.html#cb657-12" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(PCMAD_childnumber))</span></code></pre></div>
+</div>
+<div id="régime-alimentaire-minimum-acceptable-mad" class="section level2 hasAnchor" number="10.10">
+<h2><span class="header-section-number">10.10</span> Régime alimentaire minimum acceptable (MAD)<a href="mad-indicator.html#régime-alimentaire-minimum-acceptable-mad" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+</div>
+<div id="export-all-data-8" class="section level2 hasAnchor" number="10.11">
+<h2><span class="header-section-number">10.11</span> Export all data<a href="mad-indicator.html#export-all-data-8" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb658"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb658-1"><a href="mad-indicator.html#cb658-1" tabindex="-1"></a>dir_output_data <span class="ot">=</span> <span class="st">&quot;C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/output_data/Chad&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb659"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb659-1"><a href="mad-indicator.html#cb659-1" tabindex="-1"></a>WFP_Chad_MAD<span class="ot">&lt;-</span>plyr<span class="sc">::</span><span class="fu">rbind.fill</span>(MAD_ea_2021,</span>
+<span id="cb659-2"><a href="mad-indicator.html#cb659-2" tabindex="-1"></a>                                MAD_ea_2022,</span>
+<span id="cb659-3"><a href="mad-indicator.html#cb659-3" tabindex="-1"></a>                                MAD_ea_2023,</span>
+<span id="cb659-4"><a href="mad-indicator.html#cb659-4" tabindex="-1"></a>                                MAD_pdm_2022,</span>
+<span id="cb659-5"><a href="mad-indicator.html#cb659-5" tabindex="-1"></a>                                MAD_pdm_2023)</span>
+<span id="cb659-6"><a href="mad-indicator.html#cb659-6" tabindex="-1"></a></span>
+<span id="cb659-7"><a href="mad-indicator.html#cb659-7" tabindex="-1"></a></span>
+<span id="cb659-8"><a href="mad-indicator.html#cb659-8" tabindex="-1"></a>WFP_Chad_MAD<span class="sc">$</span>ID <span class="ot">&lt;-</span> <span class="fu">as.character</span>(WFP_Chad_MAD<span class="sc">$</span>ID)</span>
+<span id="cb659-9"><a href="mad-indicator.html#cb659-9" tabindex="-1"></a>WFP_Chad_MAD <span class="ot">=</span> WFP_Chad_MAD <span class="sc">%&gt;%</span> </span>
+<span id="cb659-10"><a href="mad-indicator.html#cb659-10" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(<span class="st">&quot;Key_with_subset_data&quot;</span>,<span class="st">&quot;MAD_name&quot;</span>,<span class="st">&quot;MAD_dob&quot;</span>,<span class="st">&quot;PCMAD_childnumber&quot;</span>))</span>
+<span id="cb659-11"><a href="mad-indicator.html#cb659-11" tabindex="-1"></a></span>
+<span id="cb659-12"><a href="mad-indicator.html#cb659-12" tabindex="-1"></a></span>
+<span id="cb659-13"><a href="mad-indicator.html#cb659-13" tabindex="-1"></a>WFP_Chad_MAD <span class="ot">&lt;-</span> WFP_Chad_MAD <span class="sc">%&gt;%</span></span>
+<span id="cb659-14"><a href="mad-indicator.html#cb659-14" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(MAD_sex, <span class="sc">~</span><span class="fu">ifelse</span>(<span class="fu">is.na</span>(.),<span class="cn">NA</span>,<span class="fu">ifelse</span>(.<span class="sc">==</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>))))</span>
+<span id="cb659-15"><a href="mad-indicator.html#cb659-15" tabindex="-1"></a></span>
+<span id="cb659-16"><a href="mad-indicator.html#cb659-16" tabindex="-1"></a></span>
+<span id="cb659-17"><a href="mad-indicator.html#cb659-17" tabindex="-1"></a><span class="co"># Labels mapping</span></span>
+<span id="cb659-18"><a href="mad-indicator.html#cb659-18" tabindex="-1"></a>label_map <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb659-19"><a href="mad-indicator.html#cb659-19" tabindex="-1"></a>  <span class="at">Femme =</span> <span class="dv">0</span>,</span>
+<span id="cb659-20"><a href="mad-indicator.html#cb659-20" tabindex="-1"></a>  <span class="at">Homme =</span> <span class="dv">1</span></span>
+<span id="cb659-21"><a href="mad-indicator.html#cb659-21" tabindex="-1"></a>)</span>
+<span id="cb659-22"><a href="mad-indicator.html#cb659-22" tabindex="-1"></a></span>
+<span id="cb659-23"><a href="mad-indicator.html#cb659-23" tabindex="-1"></a><span class="co"># Apply labels using mutate() and across()</span></span>
+<span id="cb659-24"><a href="mad-indicator.html#cb659-24" tabindex="-1"></a>WFP_Chad_MAD <span class="ot">&lt;-</span> WFP_Chad_MAD <span class="sc">%&gt;%</span></span>
+<span id="cb659-25"><a href="mad-indicator.html#cb659-25" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(MAD_sex,</span>
+<span id="cb659-26"><a href="mad-indicator.html#cb659-26" tabindex="-1"></a>                <span class="sc">~</span> labelled<span class="sc">::</span><span class="fu">labelled</span>(., label_map)))</span>
+<span id="cb659-27"><a href="mad-indicator.html#cb659-27" tabindex="-1"></a></span>
+<span id="cb659-28"><a href="mad-indicator.html#cb659-28" tabindex="-1"></a></span>
+<span id="cb659-29"><a href="mad-indicator.html#cb659-29" tabindex="-1"></a>WFP_Chad_MAD <span class="ot">&lt;-</span> WFP_Chad_MAD <span class="sc">%&gt;%</span></span>
+<span id="cb659-30"><a href="mad-indicator.html#cb659-30" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(EverBreastF,PCIYCBreastF,PCMADStapCer,PCMADVegOrg,PCMADStapRoo,PCMADVegGre,PCMADFruitOrg,PCMADVegFruitOth,PCMADPrMeatO,PCMADPrMeatF,PCMADPrEgg,PCMADPrFish,PCMADPulse,PCMADDairy,PCMADFatRpalm,PCMADSnfChild,PCMADSnfPowd,PCMADSnfLns), <span class="sc">~</span><span class="fu">ifelse</span>(<span class="fu">is.na</span>(.),<span class="cn">NA</span>,<span class="fu">ifelse</span>(.<span class="sc">==</span><span class="dv">1</span>,<span class="dv">0</span>, <span class="fu">ifelse</span>(.<span class="sc">==</span><span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">888</span>)))))</span>
+<span id="cb659-31"><a href="mad-indicator.html#cb659-31" tabindex="-1"></a></span>
+<span id="cb659-32"><a href="mad-indicator.html#cb659-32" tabindex="-1"></a><span class="co"># Labels mapping</span></span>
+<span id="cb659-33"><a href="mad-indicator.html#cb659-33" tabindex="-1"></a>label_map <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb659-34"><a href="mad-indicator.html#cb659-34" tabindex="-1"></a>  <span class="at">Non =</span> <span class="dv">0</span>,</span>
+<span id="cb659-35"><a href="mad-indicator.html#cb659-35" tabindex="-1"></a>  <span class="at">Oui =</span> <span class="dv">1</span>,</span>
+<span id="cb659-36"><a href="mad-indicator.html#cb659-36" tabindex="-1"></a>  <span class="st">`</span><span class="at">Ne sait pas</span><span class="st">`</span> <span class="ot">=</span> <span class="dv">888</span></span>
+<span id="cb659-37"><a href="mad-indicator.html#cb659-37" tabindex="-1"></a>)</span>
+<span id="cb659-38"><a href="mad-indicator.html#cb659-38" tabindex="-1"></a></span>
+<span id="cb659-39"><a href="mad-indicator.html#cb659-39" tabindex="-1"></a><span class="co"># Apply labels using mutate() and across()</span></span>
+<span id="cb659-40"><a href="mad-indicator.html#cb659-40" tabindex="-1"></a>WFP_Chad_MAD <span class="ot">&lt;-</span> WFP_Chad_MAD <span class="sc">%&gt;%</span></span>
+<span id="cb659-41"><a href="mad-indicator.html#cb659-41" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(EverBreastF,PCIYCBreastF,PCMADStapCer,PCMADVegOrg,PCMADStapRoo,PCMADVegGre,PCMADFruitOrg,PCMADVegFruitOth,PCMADPrMeatO,PCMADPrMeatF,PCMADPrEgg,PCMADPrFish,PCMADPulse,PCMADDairy,PCMADFatRpalm,PCMADSnfChild,PCMADSnfPowd,PCMADSnfLns),</span>
+<span id="cb659-42"><a href="mad-indicator.html#cb659-42" tabindex="-1"></a>                <span class="sc">~</span> labelled<span class="sc">::</span><span class="fu">labelled</span>(., label_map)))</span></code></pre></div>
+<div class="sourceCode" id="cb660"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb660-1"><a href="mad-indicator.html#cb660-1" tabindex="-1"></a><span class="fu">write_sav</span>(WFP_Chad_MAD, <span class="fu">paste0</span>(dir_output_data,<span class="st">&quot;/WFP_Chad_MAD.sav&quot;</span>))</span>
+<span id="cb660-2"><a href="mad-indicator.html#cb660-2" tabindex="-1"></a><span class="fu">write_dta</span>(WFP_Chad_MAD, <span class="fu">paste0</span>(dir_output_data,<span class="st">&quot;/WFP_Chad_MAD.dta&quot;</span>))</span></code></pre></div>
+
+<div class="sourceCode" id="cb661"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb661-1"><a href="mad-indicator.html#cb661-1" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb661-2"><a href="mad-indicator.html#cb661-2" tabindex="-1"></a><span class="fu">library</span>(labelled) <span class="co"># for general functions to work with labelled data</span></span>
+<span id="cb661-3"><a href="mad-indicator.html#cb661-3" tabindex="-1"></a><span class="fu">library</span>(tidyverse) <span class="co"># general wrangling</span></span>
+<span id="cb661-4"><a href="mad-indicator.html#cb661-4" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb661-5"><a href="mad-indicator.html#cb661-5" tabindex="-1"></a><span class="fu">library</span>(Hmisc)</span>
+<span id="cb661-6"><a href="mad-indicator.html#cb661-6" tabindex="-1"></a><span class="fu">library</span>(gtsummary) <span class="co"># to demonstrate automatic use of variable labels in summary tables</span></span>
+<span id="cb661-7"><a href="mad-indicator.html#cb661-7" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
+<span id="cb661-8"><a href="mad-indicator.html#cb661-8" tabindex="-1"></a><span class="fu">library</span>(foreign)</span>
+<span id="cb661-9"><a href="mad-indicator.html#cb661-9" tabindex="-1"></a><span class="fu">library</span>(sjPlot)</span>
+<span id="cb661-10"><a href="mad-indicator.html#cb661-10" tabindex="-1"></a><span class="fu">library</span>(sjmisc)</span>
+<span id="cb661-11"><a href="mad-indicator.html#cb661-11" tabindex="-1"></a><span class="fu">library</span>(sjlabelled) <span class="co"># for example efc data set with variable labels</span></span>
+<span id="cb661-12"><a href="mad-indicator.html#cb661-12" tabindex="-1"></a><span class="fu">library</span>(stringr)</span></code></pre></div>
+<div class="sourceCode" id="cb662"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb662-1"><a href="mad-indicator.html#cb662-1" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span></code></pre></div>
+<div class="sourceCode" id="cb663"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb663-1"><a href="mad-indicator.html#cb663-1" tabindex="-1"></a>dir_input_data <span class="ot">=</span> <span class="st">&quot;C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/input_data/Chad&quot;</span></span>
+<span id="cb663-2"><a href="mad-indicator.html#cb663-2" tabindex="-1"></a>dir_output_data <span class="ot">=</span> <span class="st">&quot;C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/output_data/Chad&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb664"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb664-1"><a href="mad-indicator.html#cb664-1" tabindex="-1"></a>Chad_Harmonization_variables <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="fu">paste0</span>(dir_input_data,<span class="st">&quot;/Chad_Harmonization.xlsx&quot;</span>), </span>
+<span id="cb664-2"><a href="mad-indicator.html#cb664-2" tabindex="-1"></a>    <span class="at">sheet =</span> <span class="st">&quot;variables_harmonization&quot;</span>)</span>
+<span id="cb664-3"><a href="mad-indicator.html#cb664-3" tabindex="-1"></a><span class="co">#View(Chad_Harmonization_variables)</span></span>
+<span id="cb664-4"><a href="mad-indicator.html#cb664-4" tabindex="-1"></a></span>
+<span id="cb664-5"><a href="mad-indicator.html#cb664-5" tabindex="-1"></a>Chad_Harmonization_description <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="fu">paste0</span>(dir_input_data,<span class="st">&quot;/Chad_Harmonization.xlsx&quot;</span>), </span>
+<span id="cb664-6"><a href="mad-indicator.html#cb664-6" tabindex="-1"></a>    <span class="at">sheet =</span> <span class="st">&quot;description&quot;</span>)</span>
+<span id="cb664-7"><a href="mad-indicator.html#cb664-7" tabindex="-1"></a><span class="co">#View(Chad_Harmonization_description)</span></span></code></pre></div>
+<div class="sourceCode" id="cb665"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb665-1"><a href="mad-indicator.html#cb665-1" tabindex="-1"></a>lst_data <span class="ot">=</span> Chad_Harmonization_description<span class="sc">$</span>Data</span>
+<span id="cb665-2"><a href="mad-indicator.html#cb665-2" tabindex="-1"></a>lst_test <span class="ot">=</span> Chad_Harmonization_description<span class="sc">$</span>Name</span>
+<span id="cb665-3"><a href="mad-indicator.html#cb665-3" tabindex="-1"></a></span>
+<span id="cb665-4"><a href="mad-indicator.html#cb665-4" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(lst_data)) {                              <span class="co"># Head of for-loop</span></span>
+<span id="cb665-5"><a href="mad-indicator.html#cb665-5" tabindex="-1"></a>  <span class="fu">assign</span>(lst_test[i],                                   <span class="co"># Read and store data frames</span></span>
+<span id="cb665-6"><a href="mad-indicator.html#cb665-6" tabindex="-1"></a>         <span class="fu">read_sav</span>(<span class="fu">paste0</span>(dir_input_data,<span class="st">&quot;/&quot;</span>,lst_data[i])))</span>
+<span id="cb665-7"><a href="mad-indicator.html#cb665-7" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="self-evaluated-resilience-score-sers.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="mddw-indicator.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/USERNAME/REPO/edit/BRANCH/09_WFP_Chad_MAD_data.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["_main.pdf", "_main.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

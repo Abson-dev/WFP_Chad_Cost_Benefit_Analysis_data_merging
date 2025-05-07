@@ -1,0 +1,5 @@
+# Overview
+
+This report analyzes ten rounds of household survey data collected in Chad from 2018 to 2023, with a primary focus on evaluating the quality and consistency of metadata and location-related variables. The findings reveal significant issues in data structure and standardization that undermine the integrity and usability of the dataset for longitudinal and comparative analysis.
+A major concern is the inconsistent naming of key demographic and household variables across different survey rounds. These discrepancies in variable names, labels, and formats complicate the process of merging datasets, aligning variables, and conducting reliable year-to-year comparisons. Additionally, the report documents numerous gaps in the data—specifically, missing entries for crucial variables—which further obstruct efforts to perform robust trend analysis or generate comprehensive reports.
+

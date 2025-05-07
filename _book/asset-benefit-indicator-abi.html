@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>8 ASSET BENEFIT INDICATOR (ABI) | WFP datasets wrangling - Chad : HDDS</title>
+  <meta name="description" content="8 ASSET BENEFIT INDICATOR (ABI) | WFP datasets wrangling - Chad : HDDS" />
+  <meta name="generator" content="bookdown 0.37 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="8 ASSET BENEFIT INDICATOR (ABI) | WFP datasets wrangling - Chad : HDDS" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="8 ASSET BENEFIT INDICATOR (ABI) | WFP datasets wrangling - Chad : HDDS" />
+  
+  
+  
+
+<meta name="author" content="Aboubacar HEMA" />
+
+
+<meta name="date" content="2025-05-07" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html"/>
+<link rel="next" href="self-evaluated-resilience-score-sers.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">A Minimal Book Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="overview.html"><a href="overview.html"><i class="fa fa-check"></i><b>1</b> Overview</a></li>
+<li class="chapter" data-level="2" data-path="administrative-check.html"><a href="administrative-check.html"><i class="fa fa-check"></i><b>2</b> Administrative check</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="administrative-check.html"><a href="administrative-check.html#sitevillage"><i class="fa fa-check"></i><b>2.1</b> Site/Village</a></li>
+<li class="chapter" data-level="2.2" data-path="administrative-check.html"><a href="administrative-check.html#baseline-2018"><i class="fa fa-check"></i><b>2.2</b> Baseline 2018</a></li>
+<li class="chapter" data-level="2.3" data-path="administrative-check.html"><a href="administrative-check.html#ea-2019"><i class="fa fa-check"></i><b>2.3</b> EA 2019</a></li>
+<li class="chapter" data-level="2.4" data-path="administrative-check.html"><a href="administrative-check.html#ea-2020"><i class="fa fa-check"></i><b>2.4</b> EA 2020</a></li>
+<li class="chapter" data-level="2.5" data-path="administrative-check.html"><a href="administrative-check.html#ea-2021"><i class="fa fa-check"></i><b>2.5</b> EA 2021</a></li>
+<li class="chapter" data-level="2.6" data-path="administrative-check.html"><a href="administrative-check.html#ea-2022"><i class="fa fa-check"></i><b>2.6</b> EA 2022</a></li>
+<li class="chapter" data-level="2.7" data-path="administrative-check.html"><a href="administrative-check.html#ea-2023"><i class="fa fa-check"></i><b>2.7</b> EA 2023</a></li>
+<li class="chapter" data-level="2.8" data-path="administrative-check.html"><a href="administrative-check.html#pdm-2020"><i class="fa fa-check"></i><b>2.8</b> PDM 2020</a></li>
+<li class="chapter" data-level="2.9" data-path="administrative-check.html"><a href="administrative-check.html#pdm-2021"><i class="fa fa-check"></i><b>2.9</b> PDM 2021</a></li>
+<li class="chapter" data-level="2.10" data-path="administrative-check.html"><a href="administrative-check.html#pdm-2022"><i class="fa fa-check"></i><b>2.10</b> PDM 2022</a></li>
+<li class="chapter" data-level="2.11" data-path="administrative-check.html"><a href="administrative-check.html#pdm-2023"><i class="fa fa-check"></i><b>2.11</b> PDM 2023</a></li>
+<li class="chapter" data-level="2.12" data-path="administrative-check.html"><a href="administrative-check.html#date-format-check"><i class="fa fa-check"></i><b>2.12</b> Date format check</a></li>
+<li class="chapter" data-level="2.13" data-path="administrative-check.html"><a href="administrative-check.html#merging-all-data"><i class="fa fa-check"></i><b>2.13</b> Merging all data</a></li>
+<li class="chapter" data-level="2.14" data-path="administrative-check.html"><a href="administrative-check.html#export-all-data"><i class="fa fa-check"></i><b>2.14</b> Export all data</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="household-characteristics.html"><a href="household-characteristics.html"><i class="fa fa-check"></i><b>3</b> Household characteristics</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="household-characteristics.html"><a href="household-characteristics.html#gender-recodification"><i class="fa fa-check"></i><b>3.1</b> Gender recodification</a></li>
+<li class="chapter" data-level="3.2" data-path="household-characteristics.html"><a href="household-characteristics.html#hh-age"><i class="fa fa-check"></i><b>3.2</b> HH Age</a></li>
+<li class="chapter" data-level="3.3" data-path="household-characteristics.html"><a href="household-characteristics.html#household-head-education-level"><i class="fa fa-check"></i><b>3.3</b> Household head education level</a></li>
+<li class="chapter" data-level="3.4" data-path="household-characteristics.html"><a href="household-characteristics.html#hhhmainactivity"><i class="fa fa-check"></i><b>3.4</b> HHHMainActivity</a></li>
+<li class="chapter" data-level="3.5" data-path="household-characteristics.html"><a href="household-characteristics.html#hhhmatrimonial"><i class="fa fa-check"></i><b>3.5</b> HHHMatrimonial</a></li>
+<li class="chapter" data-level="3.6" data-path="household-characteristics.html"><a href="household-characteristics.html#hhsourceincome"><i class="fa fa-check"></i><b>3.6</b> HHSourceIncome</a></li>
+<li class="chapter" data-level="3.7" data-path="household-characteristics.html"><a href="household-characteristics.html#merging-all-data-1"><i class="fa fa-check"></i><b>3.7</b> Merging all data</a></li>
+<li class="chapter" data-level="3.8" data-path="household-characteristics.html"><a href="household-characteristics.html#compute-household-size-variable"><i class="fa fa-check"></i><b>3.8</b> Compute household size variable</a></li>
+<li class="chapter" data-level="3.9" data-path="household-characteristics.html"><a href="household-characteristics.html#export-all-data-1"><i class="fa fa-check"></i><b>3.9</b> Export all data</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="assistance.html"><a href="assistance.html"><i class="fa fa-check"></i><b>4</b> Assistance</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="assistance.html"><a href="assistance.html#date-assistance-check"><i class="fa fa-check"></i><b>4.1</b> Date assistance check</a></li>
+<li class="chapter" data-level="4.2" data-path="assistance.html"><a href="assistance.html#date-last-assistance-check"><i class="fa fa-check"></i><b>4.2</b> Date last assistance check</a></li>
+<li class="chapter" data-level="4.3" data-path="assistance.html"><a href="assistance.html#montant"><i class="fa fa-check"></i><b>4.3</b> Montant</a></li>
+<li class="chapter" data-level="4.4" data-path="assistance.html"><a href="assistance.html#type-dassistance"><i class="fa fa-check"></i><b>4.4</b> Type d’assistance</a>
+<ul>
+<li class="chapter" data-level="4.4.1" data-path="assistance.html"><a href="assistance.html#baseline-2018-1"><i class="fa fa-check"></i><b>4.4.1</b> Baseline 2018</a></li>
+<li class="chapter" data-level="4.4.2" data-path="assistance.html"><a href="assistance.html#ea-2019-1"><i class="fa fa-check"></i><b>4.4.2</b> EA 2019</a></li>
+<li class="chapter" data-level="4.4.3" data-path="assistance.html"><a href="assistance.html#ea-2020-1"><i class="fa fa-check"></i><b>4.4.3</b> EA 2020</a></li>
+<li class="chapter" data-level="4.4.4" data-path="assistance.html"><a href="assistance.html#ea-2021-1"><i class="fa fa-check"></i><b>4.4.4</b> EA 2021</a></li>
+<li class="chapter" data-level="4.4.5" data-path="assistance.html"><a href="assistance.html#ea-2022-1"><i class="fa fa-check"></i><b>4.4.5</b> EA 2022</a></li>
+<li class="chapter" data-level="4.4.6" data-path="assistance.html"><a href="assistance.html#ea-2023-1"><i class="fa fa-check"></i><b>4.4.6</b> EA 2023</a></li>
+<li class="chapter" data-level="4.4.7" data-path="assistance.html"><a href="assistance.html#pdm-2020-1"><i class="fa fa-check"></i><b>4.4.7</b> PDM 2020</a></li>
+<li class="chapter" data-level="4.4.8" data-path="assistance.html"><a href="assistance.html#pdm-2021-1"><i class="fa fa-check"></i><b>4.4.8</b> PDM 2021</a></li>
+<li class="chapter" data-level="4.4.9" data-path="assistance.html"><a href="assistance.html#pdm-2022-1"><i class="fa fa-check"></i><b>4.4.9</b> PDM 2022</a></li>
+<li class="chapter" data-level="4.4.10" data-path="assistance.html"><a href="assistance.html#pdm-2023-1"><i class="fa fa-check"></i><b>4.4.10</b> PDM 2023</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="assistance.html"><a href="assistance.html#merging-all-data-2"><i class="fa fa-check"></i><b>4.5</b> Merging all data</a></li>
+<li class="chapter" data-level="4.6" data-path="assistance.html"><a href="assistance.html#export-all-data-2"><i class="fa fa-check"></i><b>4.6</b> Export all data</a></li>
+<li class="chapter" data-level="4.7" data-path="assistance.html"><a href="assistance.html#keep-assistance-original-variables"><i class="fa fa-check"></i><b>4.7</b> Keep assistance original variables</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="food-consumption-score.html"><a href="food-consumption-score.html"><i class="fa fa-check"></i><b>5</b> Food consumption score</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-céréales-et-tubercules"><i class="fa fa-check"></i><b>5.1</b> FCS : Céréales et tubercules</a></li>
+<li class="chapter" data-level="5.2" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-céréales-et-tubercules---sources"><i class="fa fa-check"></i><b>5.2</b> FCS : Céréales et tubercules - Sources</a></li>
+<li class="chapter" data-level="5.3" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-légumineuses"><i class="fa fa-check"></i><b>5.3</b> FCS : Légumineuses</a></li>
+<li class="chapter" data-level="5.4" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-légumineuses---sources"><i class="fa fa-check"></i><b>5.4</b> FCS : Légumineuses - Sources</a></li>
+<li class="chapter" data-level="5.5" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-lait-et-produits-laitiers"><i class="fa fa-check"></i><b>5.5</b> FCS : Lait et produits laitiers</a></li>
+<li class="chapter" data-level="5.6" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-lait-et-produits-laitiers---sources"><i class="fa fa-check"></i><b>5.6</b> FCS : Lait et produits laitiers - Sources</a></li>
+<li class="chapter" data-level="5.7" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-viande-poisson-et-oeufs"><i class="fa fa-check"></i><b>5.7</b> FCS: Viande, poisson et oeufs</a></li>
+<li class="chapter" data-level="5.8" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-viande-poisson-et-oeufs---sources"><i class="fa fa-check"></i><b>5.8</b> FCS: Viande, poisson et oeufs - Sources</a></li>
+<li class="chapter" data-level="5.9" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-chairviande-rouge"><i class="fa fa-check"></i><b>5.9</b> FCS : Chair/viande rouge</a></li>
+<li class="chapter" data-level="5.10" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-viande-dorgane-telle-que-foie-reins-coeur-et-ou-autres-abats"><i class="fa fa-check"></i><b>5.10</b> FCS : Viande d’organe, telle que: (foie, reins, coeur et / ou autres abats)</a></li>
+<li class="chapter" data-level="5.11" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-poissons-et-coquillage-tels-que-poissons-y-compris-le-thon-en-conserve-les-escargots-et-ou-dautres-fruits-de-mer-remplacer-par-des-exemples-localement-pertinents"><i class="fa fa-check"></i><b>5.11</b> FCS : Poissons et coquillage, tels que: (poissons, y compris le thon en conserve, les escargots et / ou d’autres fruits de mer remplacer par des exemples localement pertinents )</a></li>
+<li class="chapter" data-level="5.12" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-oeufs"><i class="fa fa-check"></i><b>5.12</b> FCS : Oeufs</a></li>
+<li class="chapter" data-level="5.13" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-légumes-et-feuilles-tels-que-épinards-oignons-tomates-carottes-poivrons-haricots-verts-laitue-etc"><i class="fa fa-check"></i><b>5.13</b> FCS : Légumes et feuilles , tels que : (épinards, oignons, tomates, carottes, poivrons, haricots verts, laitue, etc)</a></li>
+<li class="chapter" data-level="5.14" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-légumes-et-feuilles-tels-que-épinards-oignons-tomates-carottes-poivrons-haricots-verts-laitue-etc---sources"><i class="fa fa-check"></i><b>5.14</b> FCS : Légumes et feuilles , tels que : (épinards, oignons, tomates, carottes, poivrons, haricots verts, laitue, etc) - Sources</a></li>
+<li class="chapter" data-level="5.15" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-légumes-oranges-légumes-riches-en-vitamine-a"><i class="fa fa-check"></i><b>5.15</b> FCS : Légumes oranges (légumes riches en Vitamine A)</a></li>
+<li class="chapter" data-level="5.16" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-légumes-à-feuilles-vertes-tels-que-épinards-brocoli-amarante-etou-autres-feuilles-vert-foncé-feuilles-de-manioc"><i class="fa fa-check"></i><b>5.16</b> FCS : Légumes à feuilles vertes,, tels que : ( épinards, brocoli, amarante et/ou autres feuilles vert foncé , feuilles de manioc )</a></li>
+<li class="chapter" data-level="5.17" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-fruits-tels-que-banane-pomme-citron-mangue-papaye-abricot-pêche-etc"><i class="fa fa-check"></i><b>5.17</b> FCS : Fruits, tels que : (banane, pomme, citron, mangue, papaye, abricot, pêche, etc)</a></li>
+<li class="chapter" data-level="5.18" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-huilematières-grassesbeurre-tels-que-huile-végétale-huile-de-palme-beurre-de-karité-margarine-autres-huiles-matières-grasses"><i class="fa fa-check"></i><b>5.18</b> FCS : Huile/matières grasses/beurre: tels que (huile végétale, huile de palme, beurre de karité, margarine, autres huiles / matières grasses)</a></li>
+<li class="chapter" data-level="5.19" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-huilematières-grassesbeurre-tels-que-huile-végétale-huile-de-palme-beurre-de-karité-margarine-autres-huiles-matières-grasses---sources"><i class="fa fa-check"></i><b>5.19</b> FCS : Huile/matières grasses/beurre: tels que (huile végétale, huile de palme, beurre de karité, margarine, autres huiles / matières grasses) - Sources</a></li>
+<li class="chapter" data-level="5.20" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fsc-sucre-ou-sucreries-tels-que-sucre-miel-confiture-gâteau-bonbons-biscuits-viennoiserie-et-autres-produits-sucrés-boissons-sucrées"><i class="fa fa-check"></i><b>5.20</b> FSC : Sucre ou sucreries, tels que (sucre, miel, confiture, gâteau, bonbons, biscuits, viennoiserie et autres produits sucrés (boissons sucrées) )</a></li>
+<li class="chapter" data-level="5.21" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fsc-sucre-ou-sucreries-tels-que-sucre-miel-confiture-gâteau-bonbons-biscuits-viennoiserie-et-autres-produits-sucrés-boissons-sucrées---sources"><i class="fa fa-check"></i><b>5.21</b> FSC : Sucre ou sucreries, tels que (sucre, miel, confiture, gâteau, bonbons, biscuits, viennoiserie et autres produits sucrés (boissons sucrées) ) - Sources</a></li>
+<li class="chapter" data-level="5.22" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-condimentsépices-tels-que-thé-cafécacao-sel-ail-épices-levurelevure-chimique-tomatesauce-viande-ou-poisson-comme-condiment-condiments-incluant-des-petites-quantités-de-laitthé-café."><i class="fa fa-check"></i><b>5.22</b> FCS : Condiments/épices: tels que (thé, café/cacao, sel, ail, épices, levure/levure chimique, tomate/sauce, viande ou poisson comme condiment, condiments incluant des petites quantités de lait/thé, café.) ?</a></li>
+<li class="chapter" data-level="5.23" data-path="food-consumption-score.html"><a href="food-consumption-score.html#merging-all-data-3"><i class="fa fa-check"></i><b>5.23</b> Merging all data</a></li>
+<li class="chapter" data-level="5.24" data-path="food-consumption-score.html"><a href="food-consumption-score.html#fcs-computation"><i class="fa fa-check"></i><b>5.24</b> FCS computation</a></li>
+<li class="chapter" data-level="5.25" data-path="food-consumption-score.html"><a href="food-consumption-score.html#export-all-data-3"><i class="fa fa-check"></i><b>5.25</b> Export all data</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html"><a href="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html"><i class="fa fa-check"></i><b>6</b> Stratégies d’adaptation aux moyens d’existence (LhCSI)</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html"><a href="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html#lhcsi-vendre-des-actifsbiens-non-productifs-du-ménage-radio-meuble-réfrigérateur-télévision-bijoux-etc."><i class="fa fa-check"></i><b>6.1</b> LhCSI : Vendre des actifs/biens non productifs du ménage (radio, meuble, réfrigérateur, télévision, bijoux etc.)</a></li>
+<li class="chapter" data-level="6.2" data-path="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html"><a href="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html#lhcsi-vendre-plus-danimaux-non-productifs-que-dhabitude"><i class="fa fa-check"></i><b>6.2</b> LhCSI : Vendre plus d’animaux (non-productifs) que d’habitude</a></li>
+<li class="chapter" data-level="6.3" data-path="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html"><a href="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html#lhcsi-dépenser-lépargne-en-raison-dun-manque-de-nourriture-ou-dargent-pour-acheter-de-la-nourriture"><i class="fa fa-check"></i><b>6.3</b> LhCSI : Dépenser l’épargne en raison d’un manque de nourriture ou d’argent pour acheter de la nourriture ?</a></li>
+<li class="chapter" data-level="6.4" data-path="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html"><a href="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html#lhcsi-emprunter-de-largent-nourriture-auprès-dun-prêteur-formel-banque"><i class="fa fa-check"></i><b>6.4</b> LhCSI : Emprunter de l’argent / nourriture auprès d’un prêteur formel /banque</a></li>
+<li class="chapter" data-level="6.5" data-path="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html"><a href="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html#lhcsi-réduire-les-dépenses-non-alimentaires-essentielles-telles-que-léducation-la-santé-dont-de-médicaments"><i class="fa fa-check"></i><b>6.5</b> LhCSI : Réduire les dépenses non alimentaires essentielles telles que l’éducation, la santé (dont de médicaments)</a></li>
+<li class="chapter" data-level="6.6" data-path="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html"><a href="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html#lhcsi-vendre-des-biens-productifs-ou-des-moyens-de-transport-machine-à-coudre-brouette-vélo-car-etc."><i class="fa fa-check"></i><b>6.6</b> LhCSI : Vendre des biens productifs ou des moyens de transport (machine à coudre, brouette, vélo, car, etc.)</a></li>
+<li class="chapter" data-level="6.7" data-path="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html"><a href="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html#lhcsi-retirer-les-enfants-de-lécole"><i class="fa fa-check"></i><b>6.7</b> LhCSI : Retirer les enfants de l’école</a></li>
+<li class="chapter" data-level="6.8" data-path="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html"><a href="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html#lhcsi-vendre-la-maison-ou-des-terrains"><i class="fa fa-check"></i><b>6.8</b> LhCSI : Vendre la maison ou des terrains</a></li>
+<li class="chapter" data-level="6.9" data-path="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html"><a href="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html#lhcsi-mendier"><i class="fa fa-check"></i><b>6.9</b> LhCSI : Mendier</a></li>
+<li class="chapter" data-level="6.10" data-path="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html"><a href="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html#lhcsi-vendre-les-derniers-animaux-femelles-reproductrices"><i class="fa fa-check"></i><b>6.10</b> LhCSI : Vendre les derniers animaux femelles reproductrices</a></li>
+<li class="chapter" data-level="6.11" data-path="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html"><a href="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html#merging-all-data-4"><i class="fa fa-check"></i><b>6.11</b> Merging all data</a></li>
+<li class="chapter" data-level="6.12" data-path="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html"><a href="stratégies-dadaptation-aux-moyens-dexistence-lhcsi.html#export-all-data-4"><i class="fa fa-check"></i><b>6.12</b> Export all data</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html"><a href="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html"><i class="fa fa-check"></i><b>7</b> Reduced coping strategy index ou l’indice réduit des stratégies de survie (rCSI)</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html"><a href="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html#rcsi-consommer-des-aliments-moins-préférés-et-moins-chers"><i class="fa fa-check"></i><b>7.1</b> rCSI : Consommer des aliments moins préférés et moins chers</a></li>
+<li class="chapter" data-level="7.2" data-path="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html"><a href="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html#rcsi-emprunter-de-la-nourriture-ou-compter-sur-laide-des-parentsamis"><i class="fa fa-check"></i><b>7.2</b> rCSI : Emprunter de la nourriture ou compter sur l’aide des parents/amis</a></li>
+<li class="chapter" data-level="7.3" data-path="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html"><a href="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html#rcsi-diminuer-la-quantité-consommée-pendant-les-repas"><i class="fa fa-check"></i><b>7.3</b> rCSI : Diminuer la quantité consommée pendant les repas</a></li>
+<li class="chapter" data-level="7.4" data-path="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html"><a href="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html#rcsi-restreindre-la-consommation-des-adultes-pour-nourrir-les-enfants"><i class="fa fa-check"></i><b>7.4</b> rCSI : Restreindre la consommation des adultes pour nourrir les enfants</a></li>
+<li class="chapter" data-level="7.5" data-path="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html"><a href="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html#rcsi-diminuer-le-nombre-de-repas-par-jour"><i class="fa fa-check"></i><b>7.5</b> rCSI : Diminuer le nombre de repas par jour</a></li>
+<li class="chapter" data-level="7.6" data-path="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html"><a href="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html#merging-all-data-5"><i class="fa fa-check"></i><b>7.6</b> Merging all data</a></li>
+<li class="chapter" data-level="7.7" data-path="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html"><a href="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html#export-all-data-5"><i class="fa fa-check"></i><b>7.7</b> Export all data</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="asset-benefit-indicator-abi.html"><a href="asset-benefit-indicator-abi.html"><i class="fa fa-check"></i><b>8</b> ASSET BENEFIT INDICATOR (ABI)</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="asset-benefit-indicator-abi.html"><a href="asset-benefit-indicator-abi.html#ea-2019-2"><i class="fa fa-check"></i><b>8.1</b> EA 2019</a></li>
+<li class="chapter" data-level="8.2" data-path="asset-benefit-indicator-abi.html"><a href="asset-benefit-indicator-abi.html#ea-2020-2"><i class="fa fa-check"></i><b>8.2</b> EA 2020</a></li>
+<li class="chapter" data-level="8.3" data-path="asset-benefit-indicator-abi.html"><a href="asset-benefit-indicator-abi.html#ea-2021-2"><i class="fa fa-check"></i><b>8.3</b> EA 2021</a></li>
+<li class="chapter" data-level="8.4" data-path="asset-benefit-indicator-abi.html"><a href="asset-benefit-indicator-abi.html#ea-2022-2"><i class="fa fa-check"></i><b>8.4</b> EA 2022</a></li>
+<li class="chapter" data-level="8.5" data-path="asset-benefit-indicator-abi.html"><a href="asset-benefit-indicator-abi.html#ea-2023-2"><i class="fa fa-check"></i><b>8.5</b> EA 2023</a></li>
+<li class="chapter" data-level="8.6" data-path="asset-benefit-indicator-abi.html"><a href="asset-benefit-indicator-abi.html#pdm-2020-2"><i class="fa fa-check"></i><b>8.6</b> PDM 2020</a></li>
+<li class="chapter" data-level="8.7" data-path="asset-benefit-indicator-abi.html"><a href="asset-benefit-indicator-abi.html#pdm-2021-2"><i class="fa fa-check"></i><b>8.7</b> PDM 2021</a></li>
+<li class="chapter" data-level="8.8" data-path="asset-benefit-indicator-abi.html"><a href="asset-benefit-indicator-abi.html#pdm-2022-2"><i class="fa fa-check"></i><b>8.8</b> PDM 2022</a></li>
+<li class="chapter" data-level="8.9" data-path="asset-benefit-indicator-abi.html"><a href="asset-benefit-indicator-abi.html#pdm-2023-2"><i class="fa fa-check"></i><b>8.9</b> PDM 2023</a></li>
+<li class="chapter" data-level="8.10" data-path="asset-benefit-indicator-abi.html"><a href="asset-benefit-indicator-abi.html#merging-all-data-6"><i class="fa fa-check"></i><b>8.10</b> Merging all data</a></li>
+<li class="chapter" data-level="8.11" data-path="asset-benefit-indicator-abi.html"><a href="asset-benefit-indicator-abi.html#export-all-data-6"><i class="fa fa-check"></i><b>8.11</b> Export all data</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="self-evaluated-resilience-score-sers.html"><a href="self-evaluated-resilience-score-sers.html"><i class="fa fa-check"></i><b>9</b> Self-evaluated resilience score (SERS)</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="self-evaluated-resilience-score-sers.html"><a href="self-evaluated-resilience-score-sers.html#ea-2020-3"><i class="fa fa-check"></i><b>9.1</b> EA 2020</a></li>
+<li class="chapter" data-level="9.2" data-path="self-evaluated-resilience-score-sers.html"><a href="self-evaluated-resilience-score-sers.html#ea-2021-3"><i class="fa fa-check"></i><b>9.2</b> EA 2021</a></li>
+<li class="chapter" data-level="9.3" data-path="self-evaluated-resilience-score-sers.html"><a href="self-evaluated-resilience-score-sers.html#ea-2022-3"><i class="fa fa-check"></i><b>9.3</b> EA 2022</a></li>
+<li class="chapter" data-level="9.4" data-path="self-evaluated-resilience-score-sers.html"><a href="self-evaluated-resilience-score-sers.html#ea-2023-3"><i class="fa fa-check"></i><b>9.4</b> EA 2023</a></li>
+<li class="chapter" data-level="9.5" data-path="self-evaluated-resilience-score-sers.html"><a href="self-evaluated-resilience-score-sers.html#pdm-2022-3"><i class="fa fa-check"></i><b>9.5</b> PDM 2022</a></li>
+<li class="chapter" data-level="9.6" data-path="self-evaluated-resilience-score-sers.html"><a href="self-evaluated-resilience-score-sers.html#pdm-2023-3"><i class="fa fa-check"></i><b>9.6</b> PDM 2023</a></li>
+<li class="chapter" data-level="9.7" data-path="self-evaluated-resilience-score-sers.html"><a href="self-evaluated-resilience-score-sers.html#merging-all-data-7"><i class="fa fa-check"></i><b>9.7</b> Merging all data</a></li>
+<li class="chapter" data-level="9.8" data-path="self-evaluated-resilience-score-sers.html"><a href="self-evaluated-resilience-score-sers.html#export-all-data-7"><i class="fa fa-check"></i><b>9.8</b> Export all data</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="mad-indicator.html"><a href="mad-indicator.html"><i class="fa fa-check"></i><b>10</b> MAD indicator</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="mad-indicator.html"><a href="mad-indicator.html#data-consistency-check"><i class="fa fa-check"></i><b>10.1</b> Data consistency Check</a></li>
+<li class="chapter" data-level="10.2" data-path="mad-indicator.html"><a href="mad-indicator.html#drop-duplicated-observations"><i class="fa fa-check"></i><b>10.2</b> Drop duplicated observations</a></li>
+<li class="chapter" data-level="10.3" data-path="mad-indicator.html"><a href="mad-indicator.html#consent-check"><i class="fa fa-check"></i><b>10.3</b> Consent check</a></li>
+<li class="chapter" data-level="10.4" data-path="mad-indicator.html"><a href="mad-indicator.html#id-check"><i class="fa fa-check"></i><b>10.4</b> ID Check</a></li>
+<li class="chapter" data-level="10.5" data-path="mad-indicator.html"><a href="mad-indicator.html#ea-2021-4"><i class="fa fa-check"></i><b>10.5</b> EA 2021</a></li>
+<li class="chapter" data-level="10.6" data-path="mad-indicator.html"><a href="mad-indicator.html#ea-2022-4"><i class="fa fa-check"></i><b>10.6</b> EA 2022</a></li>
+<li class="chapter" data-level="10.7" data-path="mad-indicator.html"><a href="mad-indicator.html#ea-2023-4"><i class="fa fa-check"></i><b>10.7</b> EA 2023</a></li>
+<li class="chapter" data-level="10.8" data-path="mad-indicator.html"><a href="mad-indicator.html#pdm-2022-4"><i class="fa fa-check"></i><b>10.8</b> PDM 2022</a></li>
+<li class="chapter" data-level="10.9" data-path="mad-indicator.html"><a href="mad-indicator.html#pdm-2023-4"><i class="fa fa-check"></i><b>10.9</b> PDM 2023</a></li>
+<li class="chapter" data-level="10.10" data-path="mad-indicator.html"><a href="mad-indicator.html#régime-alimentaire-minimum-acceptable-mad"><i class="fa fa-check"></i><b>10.10</b> Régime alimentaire minimum acceptable (MAD)</a></li>
+<li class="chapter" data-level="10.11" data-path="mad-indicator.html"><a href="mad-indicator.html#export-all-data-8"><i class="fa fa-check"></i><b>10.11</b> Export all data</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="mddw-indicator.html"><a href="mddw-indicator.html"><i class="fa fa-check"></i><b>11</b> MDDW indicator</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="mddw-indicator.html"><a href="mddw-indicator.html#data-consistency-check-1"><i class="fa fa-check"></i><b>11.1</b> Data consistency Check</a></li>
+<li class="chapter" data-level="11.2" data-path="mddw-indicator.html"><a href="mddw-indicator.html#drop-duplicated-observations-1"><i class="fa fa-check"></i><b>11.2</b> Drop duplicated observations</a></li>
+<li class="chapter" data-level="11.3" data-path="mddw-indicator.html"><a href="mddw-indicator.html#consent-check-1"><i class="fa fa-check"></i><b>11.3</b> Consent check</a></li>
+<li class="chapter" data-level="11.4" data-path="mddw-indicator.html"><a href="mddw-indicator.html#id-check-1"><i class="fa fa-check"></i><b>11.4</b> ID Check</a></li>
+<li class="chapter" data-level="11.5" data-path="mddw-indicator.html"><a href="mddw-indicator.html#ea-2021-5"><i class="fa fa-check"></i><b>11.5</b> EA 2021</a></li>
+<li class="chapter" data-level="11.6" data-path="mddw-indicator.html"><a href="mddw-indicator.html#ea-2022-5"><i class="fa fa-check"></i><b>11.6</b> EA 2022</a></li>
+<li class="chapter" data-level="11.7" data-path="mddw-indicator.html"><a href="mddw-indicator.html#ea-2023-5"><i class="fa fa-check"></i><b>11.7</b> EA 2023</a></li>
+<li class="chapter" data-level="11.8" data-path="mddw-indicator.html"><a href="mddw-indicator.html#pdm-2022-5"><i class="fa fa-check"></i><b>11.8</b> PDM 2022</a></li>
+<li class="chapter" data-level="11.9" data-path="mddw-indicator.html"><a href="mddw-indicator.html#pdm-2023-5"><i class="fa fa-check"></i><b>11.9</b> PDM 2023</a></li>
+<li class="chapter" data-level="11.10" data-path="mddw-indicator.html"><a href="mddw-indicator.html#export-all-data-9"><i class="fa fa-check"></i><b>11.10</b> Export all data</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="hdds-indicator.html"><a href="hdds-indicator.html"><i class="fa fa-check"></i><b>12</b> HDDS indicator</a>
+<ul>
+<li class="chapter" data-level="12.1" data-path="hdds-indicator.html"><a href="hdds-indicator.html#data-consistency-check-2"><i class="fa fa-check"></i><b>12.1</b> Data consistency Check</a></li>
+<li class="chapter" data-level="12.2" data-path="hdds-indicator.html"><a href="hdds-indicator.html#drop-duplicated-observations-2"><i class="fa fa-check"></i><b>12.2</b> Drop duplicated observations</a></li>
+<li class="chapter" data-level="12.3" data-path="hdds-indicator.html"><a href="hdds-indicator.html#consent-check-2"><i class="fa fa-check"></i><b>12.3</b> Consent check</a></li>
+<li class="chapter" data-level="12.4" data-path="hdds-indicator.html"><a href="hdds-indicator.html#id-check-2"><i class="fa fa-check"></i><b>12.4</b> ID Check</a></li>
+<li class="chapter" data-level="12.5" data-path="hdds-indicator.html"><a href="hdds-indicator.html#hdds-check"><i class="fa fa-check"></i><b>12.5</b> HDDS Check</a></li>
+<li class="chapter" data-level="12.6" data-path="hdds-indicator.html"><a href="hdds-indicator.html#export-all-data-10"><i class="fa fa-check"></i><b>12.6</b> Export all data</a></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="wfp-chad-cba-data-preparation-i.html"><a href="wfp-chad-cba-data-preparation-i.html"><i class="fa fa-check"></i><b>13</b> WFP Chad CBA data preparation I</a></li>
+<li class="chapter" data-level="14" data-path="wfp-chad-cba-data-preparation-ii.html"><a href="wfp-chad-cba-data-preparation-ii.html"><i class="fa fa-check"></i><b>14</b> WFP Chad CBA data preparation II</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">WFP datasets wrangling - Chad : HDDS</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="asset-benefit-indicator-abi" class="section level1 hasAnchor" number="8">
+<h1><span class="header-section-number">8</span> ASSET BENEFIT INDICATOR (ABI)<a href="asset-benefit-indicator-abi.html#asset-benefit-indicator-abi" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div class="sourceCode" id="cb609"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb609-1"><a href="asset-benefit-indicator-abi.html#cb609-1" tabindex="-1"></a>abi_variables <span class="ot">=</span> Chad_baseline_2018 <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(gtsummary<span class="sc">::</span><span class="fu">starts_with</span>(<span class="st">&quot;ABI&quot;</span>)) <span class="sc">%&gt;%</span> <span class="fu">names</span>()</span>
+<span id="cb609-2"><a href="asset-benefit-indicator-abi.html#cb609-2" tabindex="-1"></a>abi_variables <span class="ot">&lt;-</span> <span class="fu">c</span>(abi_variables,<span class="st">&quot;ActifCreationEmploi&quot;</span>,</span>
+<span id="cb609-3"><a href="asset-benefit-indicator-abi.html#cb609-3" tabindex="-1"></a><span class="st">&quot;BeneficieEmploi&quot;</span>,</span>
+<span id="cb609-4"><a href="asset-benefit-indicator-abi.html#cb609-4" tabindex="-1"></a><span class="st">&quot;TRavailMaintienActif&quot;</span>)</span>
+<span id="cb609-5"><a href="asset-benefit-indicator-abi.html#cb609-5" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb609-6"><a href="asset-benefit-indicator-abi.html#cb609-6" tabindex="-1"></a>abi_variables <span class="ot">&lt;-</span> abi_variables[<span class="sc">!</span> abi_variables <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&#39;ABISexparticipant&#39;</span>)]</span></code></pre></div>
+<div id="ea-2019-2" class="section level2 hasAnchor" number="8.1">
+<h2><span class="header-section-number">8.1</span> EA 2019<a href="asset-benefit-indicator-abi.html#ea-2019-2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb610"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb610-1"><a href="asset-benefit-indicator-abi.html#cb610-1" tabindex="-1"></a>df_2019 <span class="ot">=</span> Chad_ea_2019 <span class="sc">%&gt;%</span> </span>
+<span id="cb610-2"><a href="asset-benefit-indicator-abi.html#cb610-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(ID,abi_variables)</span>
+<span id="cb610-3"><a href="asset-benefit-indicator-abi.html#cb610-3" tabindex="-1"></a></span>
+<span id="cb610-4"><a href="asset-benefit-indicator-abi.html#cb610-4" tabindex="-1"></a>all_missing_cols <span class="ot">&lt;-</span> df_2019 <span class="sc">%&gt;%</span></span>
+<span id="cb610-5"><a href="asset-benefit-indicator-abi.html#cb610-5" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">where</span>(<span class="sc">~</span> <span class="fu">all</span>(<span class="fu">is.na</span>(.)))) <span class="sc">%&gt;%</span> <span class="fu">names</span>()</span>
+<span id="cb610-6"><a href="asset-benefit-indicator-abi.html#cb610-6" tabindex="-1"></a></span>
+<span id="cb610-7"><a href="asset-benefit-indicator-abi.html#cb610-7" tabindex="-1"></a><span class="co">#all_missing_cols</span></span>
+<span id="cb610-8"><a href="asset-benefit-indicator-abi.html#cb610-8" tabindex="-1"></a></span>
+<span id="cb610-9"><a href="asset-benefit-indicator-abi.html#cb610-9" tabindex="-1"></a>abi_variables_tmp <span class="ot">&lt;-</span> abi_variables[<span class="sc">!</span> abi_variables <span class="sc">%in%</span> all_missing_cols]</span>
+<span id="cb610-10"><a href="asset-benefit-indicator-abi.html#cb610-10" tabindex="-1"></a></span>
+<span id="cb610-11"><a href="asset-benefit-indicator-abi.html#cb610-11" tabindex="-1"></a></span>
+<span id="cb610-12"><a href="asset-benefit-indicator-abi.html#cb610-12" tabindex="-1"></a>expss<span class="sc">::</span><span class="fu">val_lab</span>(df_2019<span class="sc">$</span>ABIProteger)</span>
+<span id="cb610-13"><a href="asset-benefit-indicator-abi.html#cb610-13" tabindex="-1"></a></span>
+<span id="cb610-14"><a href="asset-benefit-indicator-abi.html#cb610-14" tabindex="-1"></a><span class="co"># Chad_ea_2019 &lt;- Chad_ea_2019 %&gt;%  </span></span>
+<span id="cb610-15"><a href="asset-benefit-indicator-abi.html#cb610-15" tabindex="-1"></a><span class="co">#   dplyr::mutate(across(abi_variables,</span></span>
+<span id="cb610-16"><a href="asset-benefit-indicator-abi.html#cb610-16" tabindex="-1"></a><span class="co">#                 ~recode(.,</span></span>
+<span id="cb610-17"><a href="asset-benefit-indicator-abi.html#cb610-17" tabindex="-1"></a><span class="co">#                   &quot;Non&quot; = 0,</span></span>
+<span id="cb610-18"><a href="asset-benefit-indicator-abi.html#cb610-18" tabindex="-1"></a><span class="co">#                   &quot;Oui&quot; = 1,</span></span>
+<span id="cb610-19"><a href="asset-benefit-indicator-abi.html#cb610-19" tabindex="-1"></a><span class="co">#                   &quot;NA&quot; = 888</span></span>
+<span id="cb610-20"><a href="asset-benefit-indicator-abi.html#cb610-20" tabindex="-1"></a><span class="co">#                  )</span></span>
+<span id="cb610-21"><a href="asset-benefit-indicator-abi.html#cb610-21" tabindex="-1"></a><span class="co">#   )</span></span>
+<span id="cb610-22"><a href="asset-benefit-indicator-abi.html#cb610-22" tabindex="-1"></a><span class="co">#   )</span></span>
+<span id="cb610-23"><a href="asset-benefit-indicator-abi.html#cb610-23" tabindex="-1"></a>df_2019 <span class="ot">&lt;-</span> df_2019 <span class="sc">%&gt;%</span></span>
+<span id="cb610-24"><a href="asset-benefit-indicator-abi.html#cb610-24" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">all_of</span>(abi_variables_tmp), <span class="sc">~</span> <span class="fu">as.character</span>(.))) <span class="sc">%&gt;%</span></span>
+<span id="cb610-25"><a href="asset-benefit-indicator-abi.html#cb610-25" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">all_of</span>(abi_variables_tmp), <span class="sc">~</span> dplyr<span class="sc">::</span><span class="fu">recode</span>(., <span class="st">&quot;Non&quot;</span> <span class="ot">=</span> <span class="dv">0</span>, <span class="st">&quot;Oui&quot;</span> <span class="ot">=</span> <span class="dv">1</span>,<span class="st">&quot;NA&quot;</span> <span class="ot">=</span> <span class="dv">888</span>)))</span>
+<span id="cb610-26"><a href="asset-benefit-indicator-abi.html#cb610-26" tabindex="-1"></a></span>
+<span id="cb610-27"><a href="asset-benefit-indicator-abi.html#cb610-27" tabindex="-1"></a></span>
+<span id="cb610-28"><a href="asset-benefit-indicator-abi.html#cb610-28" tabindex="-1"></a>df_2019 <span class="ot">&lt;-</span> df_2019 <span class="sc">%&gt;%</span> </span>
+<span id="cb610-29"><a href="asset-benefit-indicator-abi.html#cb610-29" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="fu">across</span>(abi_variables_tmp,</span>
+<span id="cb610-30"><a href="asset-benefit-indicator-abi.html#cb610-30" tabindex="-1"></a>                <span class="sc">~</span><span class="fu">labelled</span>(., <span class="at">labels =</span> <span class="fu">c</span>(</span>
+<span id="cb610-31"><a href="asset-benefit-indicator-abi.html#cb610-31" tabindex="-1"></a>                  <span class="st">&quot;Non&quot;</span> <span class="ot">=</span> <span class="dv">0</span>,</span>
+<span id="cb610-32"><a href="asset-benefit-indicator-abi.html#cb610-32" tabindex="-1"></a>                  <span class="st">&quot;Oui&quot;</span> <span class="ot">=</span> <span class="dv">1</span>,</span>
+<span id="cb610-33"><a href="asset-benefit-indicator-abi.html#cb610-33" tabindex="-1"></a>                  <span class="st">&quot;Ne sait pas&quot;</span> <span class="ot">=</span> <span class="dv">888</span></span>
+<span id="cb610-34"><a href="asset-benefit-indicator-abi.html#cb610-34" tabindex="-1"></a>                )</span>
+<span id="cb610-35"><a href="asset-benefit-indicator-abi.html#cb610-35" tabindex="-1"></a>                )</span>
+<span id="cb610-36"><a href="asset-benefit-indicator-abi.html#cb610-36" tabindex="-1"></a>  )</span>
+<span id="cb610-37"><a href="asset-benefit-indicator-abi.html#cb610-37" tabindex="-1"></a>  )</span>
+<span id="cb610-38"><a href="asset-benefit-indicator-abi.html#cb610-38" tabindex="-1"></a>expss<span class="sc">::</span><span class="fu">val_lab</span>(df_2019<span class="sc">$</span>ABIProteger)</span>
+<span id="cb610-39"><a href="asset-benefit-indicator-abi.html#cb610-39" tabindex="-1"></a><span class="co"># haven::write_dta(df_2019,paste0(dir_output_data,&quot;/&quot;,&quot;df_2019.dta&quot;))</span></span></code></pre></div>
+</div>
+<div id="ea-2020-2" class="section level2 hasAnchor" number="8.2">
+<h2><span class="header-section-number">8.2</span> EA 2020<a href="asset-benefit-indicator-abi.html#ea-2020-2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb611"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb611-1"><a href="asset-benefit-indicator-abi.html#cb611-1" tabindex="-1"></a>df_2020 <span class="ot">=</span> Chad_ea_2020 <span class="sc">%&gt;%</span> </span>
+<span id="cb611-2"><a href="asset-benefit-indicator-abi.html#cb611-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(ID,abi_variables)</span>
+<span id="cb611-3"><a href="asset-benefit-indicator-abi.html#cb611-3" tabindex="-1"></a></span>
+<span id="cb611-4"><a href="asset-benefit-indicator-abi.html#cb611-4" tabindex="-1"></a>all_missing_cols <span class="ot">&lt;-</span> df_2020 <span class="sc">%&gt;%</span></span>
+<span id="cb611-5"><a href="asset-benefit-indicator-abi.html#cb611-5" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">where</span>(<span class="sc">~</span> <span class="fu">all</span>(<span class="fu">is.na</span>(.)))) <span class="sc">%&gt;%</span> <span class="fu">names</span>()</span>
+<span id="cb611-6"><a href="asset-benefit-indicator-abi.html#cb611-6" tabindex="-1"></a></span>
+<span id="cb611-7"><a href="asset-benefit-indicator-abi.html#cb611-7" tabindex="-1"></a><span class="co">#all_missing_cols</span></span>
+<span id="cb611-8"><a href="asset-benefit-indicator-abi.html#cb611-8" tabindex="-1"></a></span>
+<span id="cb611-9"><a href="asset-benefit-indicator-abi.html#cb611-9" tabindex="-1"></a>abi_variables_tmp <span class="ot">&lt;-</span> abi_variables[<span class="sc">!</span> abi_variables <span class="sc">%in%</span> all_missing_cols]</span>
+<span id="cb611-10"><a href="asset-benefit-indicator-abi.html#cb611-10" tabindex="-1"></a></span>
+<span id="cb611-11"><a href="asset-benefit-indicator-abi.html#cb611-11" tabindex="-1"></a></span>
+<span id="cb611-12"><a href="asset-benefit-indicator-abi.html#cb611-12" tabindex="-1"></a>expss<span class="sc">::</span><span class="fu">val_lab</span>(df_2020<span class="sc">$</span>ABIProteger)</span>
+<span id="cb611-13"><a href="asset-benefit-indicator-abi.html#cb611-13" tabindex="-1"></a></span>
+<span id="cb611-14"><a href="asset-benefit-indicator-abi.html#cb611-14" tabindex="-1"></a>df_2020 <span class="ot">&lt;-</span> df_2020 <span class="sc">%&gt;%</span></span>
+<span id="cb611-15"><a href="asset-benefit-indicator-abi.html#cb611-15" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">all_of</span>(abi_variables_tmp), <span class="sc">~</span> <span class="fu">as.character</span>(.))) <span class="sc">%&gt;%</span></span>
+<span id="cb611-16"><a href="asset-benefit-indicator-abi.html#cb611-16" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">all_of</span>(abi_variables_tmp), <span class="sc">~</span> dplyr<span class="sc">::</span><span class="fu">recode</span>(., <span class="st">&quot;0&quot;</span> <span class="ot">=</span> <span class="dv">0</span>, <span class="st">&quot;1&quot;</span> <span class="ot">=</span> <span class="dv">1</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb611-17"><a href="asset-benefit-indicator-abi.html#cb611-17" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">replace_na</span>(<span class="fu">setNames</span>(<span class="fu">as.list</span>(<span class="fu">rep</span>(<span class="dv">888</span>, <span class="fu">length</span>(abi_variables_tmp))), abi_variables_tmp))</span>
+<span id="cb611-18"><a href="asset-benefit-indicator-abi.html#cb611-18" tabindex="-1"></a></span>
+<span id="cb611-19"><a href="asset-benefit-indicator-abi.html#cb611-19" tabindex="-1"></a></span>
+<span id="cb611-20"><a href="asset-benefit-indicator-abi.html#cb611-20" tabindex="-1"></a>df_2020 <span class="ot">&lt;-</span> df_2020 <span class="sc">%&gt;%</span> </span>
+<span id="cb611-21"><a href="asset-benefit-indicator-abi.html#cb611-21" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="fu">across</span>(abi_variables_tmp,</span>
+<span id="cb611-22"><a href="asset-benefit-indicator-abi.html#cb611-22" tabindex="-1"></a>                       <span class="sc">~</span><span class="fu">labelled</span>(., <span class="at">labels =</span> <span class="fu">c</span>(</span>
+<span id="cb611-23"><a href="asset-benefit-indicator-abi.html#cb611-23" tabindex="-1"></a>                         <span class="st">&quot;Non&quot;</span> <span class="ot">=</span> <span class="dv">0</span>,</span>
+<span id="cb611-24"><a href="asset-benefit-indicator-abi.html#cb611-24" tabindex="-1"></a>                         <span class="st">&quot;Oui&quot;</span> <span class="ot">=</span> <span class="dv">1</span>,</span>
+<span id="cb611-25"><a href="asset-benefit-indicator-abi.html#cb611-25" tabindex="-1"></a>                         <span class="st">&quot;Ne sait pas&quot;</span> <span class="ot">=</span> <span class="dv">888</span></span>
+<span id="cb611-26"><a href="asset-benefit-indicator-abi.html#cb611-26" tabindex="-1"></a>                       )</span>
+<span id="cb611-27"><a href="asset-benefit-indicator-abi.html#cb611-27" tabindex="-1"></a>                       )</span>
+<span id="cb611-28"><a href="asset-benefit-indicator-abi.html#cb611-28" tabindex="-1"></a>  )</span>
+<span id="cb611-29"><a href="asset-benefit-indicator-abi.html#cb611-29" tabindex="-1"></a>  )</span>
+<span id="cb611-30"><a href="asset-benefit-indicator-abi.html#cb611-30" tabindex="-1"></a>expss<span class="sc">::</span><span class="fu">val_lab</span>(df_2020<span class="sc">$</span>ABIProteger)</span>
+<span id="cb611-31"><a href="asset-benefit-indicator-abi.html#cb611-31" tabindex="-1"></a><span class="co"># haven::write_dta(df_2020,paste0(dir_output_data,&quot;/&quot;,&quot;df_2020.dta&quot;))</span></span></code></pre></div>
+</div>
+<div id="ea-2021-2" class="section level2 hasAnchor" number="8.3">
+<h2><span class="header-section-number">8.3</span> EA 2021<a href="asset-benefit-indicator-abi.html#ea-2021-2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb612"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb612-1"><a href="asset-benefit-indicator-abi.html#cb612-1" tabindex="-1"></a>df_2021 <span class="ot">=</span> Chad_ea_2021 <span class="sc">%&gt;%</span> </span>
+<span id="cb612-2"><a href="asset-benefit-indicator-abi.html#cb612-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(ID,abi_variables)</span>
+<span id="cb612-3"><a href="asset-benefit-indicator-abi.html#cb612-3" tabindex="-1"></a></span>
+<span id="cb612-4"><a href="asset-benefit-indicator-abi.html#cb612-4" tabindex="-1"></a>all_missing_cols <span class="ot">&lt;-</span> df_2021 <span class="sc">%&gt;%</span></span>
+<span id="cb612-5"><a href="asset-benefit-indicator-abi.html#cb612-5" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">where</span>(<span class="sc">~</span> <span class="fu">all</span>(<span class="fu">is.na</span>(.)))) <span class="sc">%&gt;%</span> <span class="fu">names</span>()</span>
+<span id="cb612-6"><a href="asset-benefit-indicator-abi.html#cb612-6" tabindex="-1"></a></span>
+<span id="cb612-7"><a href="asset-benefit-indicator-abi.html#cb612-7" tabindex="-1"></a><span class="co">#all_missing_cols</span></span>
+<span id="cb612-8"><a href="asset-benefit-indicator-abi.html#cb612-8" tabindex="-1"></a></span>
+<span id="cb612-9"><a href="asset-benefit-indicator-abi.html#cb612-9" tabindex="-1"></a>abi_variables_tmp <span class="ot">&lt;-</span> abi_variables[<span class="sc">!</span> abi_variables <span class="sc">%in%</span> all_missing_cols]</span>
+<span id="cb612-10"><a href="asset-benefit-indicator-abi.html#cb612-10" tabindex="-1"></a></span>
+<span id="cb612-11"><a href="asset-benefit-indicator-abi.html#cb612-11" tabindex="-1"></a>expss<span class="sc">::</span><span class="fu">val_lab</span>(df_2021<span class="sc">$</span>ABIProteger)</span>
+<span id="cb612-12"><a href="asset-benefit-indicator-abi.html#cb612-12" tabindex="-1"></a>df_2021 <span class="ot">&lt;-</span> df_2021 <span class="sc">%&gt;%</span> </span>
+<span id="cb612-13"><a href="asset-benefit-indicator-abi.html#cb612-13" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="fu">across</span>(abi_variables_tmp,</span>
+<span id="cb612-14"><a href="asset-benefit-indicator-abi.html#cb612-14" tabindex="-1"></a>                <span class="sc">~</span><span class="fu">recode</span>(.,</span>
+<span id="cb612-15"><a href="asset-benefit-indicator-abi.html#cb612-15" tabindex="-1"></a>                  <span class="st">&quot;1&quot;</span> <span class="ot">=</span> <span class="dv">0</span>,</span>
+<span id="cb612-16"><a href="asset-benefit-indicator-abi.html#cb612-16" tabindex="-1"></a>                  <span class="st">&quot;2&quot;</span> <span class="ot">=</span> <span class="dv">1</span>,</span>
+<span id="cb612-17"><a href="asset-benefit-indicator-abi.html#cb612-17" tabindex="-1"></a>                  <span class="st">&quot;3&quot;</span> <span class="ot">=</span> <span class="dv">888</span></span>
+<span id="cb612-18"><a href="asset-benefit-indicator-abi.html#cb612-18" tabindex="-1"></a>                 )</span>
+<span id="cb612-19"><a href="asset-benefit-indicator-abi.html#cb612-19" tabindex="-1"></a>  )</span>
+<span id="cb612-20"><a href="asset-benefit-indicator-abi.html#cb612-20" tabindex="-1"></a>  )</span>
+<span id="cb612-21"><a href="asset-benefit-indicator-abi.html#cb612-21" tabindex="-1"></a>df_2021 <span class="ot">&lt;-</span> df_2021 <span class="sc">%&gt;%</span> </span>
+<span id="cb612-22"><a href="asset-benefit-indicator-abi.html#cb612-22" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="fu">across</span>(abi_variables_tmp,</span>
+<span id="cb612-23"><a href="asset-benefit-indicator-abi.html#cb612-23" tabindex="-1"></a>                <span class="sc">~</span><span class="fu">labelled</span>(., <span class="at">labels =</span> <span class="fu">c</span>(</span>
+<span id="cb612-24"><a href="asset-benefit-indicator-abi.html#cb612-24" tabindex="-1"></a>                  <span class="st">&quot;Non&quot;</span> <span class="ot">=</span> <span class="dv">0</span>,</span>
+<span id="cb612-25"><a href="asset-benefit-indicator-abi.html#cb612-25" tabindex="-1"></a>                  <span class="st">&quot;Oui&quot;</span> <span class="ot">=</span> <span class="dv">1</span>,</span>
+<span id="cb612-26"><a href="asset-benefit-indicator-abi.html#cb612-26" tabindex="-1"></a>                  <span class="st">&quot;Ne sait pas&quot;</span> <span class="ot">=</span> <span class="dv">888</span></span>
+<span id="cb612-27"><a href="asset-benefit-indicator-abi.html#cb612-27" tabindex="-1"></a>                )</span>
+<span id="cb612-28"><a href="asset-benefit-indicator-abi.html#cb612-28" tabindex="-1"></a>                )</span>
+<span id="cb612-29"><a href="asset-benefit-indicator-abi.html#cb612-29" tabindex="-1"></a>  )</span>
+<span id="cb612-30"><a href="asset-benefit-indicator-abi.html#cb612-30" tabindex="-1"></a>  )</span>
+<span id="cb612-31"><a href="asset-benefit-indicator-abi.html#cb612-31" tabindex="-1"></a>expss<span class="sc">::</span><span class="fu">val_lab</span>(df_2021<span class="sc">$</span>ABIProteger)</span></code></pre></div>
+</div>
+<div id="ea-2022-2" class="section level2 hasAnchor" number="8.4">
+<h2><span class="header-section-number">8.4</span> EA 2022<a href="asset-benefit-indicator-abi.html#ea-2022-2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb613"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb613-1"><a href="asset-benefit-indicator-abi.html#cb613-1" tabindex="-1"></a>df_2022 <span class="ot">=</span> Chad_ea_2022 <span class="sc">%&gt;%</span> </span>
+<span id="cb613-2"><a href="asset-benefit-indicator-abi.html#cb613-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(ID,abi_variables)</span>
+<span id="cb613-3"><a href="asset-benefit-indicator-abi.html#cb613-3" tabindex="-1"></a></span>
+<span id="cb613-4"><a href="asset-benefit-indicator-abi.html#cb613-4" tabindex="-1"></a>all_missing_cols <span class="ot">&lt;-</span> df_2022 <span class="sc">%&gt;%</span></span>
+<span id="cb613-5"><a href="asset-benefit-indicator-abi.html#cb613-5" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">where</span>(<span class="sc">~</span> <span class="fu">all</span>(<span class="fu">is.na</span>(.)))) <span class="sc">%&gt;%</span> <span class="fu">names</span>()</span>
+<span id="cb613-6"><a href="asset-benefit-indicator-abi.html#cb613-6" tabindex="-1"></a></span>
+<span id="cb613-7"><a href="asset-benefit-indicator-abi.html#cb613-7" tabindex="-1"></a><span class="co">#all_missing_cols</span></span>
+<span id="cb613-8"><a href="asset-benefit-indicator-abi.html#cb613-8" tabindex="-1"></a></span>
+<span id="cb613-9"><a href="asset-benefit-indicator-abi.html#cb613-9" tabindex="-1"></a>abi_variables_tmp <span class="ot">&lt;-</span> abi_variables[<span class="sc">!</span> abi_variables <span class="sc">%in%</span> all_missing_cols]</span>
+<span id="cb613-10"><a href="asset-benefit-indicator-abi.html#cb613-10" tabindex="-1"></a></span>
+<span id="cb613-11"><a href="asset-benefit-indicator-abi.html#cb613-11" tabindex="-1"></a>expss<span class="sc">::</span><span class="fu">val_lab</span>(df_2022<span class="sc">$</span>ABIProteger)</span>
+<span id="cb613-12"><a href="asset-benefit-indicator-abi.html#cb613-12" tabindex="-1"></a>df_2022 <span class="ot">&lt;-</span> df_2022 <span class="sc">%&gt;%</span> </span>
+<span id="cb613-13"><a href="asset-benefit-indicator-abi.html#cb613-13" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="fu">across</span>(abi_variables_tmp,</span>
+<span id="cb613-14"><a href="asset-benefit-indicator-abi.html#cb613-14" tabindex="-1"></a>                <span class="sc">~</span><span class="fu">recode</span>(.,</span>
+<span id="cb613-15"><a href="asset-benefit-indicator-abi.html#cb613-15" tabindex="-1"></a>                  <span class="st">&quot;1&quot;</span> <span class="ot">=</span> <span class="dv">0</span>,</span>
+<span id="cb613-16"><a href="asset-benefit-indicator-abi.html#cb613-16" tabindex="-1"></a>                  <span class="st">&quot;2&quot;</span> <span class="ot">=</span> <span class="dv">1</span>,</span>
+<span id="cb613-17"><a href="asset-benefit-indicator-abi.html#cb613-17" tabindex="-1"></a>                  <span class="st">&quot;3&quot;</span> <span class="ot">=</span> <span class="dv">888</span></span>
+<span id="cb613-18"><a href="asset-benefit-indicator-abi.html#cb613-18" tabindex="-1"></a>                 )</span>
+<span id="cb613-19"><a href="asset-benefit-indicator-abi.html#cb613-19" tabindex="-1"></a>  )</span>
+<span id="cb613-20"><a href="asset-benefit-indicator-abi.html#cb613-20" tabindex="-1"></a>  )</span>
+<span id="cb613-21"><a href="asset-benefit-indicator-abi.html#cb613-21" tabindex="-1"></a>df_2022 <span class="ot">&lt;-</span> df_2022 <span class="sc">%&gt;%</span> </span>
+<span id="cb613-22"><a href="asset-benefit-indicator-abi.html#cb613-22" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="fu">across</span>(abi_variables_tmp,</span>
+<span id="cb613-23"><a href="asset-benefit-indicator-abi.html#cb613-23" tabindex="-1"></a>                <span class="sc">~</span><span class="fu">labelled</span>(., <span class="at">labels =</span> <span class="fu">c</span>(</span>
+<span id="cb613-24"><a href="asset-benefit-indicator-abi.html#cb613-24" tabindex="-1"></a>                  <span class="st">&quot;Non&quot;</span> <span class="ot">=</span> <span class="dv">0</span>,</span>
+<span id="cb613-25"><a href="asset-benefit-indicator-abi.html#cb613-25" tabindex="-1"></a>                  <span class="st">&quot;Oui&quot;</span> <span class="ot">=</span> <span class="dv">1</span>,</span>
+<span id="cb613-26"><a href="asset-benefit-indicator-abi.html#cb613-26" tabindex="-1"></a>                  <span class="st">&quot;Ne sait pas&quot;</span> <span class="ot">=</span> <span class="dv">888</span></span>
+<span id="cb613-27"><a href="asset-benefit-indicator-abi.html#cb613-27" tabindex="-1"></a>                )</span>
+<span id="cb613-28"><a href="asset-benefit-indicator-abi.html#cb613-28" tabindex="-1"></a>                )</span>
+<span id="cb613-29"><a href="asset-benefit-indicator-abi.html#cb613-29" tabindex="-1"></a>  )</span>
+<span id="cb613-30"><a href="asset-benefit-indicator-abi.html#cb613-30" tabindex="-1"></a>  )</span>
+<span id="cb613-31"><a href="asset-benefit-indicator-abi.html#cb613-31" tabindex="-1"></a>expss<span class="sc">::</span><span class="fu">val_lab</span>(df_2022<span class="sc">$</span>ABIProteger)</span></code></pre></div>
+</div>
+<div id="ea-2023-2" class="section level2 hasAnchor" number="8.5">
+<h2><span class="header-section-number">8.5</span> EA 2023<a href="asset-benefit-indicator-abi.html#ea-2023-2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb614"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb614-1"><a href="asset-benefit-indicator-abi.html#cb614-1" tabindex="-1"></a>df_2023 <span class="ot">=</span> Chad_ea_2023 <span class="sc">%&gt;%</span> </span>
+<span id="cb614-2"><a href="asset-benefit-indicator-abi.html#cb614-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(ID,abi_variables)</span>
+<span id="cb614-3"><a href="asset-benefit-indicator-abi.html#cb614-3" tabindex="-1"></a></span>
+<span id="cb614-4"><a href="asset-benefit-indicator-abi.html#cb614-4" tabindex="-1"></a>all_missing_cols <span class="ot">&lt;-</span> df_2023 <span class="sc">%&gt;%</span></span>
+<span id="cb614-5"><a href="asset-benefit-indicator-abi.html#cb614-5" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">where</span>(<span class="sc">~</span> <span class="fu">all</span>(<span class="fu">is.na</span>(.)))) <span class="sc">%&gt;%</span> <span class="fu">names</span>()</span>
+<span id="cb614-6"><a href="asset-benefit-indicator-abi.html#cb614-6" tabindex="-1"></a></span>
+<span id="cb614-7"><a href="asset-benefit-indicator-abi.html#cb614-7" tabindex="-1"></a><span class="co">#all_missing_cols</span></span>
+<span id="cb614-8"><a href="asset-benefit-indicator-abi.html#cb614-8" tabindex="-1"></a></span>
+<span id="cb614-9"><a href="asset-benefit-indicator-abi.html#cb614-9" tabindex="-1"></a>abi_variables_tmp <span class="ot">&lt;-</span> abi_variables[<span class="sc">!</span> abi_variables <span class="sc">%in%</span> all_missing_cols]</span>
+<span id="cb614-10"><a href="asset-benefit-indicator-abi.html#cb614-10" tabindex="-1"></a></span>
+<span id="cb614-11"><a href="asset-benefit-indicator-abi.html#cb614-11" tabindex="-1"></a>expss<span class="sc">::</span><span class="fu">val_lab</span>(df_2023<span class="sc">$</span>ABIProteger)</span>
+<span id="cb614-12"><a href="asset-benefit-indicator-abi.html#cb614-12" tabindex="-1"></a><span class="co"># df_2023 &lt;- df_2023 %&gt;% </span></span>
+<span id="cb614-13"><a href="asset-benefit-indicator-abi.html#cb614-13" tabindex="-1"></a><span class="co">#   dplyr::mutate(across(abi_variables_tmp,</span></span>
+<span id="cb614-14"><a href="asset-benefit-indicator-abi.html#cb614-14" tabindex="-1"></a><span class="co">#                        ~recode(.,</span></span>
+<span id="cb614-15"><a href="asset-benefit-indicator-abi.html#cb614-15" tabindex="-1"></a><span class="co">#                                &quot;1&quot; = 0,</span></span>
+<span id="cb614-16"><a href="asset-benefit-indicator-abi.html#cb614-16" tabindex="-1"></a><span class="co">#                                &quot;2&quot; = 1,</span></span>
+<span id="cb614-17"><a href="asset-benefit-indicator-abi.html#cb614-17" tabindex="-1"></a><span class="co">#                                &quot;3&quot; = 888</span></span>
+<span id="cb614-18"><a href="asset-benefit-indicator-abi.html#cb614-18" tabindex="-1"></a><span class="co">#                        )</span></span>
+<span id="cb614-19"><a href="asset-benefit-indicator-abi.html#cb614-19" tabindex="-1"></a><span class="co">#   )</span></span>
+<span id="cb614-20"><a href="asset-benefit-indicator-abi.html#cb614-20" tabindex="-1"></a><span class="co">#   )</span></span>
+<span id="cb614-21"><a href="asset-benefit-indicator-abi.html#cb614-21" tabindex="-1"></a>df_2023 <span class="ot">&lt;-</span> df_2023 <span class="sc">%&gt;%</span> </span>
+<span id="cb614-22"><a href="asset-benefit-indicator-abi.html#cb614-22" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="fu">across</span>(abi_variables_tmp,</span>
+<span id="cb614-23"><a href="asset-benefit-indicator-abi.html#cb614-23" tabindex="-1"></a>                       <span class="sc">~</span><span class="fu">labelled</span>(., <span class="at">labels =</span> <span class="fu">c</span>(</span>
+<span id="cb614-24"><a href="asset-benefit-indicator-abi.html#cb614-24" tabindex="-1"></a>                         <span class="st">&quot;Non&quot;</span> <span class="ot">=</span> <span class="dv">0</span>,</span>
+<span id="cb614-25"><a href="asset-benefit-indicator-abi.html#cb614-25" tabindex="-1"></a>                         <span class="st">&quot;Oui&quot;</span> <span class="ot">=</span> <span class="dv">1</span>,</span>
+<span id="cb614-26"><a href="asset-benefit-indicator-abi.html#cb614-26" tabindex="-1"></a>                         <span class="st">&quot;Ne sait pas&quot;</span> <span class="ot">=</span> <span class="dv">888</span></span>
+<span id="cb614-27"><a href="asset-benefit-indicator-abi.html#cb614-27" tabindex="-1"></a>                       )</span>
+<span id="cb614-28"><a href="asset-benefit-indicator-abi.html#cb614-28" tabindex="-1"></a>                       )</span>
+<span id="cb614-29"><a href="asset-benefit-indicator-abi.html#cb614-29" tabindex="-1"></a>  )</span>
+<span id="cb614-30"><a href="asset-benefit-indicator-abi.html#cb614-30" tabindex="-1"></a>  )</span>
+<span id="cb614-31"><a href="asset-benefit-indicator-abi.html#cb614-31" tabindex="-1"></a>expss<span class="sc">::</span><span class="fu">val_lab</span>(df_2023<span class="sc">$</span>ABIProteger)</span></code></pre></div>
+</div>
+<div id="pdm-2020-2" class="section level2 hasAnchor" number="8.6">
+<h2><span class="header-section-number">8.6</span> PDM 2020<a href="asset-benefit-indicator-abi.html#pdm-2020-2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb615"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb615-1"><a href="asset-benefit-indicator-abi.html#cb615-1" tabindex="-1"></a>df_pdm_2020 <span class="ot">=</span> Chad_pdm_2020 <span class="sc">%&gt;%</span> </span>
+<span id="cb615-2"><a href="asset-benefit-indicator-abi.html#cb615-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(ID,abi_variables)</span>
+<span id="cb615-3"><a href="asset-benefit-indicator-abi.html#cb615-3" tabindex="-1"></a></span>
+<span id="cb615-4"><a href="asset-benefit-indicator-abi.html#cb615-4" tabindex="-1"></a>all_missing_cols <span class="ot">&lt;-</span> df_pdm_2020 <span class="sc">%&gt;%</span></span>
+<span id="cb615-5"><a href="asset-benefit-indicator-abi.html#cb615-5" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">where</span>(<span class="sc">~</span> <span class="fu">all</span>(<span class="fu">is.na</span>(.)))) <span class="sc">%&gt;%</span> <span class="fu">names</span>()</span>
+<span id="cb615-6"><a href="asset-benefit-indicator-abi.html#cb615-6" tabindex="-1"></a></span>
+<span id="cb615-7"><a href="asset-benefit-indicator-abi.html#cb615-7" tabindex="-1"></a><span class="co">#all_missing_cols</span></span>
+<span id="cb615-8"><a href="asset-benefit-indicator-abi.html#cb615-8" tabindex="-1"></a></span>
+<span id="cb615-9"><a href="asset-benefit-indicator-abi.html#cb615-9" tabindex="-1"></a>abi_variables_tmp <span class="ot">&lt;-</span> abi_variables[<span class="sc">!</span> abi_variables <span class="sc">%in%</span> all_missing_cols]</span>
+<span id="cb615-10"><a href="asset-benefit-indicator-abi.html#cb615-10" tabindex="-1"></a></span>
+<span id="cb615-11"><a href="asset-benefit-indicator-abi.html#cb615-11" tabindex="-1"></a></span>
+<span id="cb615-12"><a href="asset-benefit-indicator-abi.html#cb615-12" tabindex="-1"></a>expss<span class="sc">::</span><span class="fu">val_lab</span>(df_pdm_2020<span class="sc">$</span>ABIProteger)</span>
+<span id="cb615-13"><a href="asset-benefit-indicator-abi.html#cb615-13" tabindex="-1"></a></span>
+<span id="cb615-14"><a href="asset-benefit-indicator-abi.html#cb615-14" tabindex="-1"></a>df_pdm_2020 <span class="ot">&lt;-</span> df_pdm_2020 <span class="sc">%&gt;%</span></span>
+<span id="cb615-15"><a href="asset-benefit-indicator-abi.html#cb615-15" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">all_of</span>(abi_variables_tmp), <span class="sc">~</span> <span class="fu">as.character</span>(.))) <span class="sc">%&gt;%</span></span>
+<span id="cb615-16"><a href="asset-benefit-indicator-abi.html#cb615-16" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">all_of</span>(abi_variables_tmp), <span class="sc">~</span> dplyr<span class="sc">::</span><span class="fu">recode</span>(., <span class="st">&quot;0&quot;</span> <span class="ot">=</span> <span class="dv">0</span>, <span class="st">&quot;1&quot;</span> <span class="ot">=</span> <span class="dv">1</span>)))</span>
+<span id="cb615-17"><a href="asset-benefit-indicator-abi.html#cb615-17" tabindex="-1"></a>df_pdm_2020 <span class="ot">&lt;-</span> df_pdm_2020 <span class="sc">%&gt;%</span> </span>
+<span id="cb615-18"><a href="asset-benefit-indicator-abi.html#cb615-18" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="fu">across</span>(abi_variables_tmp,</span>
+<span id="cb615-19"><a href="asset-benefit-indicator-abi.html#cb615-19" tabindex="-1"></a>                       <span class="sc">~</span><span class="fu">labelled</span>(., <span class="at">labels =</span> <span class="fu">c</span>(</span>
+<span id="cb615-20"><a href="asset-benefit-indicator-abi.html#cb615-20" tabindex="-1"></a>                         <span class="st">&quot;Non&quot;</span> <span class="ot">=</span> <span class="dv">0</span>,</span>
+<span id="cb615-21"><a href="asset-benefit-indicator-abi.html#cb615-21" tabindex="-1"></a>                         <span class="st">&quot;Oui&quot;</span> <span class="ot">=</span> <span class="dv">1</span>,</span>
+<span id="cb615-22"><a href="asset-benefit-indicator-abi.html#cb615-22" tabindex="-1"></a>                         <span class="st">&quot;Ne sait pas&quot;</span> <span class="ot">=</span> <span class="dv">888</span></span>
+<span id="cb615-23"><a href="asset-benefit-indicator-abi.html#cb615-23" tabindex="-1"></a>                       )</span>
+<span id="cb615-24"><a href="asset-benefit-indicator-abi.html#cb615-24" tabindex="-1"></a>                       )</span>
+<span id="cb615-25"><a href="asset-benefit-indicator-abi.html#cb615-25" tabindex="-1"></a>  )</span>
+<span id="cb615-26"><a href="asset-benefit-indicator-abi.html#cb615-26" tabindex="-1"></a>  )</span>
+<span id="cb615-27"><a href="asset-benefit-indicator-abi.html#cb615-27" tabindex="-1"></a>expss<span class="sc">::</span><span class="fu">val_lab</span>(df_pdm_2020<span class="sc">$</span>ABIProteger)</span></code></pre></div>
+</div>
+<div id="pdm-2021-2" class="section level2 hasAnchor" number="8.7">
+<h2><span class="header-section-number">8.7</span> PDM 2021<a href="asset-benefit-indicator-abi.html#pdm-2021-2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb616"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb616-1"><a href="asset-benefit-indicator-abi.html#cb616-1" tabindex="-1"></a>df_pdm_2021 <span class="ot">=</span> Chad_pdm_2021 <span class="sc">%&gt;%</span> </span>
+<span id="cb616-2"><a href="asset-benefit-indicator-abi.html#cb616-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(ID,abi_variables)</span>
+<span id="cb616-3"><a href="asset-benefit-indicator-abi.html#cb616-3" tabindex="-1"></a></span>
+<span id="cb616-4"><a href="asset-benefit-indicator-abi.html#cb616-4" tabindex="-1"></a>all_missing_cols <span class="ot">&lt;-</span> df_pdm_2021 <span class="sc">%&gt;%</span></span>
+<span id="cb616-5"><a href="asset-benefit-indicator-abi.html#cb616-5" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">where</span>(<span class="sc">~</span> <span class="fu">all</span>(<span class="fu">is.na</span>(.)))) <span class="sc">%&gt;%</span> <span class="fu">names</span>()</span>
+<span id="cb616-6"><a href="asset-benefit-indicator-abi.html#cb616-6" tabindex="-1"></a></span>
+<span id="cb616-7"><a href="asset-benefit-indicator-abi.html#cb616-7" tabindex="-1"></a><span class="co">#all_missing_cols</span></span>
+<span id="cb616-8"><a href="asset-benefit-indicator-abi.html#cb616-8" tabindex="-1"></a></span>
+<span id="cb616-9"><a href="asset-benefit-indicator-abi.html#cb616-9" tabindex="-1"></a>abi_variables_tmp <span class="ot">&lt;-</span> abi_variables[<span class="sc">!</span> abi_variables <span class="sc">%in%</span> all_missing_cols]</span>
+<span id="cb616-10"><a href="asset-benefit-indicator-abi.html#cb616-10" tabindex="-1"></a></span>
+<span id="cb616-11"><a href="asset-benefit-indicator-abi.html#cb616-11" tabindex="-1"></a></span>
+<span id="cb616-12"><a href="asset-benefit-indicator-abi.html#cb616-12" tabindex="-1"></a>expss<span class="sc">::</span><span class="fu">val_lab</span>(df_pdm_2021<span class="sc">$</span>ABIProteger)</span>
+<span id="cb616-13"><a href="asset-benefit-indicator-abi.html#cb616-13" tabindex="-1"></a></span>
+<span id="cb616-14"><a href="asset-benefit-indicator-abi.html#cb616-14" tabindex="-1"></a>df_pdm_2021 <span class="ot">&lt;-</span> df_pdm_2021 <span class="sc">%&gt;%</span></span>
+<span id="cb616-15"><a href="asset-benefit-indicator-abi.html#cb616-15" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">all_of</span>(abi_variables_tmp), <span class="sc">~</span> <span class="fu">as.character</span>(.))) <span class="sc">%&gt;%</span></span>
+<span id="cb616-16"><a href="asset-benefit-indicator-abi.html#cb616-16" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">all_of</span>(abi_variables_tmp), <span class="sc">~</span> dplyr<span class="sc">::</span><span class="fu">recode</span>(., <span class="st">&quot;0&quot;</span> <span class="ot">=</span> <span class="dv">0</span>, <span class="st">&quot;1&quot;</span> <span class="ot">=</span> <span class="dv">1</span>, <span class="st">&quot;2&quot;</span> <span class="ot">=</span> <span class="dv">888</span>)))</span>
+<span id="cb616-17"><a href="asset-benefit-indicator-abi.html#cb616-17" tabindex="-1"></a>df_pdm_2021 <span class="ot">&lt;-</span> df_pdm_2021 <span class="sc">%&gt;%</span> </span>
+<span id="cb616-18"><a href="asset-benefit-indicator-abi.html#cb616-18" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="fu">across</span>(abi_variables_tmp,</span>
+<span id="cb616-19"><a href="asset-benefit-indicator-abi.html#cb616-19" tabindex="-1"></a>                       <span class="sc">~</span><span class="fu">labelled</span>(., <span class="at">labels =</span> <span class="fu">c</span>(</span>
+<span id="cb616-20"><a href="asset-benefit-indicator-abi.html#cb616-20" tabindex="-1"></a>                         <span class="st">&quot;Non&quot;</span> <span class="ot">=</span> <span class="dv">0</span>,</span>
+<span id="cb616-21"><a href="asset-benefit-indicator-abi.html#cb616-21" tabindex="-1"></a>                         <span class="st">&quot;Oui&quot;</span> <span class="ot">=</span> <span class="dv">1</span>,</span>
+<span id="cb616-22"><a href="asset-benefit-indicator-abi.html#cb616-22" tabindex="-1"></a>                         <span class="st">&quot;Ne sait pas&quot;</span> <span class="ot">=</span> <span class="dv">888</span></span>
+<span id="cb616-23"><a href="asset-benefit-indicator-abi.html#cb616-23" tabindex="-1"></a>                       )</span>
+<span id="cb616-24"><a href="asset-benefit-indicator-abi.html#cb616-24" tabindex="-1"></a>                       )</span>
+<span id="cb616-25"><a href="asset-benefit-indicator-abi.html#cb616-25" tabindex="-1"></a>  )</span>
+<span id="cb616-26"><a href="asset-benefit-indicator-abi.html#cb616-26" tabindex="-1"></a>  )</span>
+<span id="cb616-27"><a href="asset-benefit-indicator-abi.html#cb616-27" tabindex="-1"></a>expss<span class="sc">::</span><span class="fu">val_lab</span>(df_pdm_2021<span class="sc">$</span>ABIProteger)</span></code></pre></div>
+</div>
+<div id="pdm-2022-2" class="section level2 hasAnchor" number="8.8">
+<h2><span class="header-section-number">8.8</span> PDM 2022<a href="asset-benefit-indicator-abi.html#pdm-2022-2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb617"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb617-1"><a href="asset-benefit-indicator-abi.html#cb617-1" tabindex="-1"></a>df_pdm_2022 <span class="ot">=</span> Chad_pdm_2022 <span class="sc">%&gt;%</span> labelled<span class="sc">::</span><span class="fu">to_factor</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb617-2"><a href="asset-benefit-indicator-abi.html#cb617-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(ID,abi_variables)</span>
+<span id="cb617-3"><a href="asset-benefit-indicator-abi.html#cb617-3" tabindex="-1"></a></span>
+<span id="cb617-4"><a href="asset-benefit-indicator-abi.html#cb617-4" tabindex="-1"></a>all_missing_cols <span class="ot">&lt;-</span> df_pdm_2022 <span class="sc">%&gt;%</span></span>
+<span id="cb617-5"><a href="asset-benefit-indicator-abi.html#cb617-5" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">where</span>(<span class="sc">~</span> <span class="fu">all</span>(<span class="fu">is.na</span>(.)))) <span class="sc">%&gt;%</span> <span class="fu">names</span>()</span>
+<span id="cb617-6"><a href="asset-benefit-indicator-abi.html#cb617-6" tabindex="-1"></a></span>
+<span id="cb617-7"><a href="asset-benefit-indicator-abi.html#cb617-7" tabindex="-1"></a><span class="co">#all_missing_cols</span></span>
+<span id="cb617-8"><a href="asset-benefit-indicator-abi.html#cb617-8" tabindex="-1"></a></span>
+<span id="cb617-9"><a href="asset-benefit-indicator-abi.html#cb617-9" tabindex="-1"></a>abi_variables_tmp <span class="ot">&lt;-</span> abi_variables[<span class="sc">!</span> abi_variables <span class="sc">%in%</span> all_missing_cols]</span>
+<span id="cb617-10"><a href="asset-benefit-indicator-abi.html#cb617-10" tabindex="-1"></a></span>
+<span id="cb617-11"><a href="asset-benefit-indicator-abi.html#cb617-11" tabindex="-1"></a></span>
+<span id="cb617-12"><a href="asset-benefit-indicator-abi.html#cb617-12" tabindex="-1"></a>expss<span class="sc">::</span><span class="fu">val_lab</span>(df_pdm_2022<span class="sc">$</span>ABIProteger)</span>
+<span id="cb617-13"><a href="asset-benefit-indicator-abi.html#cb617-13" tabindex="-1"></a></span>
+<span id="cb617-14"><a href="asset-benefit-indicator-abi.html#cb617-14" tabindex="-1"></a>df_pdm_2022 <span class="ot">&lt;-</span> df_pdm_2022 <span class="sc">%&gt;%</span></span>
+<span id="cb617-15"><a href="asset-benefit-indicator-abi.html#cb617-15" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">all_of</span>(abi_variables_tmp), <span class="sc">~</span> <span class="fu">as.character</span>(.))) <span class="sc">%&gt;%</span></span>
+<span id="cb617-16"><a href="asset-benefit-indicator-abi.html#cb617-16" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">all_of</span>(abi_variables_tmp), <span class="sc">~</span> dplyr<span class="sc">::</span><span class="fu">recode</span>(., <span class="st">&quot;Non&quot;</span> <span class="ot">=</span> <span class="dv">0</span>, <span class="st">&quot;Oui&quot;</span> <span class="ot">=</span> <span class="dv">1</span>, <span class="st">&quot;Ne sait pas&quot;</span> <span class="ot">=</span> <span class="dv">888</span>)))</span>
+<span id="cb617-17"><a href="asset-benefit-indicator-abi.html#cb617-17" tabindex="-1"></a>df_pdm_2022 <span class="ot">&lt;-</span> df_pdm_2022 <span class="sc">%&gt;%</span> </span>
+<span id="cb617-18"><a href="asset-benefit-indicator-abi.html#cb617-18" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="fu">across</span>(abi_variables_tmp,</span>
+<span id="cb617-19"><a href="asset-benefit-indicator-abi.html#cb617-19" tabindex="-1"></a>                       <span class="sc">~</span><span class="fu">labelled</span>(., <span class="at">labels =</span> <span class="fu">c</span>(</span>
+<span id="cb617-20"><a href="asset-benefit-indicator-abi.html#cb617-20" tabindex="-1"></a>                         <span class="st">&quot;Non&quot;</span> <span class="ot">=</span> <span class="dv">0</span>,</span>
+<span id="cb617-21"><a href="asset-benefit-indicator-abi.html#cb617-21" tabindex="-1"></a>                         <span class="st">&quot;Oui&quot;</span> <span class="ot">=</span> <span class="dv">1</span>,</span>
+<span id="cb617-22"><a href="asset-benefit-indicator-abi.html#cb617-22" tabindex="-1"></a>                         <span class="st">&quot;Ne sait pas&quot;</span> <span class="ot">=</span> <span class="dv">888</span></span>
+<span id="cb617-23"><a href="asset-benefit-indicator-abi.html#cb617-23" tabindex="-1"></a>                       )</span>
+<span id="cb617-24"><a href="asset-benefit-indicator-abi.html#cb617-24" tabindex="-1"></a>                       )</span>
+<span id="cb617-25"><a href="asset-benefit-indicator-abi.html#cb617-25" tabindex="-1"></a>  )</span>
+<span id="cb617-26"><a href="asset-benefit-indicator-abi.html#cb617-26" tabindex="-1"></a>  )</span>
+<span id="cb617-27"><a href="asset-benefit-indicator-abi.html#cb617-27" tabindex="-1"></a>expss<span class="sc">::</span><span class="fu">val_lab</span>(df_pdm_2022<span class="sc">$</span>ABIProteger)</span></code></pre></div>
+</div>
+<div id="pdm-2023-2" class="section level2 hasAnchor" number="8.9">
+<h2><span class="header-section-number">8.9</span> PDM 2023<a href="asset-benefit-indicator-abi.html#pdm-2023-2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb618"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb618-1"><a href="asset-benefit-indicator-abi.html#cb618-1" tabindex="-1"></a>df_pdm_2023 <span class="ot">=</span> Chad_pdm_2023 <span class="sc">%&gt;%</span>  </span>
+<span id="cb618-2"><a href="asset-benefit-indicator-abi.html#cb618-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(ID,abi_variables)</span>
+<span id="cb618-3"><a href="asset-benefit-indicator-abi.html#cb618-3" tabindex="-1"></a></span>
+<span id="cb618-4"><a href="asset-benefit-indicator-abi.html#cb618-4" tabindex="-1"></a>all_missing_cols <span class="ot">&lt;-</span> df_pdm_2023 <span class="sc">%&gt;%</span></span>
+<span id="cb618-5"><a href="asset-benefit-indicator-abi.html#cb618-5" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">where</span>(<span class="sc">~</span> <span class="fu">all</span>(<span class="fu">is.na</span>(.)))) <span class="sc">%&gt;%</span> <span class="fu">names</span>()</span>
+<span id="cb618-6"><a href="asset-benefit-indicator-abi.html#cb618-6" tabindex="-1"></a></span>
+<span id="cb618-7"><a href="asset-benefit-indicator-abi.html#cb618-7" tabindex="-1"></a><span class="co">#all_missing_cols</span></span>
+<span id="cb618-8"><a href="asset-benefit-indicator-abi.html#cb618-8" tabindex="-1"></a></span>
+<span id="cb618-9"><a href="asset-benefit-indicator-abi.html#cb618-9" tabindex="-1"></a>abi_variables_tmp <span class="ot">&lt;-</span> abi_variables[<span class="sc">!</span> abi_variables <span class="sc">%in%</span> all_missing_cols]</span>
+<span id="cb618-10"><a href="asset-benefit-indicator-abi.html#cb618-10" tabindex="-1"></a></span>
+<span id="cb618-11"><a href="asset-benefit-indicator-abi.html#cb618-11" tabindex="-1"></a>df_pdm_2023 <span class="ot">&lt;-</span> df_pdm_2023 <span class="sc">%&gt;%</span> </span>
+<span id="cb618-12"><a href="asset-benefit-indicator-abi.html#cb618-12" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="fu">across</span>(abi_variables_tmp,</span>
+<span id="cb618-13"><a href="asset-benefit-indicator-abi.html#cb618-13" tabindex="-1"></a>                       <span class="sc">~</span><span class="fu">labelled</span>(., <span class="at">labels =</span> <span class="fu">c</span>(</span>
+<span id="cb618-14"><a href="asset-benefit-indicator-abi.html#cb618-14" tabindex="-1"></a>                         <span class="st">&quot;Non&quot;</span> <span class="ot">=</span> <span class="dv">0</span>,</span>
+<span id="cb618-15"><a href="asset-benefit-indicator-abi.html#cb618-15" tabindex="-1"></a>                         <span class="st">&quot;Oui&quot;</span> <span class="ot">=</span> <span class="dv">1</span>,</span>
+<span id="cb618-16"><a href="asset-benefit-indicator-abi.html#cb618-16" tabindex="-1"></a>                         <span class="st">&quot;Ne sait pas&quot;</span> <span class="ot">=</span> <span class="dv">888</span></span>
+<span id="cb618-17"><a href="asset-benefit-indicator-abi.html#cb618-17" tabindex="-1"></a>                       )</span>
+<span id="cb618-18"><a href="asset-benefit-indicator-abi.html#cb618-18" tabindex="-1"></a>                       )</span>
+<span id="cb618-19"><a href="asset-benefit-indicator-abi.html#cb618-19" tabindex="-1"></a>  )</span>
+<span id="cb618-20"><a href="asset-benefit-indicator-abi.html#cb618-20" tabindex="-1"></a>  )</span>
+<span id="cb618-21"><a href="asset-benefit-indicator-abi.html#cb618-21" tabindex="-1"></a>expss<span class="sc">::</span><span class="fu">val_lab</span>(df_pdm_2023<span class="sc">$</span>ABIProteger)</span></code></pre></div>
+</div>
+<div id="merging-all-data-6" class="section level2 hasAnchor" number="8.10">
+<h2><span class="header-section-number">8.10</span> Merging all data<a href="asset-benefit-indicator-abi.html#merging-all-data-6" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb619"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb619-1"><a href="asset-benefit-indicator-abi.html#cb619-1" tabindex="-1"></a>df_Chad<span class="ot">&lt;-</span>plyr<span class="sc">::</span><span class="fu">rbind.fill</span>(df_2019,</span>
+<span id="cb619-2"><a href="asset-benefit-indicator-abi.html#cb619-2" tabindex="-1"></a>                          df_2020,</span>
+<span id="cb619-3"><a href="asset-benefit-indicator-abi.html#cb619-3" tabindex="-1"></a>                          df_2021,</span>
+<span id="cb619-4"><a href="asset-benefit-indicator-abi.html#cb619-4" tabindex="-1"></a>                          df_2022,</span>
+<span id="cb619-5"><a href="asset-benefit-indicator-abi.html#cb619-5" tabindex="-1"></a>                          df_2023,</span>
+<span id="cb619-6"><a href="asset-benefit-indicator-abi.html#cb619-6" tabindex="-1"></a>                          df_pdm_2020,</span>
+<span id="cb619-7"><a href="asset-benefit-indicator-abi.html#cb619-7" tabindex="-1"></a>                          df_pdm_2021,</span>
+<span id="cb619-8"><a href="asset-benefit-indicator-abi.html#cb619-8" tabindex="-1"></a>                          df_pdm_2022,</span>
+<span id="cb619-9"><a href="asset-benefit-indicator-abi.html#cb619-9" tabindex="-1"></a>                          df_pdm_2023)</span></code></pre></div>
+<div class="sourceCode" id="cb620"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb620-1"><a href="asset-benefit-indicator-abi.html#cb620-1" tabindex="-1"></a>expss<span class="sc">::</span><span class="fu">val_lab</span>(df_Chad<span class="sc">$</span>ABIProteger)</span>
+<span id="cb620-2"><a href="asset-benefit-indicator-abi.html#cb620-2" tabindex="-1"></a>not_ok <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;ABIParticipation&quot;</span>,<span class="st">&quot;ABItransferts&quot;</span>,<span class="st">&quot;ABITensions&quot;</span>,<span class="st">&quot;ActifCreationEmploi&quot;</span>,<span class="st">&quot;BeneficieEmploi&quot;</span>,<span class="st">&quot;TRavailMaintienActif&quot;</span>)</span>
+<span id="cb620-3"><a href="asset-benefit-indicator-abi.html#cb620-3" tabindex="-1"></a></span>
+<span id="cb620-4"><a href="asset-benefit-indicator-abi.html#cb620-4" tabindex="-1"></a>df_Chad <span class="ot">&lt;-</span> df_Chad <span class="sc">%&gt;%</span> </span>
+<span id="cb620-5"><a href="asset-benefit-indicator-abi.html#cb620-5" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="fu">across</span>(not_ok,</span>
+<span id="cb620-6"><a href="asset-benefit-indicator-abi.html#cb620-6" tabindex="-1"></a>                       <span class="sc">~</span><span class="fu">labelled</span>(., <span class="at">labels =</span> <span class="fu">c</span>(</span>
+<span id="cb620-7"><a href="asset-benefit-indicator-abi.html#cb620-7" tabindex="-1"></a>                         <span class="st">&quot;Non&quot;</span> <span class="ot">=</span> <span class="dv">0</span>,</span>
+<span id="cb620-8"><a href="asset-benefit-indicator-abi.html#cb620-8" tabindex="-1"></a>                         <span class="st">&quot;Oui&quot;</span> <span class="ot">=</span> <span class="dv">1</span>,</span>
+<span id="cb620-9"><a href="asset-benefit-indicator-abi.html#cb620-9" tabindex="-1"></a>                         <span class="st">&quot;Ne sait pas&quot;</span> <span class="ot">=</span> <span class="dv">888</span></span>
+<span id="cb620-10"><a href="asset-benefit-indicator-abi.html#cb620-10" tabindex="-1"></a>                       )</span>
+<span id="cb620-11"><a href="asset-benefit-indicator-abi.html#cb620-11" tabindex="-1"></a>                       )</span>
+<span id="cb620-12"><a href="asset-benefit-indicator-abi.html#cb620-12" tabindex="-1"></a>  )</span>
+<span id="cb620-13"><a href="asset-benefit-indicator-abi.html#cb620-13" tabindex="-1"></a>  )</span>
+<span id="cb620-14"><a href="asset-benefit-indicator-abi.html#cb620-14" tabindex="-1"></a>expss<span class="sc">::</span><span class="fu">val_lab</span>(df_Chad<span class="sc">$</span>ABIProteger)</span></code></pre></div>
+<div class="sourceCode" id="cb621"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb621-1"><a href="asset-benefit-indicator-abi.html#cb621-1" tabindex="-1"></a>df_Chad<span class="sc">$</span>HHFFAPart <span class="ot">&lt;-</span> df_Chad<span class="sc">$</span>ABIParticipation</span>
+<span id="cb621-2"><a href="asset-benefit-indicator-abi.html#cb621-2" tabindex="-1"></a>df_Chad<span class="sc">$</span>HHAssetProtect <span class="ot">&lt;-</span> df_Chad<span class="sc">$</span>ABIProteger</span>
+<span id="cb621-3"><a href="asset-benefit-indicator-abi.html#cb621-3" tabindex="-1"></a>df_Chad<span class="sc">$</span>HHAssetProduct <span class="ot">&lt;-</span> df_Chad<span class="sc">$</span>ABIProduction</span>
+<span id="cb621-4"><a href="asset-benefit-indicator-abi.html#cb621-4" tabindex="-1"></a>df_Chad<span class="sc">$</span>HHAssetDecHardship <span class="ot">&lt;-</span> df_Chad<span class="sc">$</span>ABIdifficultes</span>
+<span id="cb621-5"><a href="asset-benefit-indicator-abi.html#cb621-5" tabindex="-1"></a>df_Chad<span class="sc">$</span>HHAssetAccess <span class="ot">&lt;-</span> df_Chad<span class="sc">$</span>ABIMarches</span>
+<span id="cb621-6"><a href="asset-benefit-indicator-abi.html#cb621-6" tabindex="-1"></a>df_Chad<span class="sc">$</span>HHTrainingAsset <span class="ot">&lt;-</span> df_Chad<span class="sc">$</span>ABIGererActifs</span>
+<span id="cb621-7"><a href="asset-benefit-indicator-abi.html#cb621-7" tabindex="-1"></a>df_Chad<span class="sc">$</span>HHAssetEnv <span class="ot">&lt;-</span> df_Chad<span class="sc">$</span>ABIEnvironnement</span>
+<span id="cb621-8"><a href="asset-benefit-indicator-abi.html#cb621-8" tabindex="-1"></a>df_Chad<span class="sc">$</span>HHWorkAsset <span class="ot">&lt;-</span> df_Chad<span class="sc">$</span>ABIutiliseractifs</span></code></pre></div>
+<div class="sourceCode" id="cb622"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb622-1"><a href="asset-benefit-indicator-abi.html#cb622-1" tabindex="-1"></a>df_Chad <span class="ot">&lt;-</span> df_Chad <span class="sc">%&gt;%</span></span>
+<span id="cb622-2"><a href="asset-benefit-indicator-abi.html#cb622-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(HHAssetProtect,HHAssetProduct,HHAssetDecHardship,HHAssetAccess,HHTrainingAsset,HHAssetEnv,HHWorkAsset), <span class="sc">~</span><span class="fu">labelled</span>(., <span class="at">labels =</span> <span class="fu">c</span>(</span>
+<span id="cb622-3"><a href="asset-benefit-indicator-abi.html#cb622-3" tabindex="-1"></a>    <span class="st">&quot;No&quot;</span> <span class="ot">=</span> <span class="dv">0</span>,</span>
+<span id="cb622-4"><a href="asset-benefit-indicator-abi.html#cb622-4" tabindex="-1"></a>    <span class="st">&quot;Yes&quot;</span> <span class="ot">=</span> <span class="dv">1</span>,</span>
+<span id="cb622-5"><a href="asset-benefit-indicator-abi.html#cb622-5" tabindex="-1"></a>    <span class="st">&quot;Don&#39;t know&quot;</span> <span class="ot">=</span> <span class="dv">888</span>,</span>
+<span id="cb622-6"><a href="asset-benefit-indicator-abi.html#cb622-6" tabindex="-1"></a>    <span class="st">&quot;Not applicable&quot;</span> <span class="ot">=</span> <span class="dv">999</span></span>
+<span id="cb622-7"><a href="asset-benefit-indicator-abi.html#cb622-7" tabindex="-1"></a>  ))))</span>
+<span id="cb622-8"><a href="asset-benefit-indicator-abi.html#cb622-8" tabindex="-1"></a></span>
+<span id="cb622-9"><a href="asset-benefit-indicator-abi.html#cb622-9" tabindex="-1"></a></span>
+<span id="cb622-10"><a href="asset-benefit-indicator-abi.html#cb622-10" tabindex="-1"></a></span>
+<span id="cb622-11"><a href="asset-benefit-indicator-abi.html#cb622-11" tabindex="-1"></a><span class="co">#recode 888/999 to 0</span></span>
+<span id="cb622-12"><a href="asset-benefit-indicator-abi.html#cb622-12" tabindex="-1"></a>df_Chad <span class="ot">&lt;-</span> df_Chad <span class="sc">%&gt;%</span></span>
+<span id="cb622-13"><a href="asset-benefit-indicator-abi.html#cb622-13" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(HHAssetProtect<span class="sc">:</span>HHWorkAsset, <span class="sc">~</span> dplyr<span class="sc">::</span><span class="fu">recode</span>(.x, <span class="st">&quot;0&quot;</span> <span class="ot">=</span> <span class="dv">0</span>, <span class="st">&quot;1&quot;</span> <span class="ot">=</span> <span class="dv">1</span>, <span class="st">&quot;999&quot;</span> <span class="ot">=</span> <span class="dv">0</span>, <span class="st">&quot;888&quot;</span> <span class="ot">=</span> <span class="dv">0</span>)))</span>
+<span id="cb622-14"><a href="asset-benefit-indicator-abi.html#cb622-14" tabindex="-1"></a></span>
+<span id="cb622-15"><a href="asset-benefit-indicator-abi.html#cb622-15" tabindex="-1"></a><span class="co"># Count non-missing values per row</span></span>
+<span id="cb622-16"><a href="asset-benefit-indicator-abi.html#cb622-16" tabindex="-1"></a>df_Chad<span class="sc">$</span>NonMissingCount <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(<span class="sc">!</span><span class="fu">is.na</span>(df_Chad[, <span class="fu">c</span>(<span class="st">&quot;ABIProteger&quot;</span>, <span class="st">&quot;ABIProduction&quot;</span>, </span>
+<span id="cb622-17"><a href="asset-benefit-indicator-abi.html#cb622-17" tabindex="-1"></a>                                             <span class="st">&quot;ABIdifficultes&quot;</span>, <span class="st">&quot;ABIMarches&quot;</span>, </span>
+<span id="cb622-18"><a href="asset-benefit-indicator-abi.html#cb622-18" tabindex="-1"></a>                                             <span class="st">&quot;ABIGererActifs&quot;</span>, <span class="st">&quot;ABIEnvironnement&quot;</span>, </span>
+<span id="cb622-19"><a href="asset-benefit-indicator-abi.html#cb622-19" tabindex="-1"></a>                                             <span class="st">&quot;ABIutiliseractifs&quot;</span>)]))</span>
+<span id="cb622-20"><a href="asset-benefit-indicator-abi.html#cb622-20" tabindex="-1"></a></span>
+<span id="cb622-21"><a href="asset-benefit-indicator-abi.html#cb622-21" tabindex="-1"></a><span class="co">#sum ABI rows</span></span>
+<span id="cb622-22"><a href="asset-benefit-indicator-abi.html#cb622-22" tabindex="-1"></a>df_Chad <span class="ot">&lt;-</span> df_Chad <span class="sc">%&gt;%</span> </span>
+<span id="cb622-23"><a href="asset-benefit-indicator-abi.html#cb622-23" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ABIScore =</span> <span class="fu">ifelse</span>(NonMissingCount <span class="sc">&gt;</span><span class="dv">0</span> ,<span class="fu">rowSums</span>(<span class="fu">across</span>(<span class="fu">c</span>(HHAssetProtect<span class="sc">:</span>HHWorkAsset)),<span class="at">na.rm =</span> T),<span class="cn">NA</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb623"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb623-1"><a href="asset-benefit-indicator-abi.html#cb623-1" tabindex="-1"></a><span class="co">#assign variable and value labels </span></span>
+<span id="cb623-2"><a href="asset-benefit-indicator-abi.html#cb623-2" tabindex="-1"></a><span class="fu">var_label</span>(df_Chad<span class="sc">$</span>HHFFAPart) <span class="ot">&lt;-</span> <span class="st">&quot;Have you or any of your household member participated in the asset creation activities and received a food assistance transfer?&quot;</span></span>
+<span id="cb623-3"><a href="asset-benefit-indicator-abi.html#cb623-3" tabindex="-1"></a><span class="fu">var_label</span>(df_Chad<span class="sc">$</span>HHAssetProtect) <span class="ot">&lt;-</span> <span class="st">&quot;Do you think that the assets that were built or rehabilitated in your community are better protecting your household, its belongings and its production capacities (fields, equipment, etc.) from floods / drought / landslides / mudslides?&quot;</span></span>
+<span id="cb623-4"><a href="asset-benefit-indicator-abi.html#cb623-4" tabindex="-1"></a><span class="fu">var_label</span>(df_Chad<span class="sc">$</span>HHAssetProduct) <span class="ot">&lt;-</span> <span class="st">&quot;Do you think that the assets that were built or rehabilitated in your community have allowed your household to increase or diversify its production (agriculture / livestock / other)?&quot;</span></span>
+<span id="cb623-5"><a href="asset-benefit-indicator-abi.html#cb623-5" tabindex="-1"></a><span class="fu">var_label</span>(df_Chad<span class="sc">$</span>HHAssetDecHardship) <span class="ot">&lt;-</span> <span class="st">&quot;Do you think that the assets that were built or rehabilitated in your community have decreased the day-to-day hardship and released time for any of your family members (including women and children)?&quot;</span></span>
+<span id="cb623-6"><a href="asset-benefit-indicator-abi.html#cb623-6" tabindex="-1"></a><span class="fu">var_label</span>(df_Chad<span class="sc">$</span>HHAssetAccess) <span class="ot">&lt;-</span> <span class="st">&quot;Do you think that the assets that were built or rehabilitated in your community have improved the ability of any of your household member to access markets and/or basic services (water, sanitation, health, education, etc)?&quot;</span></span>
+<span id="cb623-7"><a href="asset-benefit-indicator-abi.html#cb623-7" tabindex="-1"></a><span class="fu">var_label</span>(df_Chad<span class="sc">$</span>HHTrainingAsset) <span class="ot">&lt;-</span> <span class="st">&quot;Do you think that the trainings and other support provided in your community have improved your household’s ability to manage and maintain assets?&quot;</span></span>
+<span id="cb623-8"><a href="asset-benefit-indicator-abi.html#cb623-8" tabindex="-1"></a><span class="fu">var_label</span>(df_Chad<span class="sc">$</span>HHAssetEnv) <span class="ot">&lt;-</span> <span class="st">&quot;Do you think that the assets that were built or rehabilitated in your community have improved your natural environment (for example more vegetal cover, water table increased, less erosion, etc.)?&quot;</span></span>
+<span id="cb623-9"><a href="asset-benefit-indicator-abi.html#cb623-9" tabindex="-1"></a><span class="fu">var_label</span>(df_Chad<span class="sc">$</span>HHWorkAsset) <span class="ot">&lt;-</span> <span class="st">&quot;Do you think that the works undertaken in your community have restored your ability to access and/or use basic asset functionalities?&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb624"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb624-1"><a href="asset-benefit-indicator-abi.html#cb624-1" tabindex="-1"></a><span class="fu">var_label</span>(df_Chad<span class="sc">$</span>ABIScore) <span class="ot">&lt;-</span> <span class="st">&quot;ASSET BENEFIT INDICATOR SCORE&quot;</span></span></code></pre></div>
+</div>
+<div id="export-all-data-6" class="section level2 hasAnchor" number="8.11">
+<h2><span class="header-section-number">8.11</span> Export all data<a href="asset-benefit-indicator-abi.html#export-all-data-6" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb625"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb625-1"><a href="asset-benefit-indicator-abi.html#cb625-1" tabindex="-1"></a>df_Chad <span class="ot">=</span> df_Chad <span class="sc">%&gt;%</span> </span>
+<span id="cb625-2"><a href="asset-benefit-indicator-abi.html#cb625-2" tabindex="-1"></a>  <span class="fu">distinct</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb626"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb626-1"><a href="asset-benefit-indicator-abi.html#cb626-1" tabindex="-1"></a>haven<span class="sc">::</span><span class="fu">write_dta</span>(df_Chad,<span class="fu">paste0</span>(dir_output_data,<span class="st">&quot;/&quot;</span>,<span class="st">&quot;WFP_Chad_ABI.dta&quot;</span>))</span></code></pre></div>
+
+<div class="sourceCode" id="cb627"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb627-1"><a href="asset-benefit-indicator-abi.html#cb627-1" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb627-2"><a href="asset-benefit-indicator-abi.html#cb627-2" tabindex="-1"></a><span class="fu">library</span>(labelled) <span class="co"># for general functions to work with labelled data</span></span>
+<span id="cb627-3"><a href="asset-benefit-indicator-abi.html#cb627-3" tabindex="-1"></a><span class="fu">library</span>(tidyverse) <span class="co"># general wrangling</span></span>
+<span id="cb627-4"><a href="asset-benefit-indicator-abi.html#cb627-4" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb627-5"><a href="asset-benefit-indicator-abi.html#cb627-5" tabindex="-1"></a><span class="fu">library</span>(Hmisc)</span>
+<span id="cb627-6"><a href="asset-benefit-indicator-abi.html#cb627-6" tabindex="-1"></a><span class="fu">library</span>(gtsummary) <span class="co"># to demonstrate automatic use of variable labels in summary tables</span></span>
+<span id="cb627-7"><a href="asset-benefit-indicator-abi.html#cb627-7" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
+<span id="cb627-8"><a href="asset-benefit-indicator-abi.html#cb627-8" tabindex="-1"></a><span class="fu">library</span>(foreign)</span>
+<span id="cb627-9"><a href="asset-benefit-indicator-abi.html#cb627-9" tabindex="-1"></a><span class="fu">library</span>(sjPlot)</span>
+<span id="cb627-10"><a href="asset-benefit-indicator-abi.html#cb627-10" tabindex="-1"></a><span class="fu">library</span>(sjmisc)</span>
+<span id="cb627-11"><a href="asset-benefit-indicator-abi.html#cb627-11" tabindex="-1"></a><span class="fu">library</span>(sjlabelled) <span class="co"># for example efc data set with variable labels</span></span>
+<span id="cb627-12"><a href="asset-benefit-indicator-abi.html#cb627-12" tabindex="-1"></a><span class="fu">library</span>(stringr)</span></code></pre></div>
+<div class="sourceCode" id="cb628"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb628-1"><a href="asset-benefit-indicator-abi.html#cb628-1" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span></code></pre></div>
+<div class="sourceCode" id="cb629"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb629-1"><a href="asset-benefit-indicator-abi.html#cb629-1" tabindex="-1"></a>dir_input_data <span class="ot">=</span> <span class="st">&quot;C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/input_data/Chad&quot;</span></span>
+<span id="cb629-2"><a href="asset-benefit-indicator-abi.html#cb629-2" tabindex="-1"></a>dir_output_data <span class="ot">=</span> <span class="st">&quot;C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/output_data/Chad&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb630"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb630-1"><a href="asset-benefit-indicator-abi.html#cb630-1" tabindex="-1"></a>Chad_Harmonization_variables <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="fu">paste0</span>(dir_input_data,<span class="st">&quot;/Chad_Harmonization.xlsx&quot;</span>), </span>
+<span id="cb630-2"><a href="asset-benefit-indicator-abi.html#cb630-2" tabindex="-1"></a>    <span class="at">sheet =</span> <span class="st">&quot;variables_harmonization&quot;</span>)</span>
+<span id="cb630-3"><a href="asset-benefit-indicator-abi.html#cb630-3" tabindex="-1"></a><span class="co">#View(Chad_Harmonization_variables)</span></span>
+<span id="cb630-4"><a href="asset-benefit-indicator-abi.html#cb630-4" tabindex="-1"></a></span>
+<span id="cb630-5"><a href="asset-benefit-indicator-abi.html#cb630-5" tabindex="-1"></a>Chad_Harmonization_description <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="fu">paste0</span>(dir_input_data,<span class="st">&quot;/Chad_Harmonization.xlsx&quot;</span>), </span>
+<span id="cb630-6"><a href="asset-benefit-indicator-abi.html#cb630-6" tabindex="-1"></a>    <span class="at">sheet =</span> <span class="st">&quot;description&quot;</span>)</span>
+<span id="cb630-7"><a href="asset-benefit-indicator-abi.html#cb630-7" tabindex="-1"></a><span class="co">#View(Chad_Harmonization_description)</span></span></code></pre></div>
+<div class="sourceCode" id="cb631"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb631-1"><a href="asset-benefit-indicator-abi.html#cb631-1" tabindex="-1"></a>lst_data <span class="ot">=</span> Chad_Harmonization_description<span class="sc">$</span>Data</span>
+<span id="cb631-2"><a href="asset-benefit-indicator-abi.html#cb631-2" tabindex="-1"></a>lst_test <span class="ot">=</span> Chad_Harmonization_description<span class="sc">$</span>Name</span>
+<span id="cb631-3"><a href="asset-benefit-indicator-abi.html#cb631-3" tabindex="-1"></a></span>
+<span id="cb631-4"><a href="asset-benefit-indicator-abi.html#cb631-4" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(lst_data)) {                              <span class="co"># Head of for-loop</span></span>
+<span id="cb631-5"><a href="asset-benefit-indicator-abi.html#cb631-5" tabindex="-1"></a>  <span class="fu">assign</span>(lst_test[i],                                   <span class="co"># Read and store data frames</span></span>
+<span id="cb631-6"><a href="asset-benefit-indicator-abi.html#cb631-6" tabindex="-1"></a>         <span class="fu">read_sav</span>(<span class="fu">paste0</span>(dir_input_data,<span class="st">&quot;/&quot;</span>,lst_data[i])))</span>
+<span id="cb631-7"><a href="asset-benefit-indicator-abi.html#cb631-7" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb632"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb632-1"><a href="asset-benefit-indicator-abi.html#cb632-1" tabindex="-1"></a><span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(lst_test)){</span>
+<span id="cb632-2"><a href="asset-benefit-indicator-abi.html#cb632-2" tabindex="-1"></a>         df<span class="ot">=</span>  <span class="fu">get</span>(lst_test[j], <span class="at">envir =</span> .GlobalEnv)</span>
+<span id="cb632-3"><a href="asset-benefit-indicator-abi.html#cb632-3" tabindex="-1"></a>          <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(Chad_Harmonization_variables)){</span>
+<span id="cb632-4"><a href="asset-benefit-indicator-abi.html#cb632-4" tabindex="-1"></a>            df[,Chad_Harmonization_variables<span class="sc">$</span>NewVariable_Name[i]]<span class="ot">=</span><span class="fu">ifelse</span>(<span class="fu">is.na</span>(Chad_Harmonization_variables[i,lst_test[j]]),<span class="cn">NA</span>,df[,Chad_Harmonization_variables[i,lst_test[j]][[<span class="dv">1</span>]]])</span>
+<span id="cb632-5"><a href="asset-benefit-indicator-abi.html#cb632-5" tabindex="-1"></a>          }</span>
+<span id="cb632-6"><a href="asset-benefit-indicator-abi.html#cb632-6" tabindex="-1"></a>    </span>
+<span id="cb632-7"><a href="asset-benefit-indicator-abi.html#cb632-7" tabindex="-1"></a>    df<span class="ot">&lt;-</span>df <span class="sc">%&gt;%</span> <span class="fu">select</span>(Chad_Harmonization_variables<span class="sc">$</span>NewVariable_Name)</span>
+<span id="cb632-8"><a href="asset-benefit-indicator-abi.html#cb632-8" tabindex="-1"></a>    <span class="fu">assign</span>(lst_test[j],                                   <span class="co"># Read and store data frames</span></span>
+<span id="cb632-9"><a href="asset-benefit-indicator-abi.html#cb632-9" tabindex="-1"></a>         df)</span>
+<span id="cb632-10"><a href="asset-benefit-indicator-abi.html#cb632-10" tabindex="-1"></a><span class="co">#write_sav(df, paste0(dir_output_data,&quot;/&quot;,lst_test[j],&quot;.sav&quot;))</span></span>
+<span id="cb632-11"><a href="asset-benefit-indicator-abi.html#cb632-11" tabindex="-1"></a><span class="co">#write_dta(df, paste0(dir_output_data,&quot;/&quot;,lst_test[j],&quot;.dta&quot;))</span></span>
+<span id="cb632-12"><a href="asset-benefit-indicator-abi.html#cb632-12" tabindex="-1"></a>    </span>
+<span id="cb632-13"><a href="asset-benefit-indicator-abi.html#cb632-13" tabindex="-1"></a></span>
+<span id="cb632-14"><a href="asset-benefit-indicator-abi.html#cb632-14" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb633"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb633-1"><a href="asset-benefit-indicator-abi.html#cb633-1" tabindex="-1"></a>Chad_pdm_2022<span class="sc">$</span>ID <span class="ot">=</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(Chad_pdm_2022)</span></code></pre></div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="reduced-coping-strategy-index-ou-lindice-réduit-des-stratégies-de-survie-rcsi.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="self-evaluated-resilience-score-sers.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/USERNAME/REPO/edit/BRANCH/07_WFP_Chad_ABI_data.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["_main.pdf", "_main.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

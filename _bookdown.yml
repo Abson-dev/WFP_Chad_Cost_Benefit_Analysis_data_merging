@@ -1,0 +1,20 @@
+delete_merged_file: true
+language:
+  ui:
+    chapter_name: ""
+  rmd_files:
+  - 00-Overview.Rmd
+  - 01_WFP_Chad_Admin.Rmd
+  - 02_WFP_Chad_HH_data.Rmd
+  - 03_WFP_Chad_Assistance_data.Rmd
+  - 03_WFP_Chad_Assistance_data_original_variables.Rmd
+  - 04_WFP_Chad_FCS_data.Rmd
+  - 05_WFP_Chad_LhCSI_data.Rmd
+  - 06_Chad_WFP_rCSI_data.Rmd
+  - 07_WFP_Chad_ABI_data.Rmd
+  - 08_WFP_Chad_SERS_data.Rmd
+  - 09_WFP_Chad_MAD_data.Rmd
+  - 10_WFP_Chad_MDDW_data.Rmd
+  - 11_WFP_Chad_HDDS_data.Rmd
+  - 12_WFP_Chad_CBA_data_preparation.Rmd
+  - 13_WFP_Chad_OriginalAssistenciesVariables.Rmd
