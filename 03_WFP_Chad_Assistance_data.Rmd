@@ -22,6 +22,9 @@ knitr::opts_chunk$set(
 ```
 
 
+# Assistance
+
+
 
 ```{r 03 packages needed}
 library(haven)
@@ -101,7 +104,6 @@ Chad_pdm_2022$ID = 1:nrow(Chad_pdm_2022)
 ```
 
 
-# Assistance
 
 ## Date assistance check
 

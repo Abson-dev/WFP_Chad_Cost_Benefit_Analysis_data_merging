@@ -26,6 +26,12 @@ knitr::opts_chunk$set(
 
 
 
+
+
+
+
+# Stratégies d'adaptation aux moyens d'existence (LhCSI)
+
 ```{r 05 packages needed}
 library(haven)
 library(labelled) # for general functions to work with labelled data
@@ -103,10 +109,6 @@ for (j in 1:length(lst_test)){
 Chad_pdm_2022$ID = 1:nrow(Chad_pdm_2022)
 ```
 
-
-
-
-# Stratégies d'adaptation aux moyens d'existence (LhCSI)
 
 
 ```{r}

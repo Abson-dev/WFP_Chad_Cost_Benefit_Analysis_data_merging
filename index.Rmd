@@ -1,0 +1,20 @@
+---
+title: "Cost Benefit Analysis of WFP Resilience Interventions in Chad, 2018-2023"
+site: bookdown::bookdown_site
+documentclass: book
+output:
+  bookdown::gitbook:
+    css: style.css
+    toc_depth: 2
+    split_by: chapter
+    config:
+      toc:
+        collapse: section
+      edit: null
+      download: ["pdf"]
+      sharing: no
+bibliography: book.bib
+---
+
+# Cost Benefit Analysis of WFP Resilience Interventions in Chad, 2018-2023
+

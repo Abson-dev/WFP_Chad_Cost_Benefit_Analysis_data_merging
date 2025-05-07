@@ -26,6 +26,12 @@ knitr::opts_chunk$set(
 
 
 
+
+
+# ASSET BENEFIT INDICATOR (ABI) 
+
+
+
 ```{r 07 packages needed}
 library(haven)
 library(labelled) # for general functions to work with labelled data
@@ -104,10 +110,6 @@ Chad_pdm_2022$ID = 1:nrow(Chad_pdm_2022)
 ```
 
 
-
-
-
-# ASSET BENEFIT INDICATOR (ABI) 
 
 ```{r}
 abi_variables = Chad_baseline_2018 %>% dplyr::select(gtsummary::starts_with("ABI")) %>% names()

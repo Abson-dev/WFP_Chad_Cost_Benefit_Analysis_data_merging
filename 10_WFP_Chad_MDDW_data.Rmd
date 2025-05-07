@@ -24,6 +24,10 @@ knitr::opts_chunk$set(
 ```
 
 
+
+
+# MDDW indicator
+
 ```{r}
 library(haven)
 library(labelled) # for general functions to work with labelled data
@@ -76,7 +80,6 @@ for(i in 1:length(lst_data)) {                              # Head of for-loop
 
 ```
 
-# MDDW indicator
 
 ## Data consistency  Check
 

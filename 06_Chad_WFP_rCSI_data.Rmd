@@ -26,6 +26,9 @@ knitr::opts_chunk$set(
 
 
 
+# Reduced coping strategy index ou l’indice réduit des stratégies de survie (rCSI)
+
+
 ```{r 06 packages needed}
 library(haven)
 library(labelled) # for general functions to work with labelled data
@@ -122,7 +125,6 @@ var_needed = c("rCSI",
 
 ```
 
-# Reduced coping strategy index ou l’indice réduit des stratégies de survie (rCSI)
 
 ## rCSI : Consommer des aliments moins préférés et moins chers
 

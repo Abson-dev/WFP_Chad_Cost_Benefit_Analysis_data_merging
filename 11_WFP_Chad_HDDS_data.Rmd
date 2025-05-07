@@ -24,6 +24,10 @@ knitr::opts_chunk$set(
 ```
 
 
+
+# HDDS indicator
+
+
 ```{r}
 library(haven)
 library(labelled) # for general functions to work with labelled data
@@ -74,7 +78,7 @@ for(i in 1:length(lst_data)) {                              # Head of for-loop
 
 ```
 
-# HDDS indicator
+
 
 ## Data consistency  Check
 
