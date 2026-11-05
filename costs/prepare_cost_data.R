@@ -122,7 +122,7 @@ total <- sum(costs$cash_xaf, na.rm = TRUE)
 for (t in list(by_category, by_area, by_partner)) if (abs(sum(t$cash_xaf) - total) > 1) stop("A cost table does not add up to the total.", call. = FALSE)
 
 # ---- Link to the surveys: cost area x year -------------------------------------------------------------
-sv <- haven::zap_labels(haven::read_dta(file.path(BASE, "WFP_Chad_2018-2023_20261105.dta"), col_select = c(YEAR, SURVEY, ADMIN1Name, ADMIN2Name, adm2_ocha, ArgentContreTravail)))
+sv <- haven::zap_labels(haven::read_dta(file.path(BASE, "WFP_Chad_2018-2023_20261105_v2.dta"), col_select = c(YEAR, SURVEY, ADMIN1Name, ADMIN2Name, adm2_ocha, ArgentContreTravail)))
 sv <- as.data.frame(sv); sv$adm2_ocha[is.na(sv$adm2_ocha)] <- ""
 mapped <- xw[!is.na(xw$adm2_ocha), c("adm2_ocha", "cost_area")]
 sv$cost_area <- mapped$cost_area[match(sv$adm2_ocha, mapped$adm2_ocha)]

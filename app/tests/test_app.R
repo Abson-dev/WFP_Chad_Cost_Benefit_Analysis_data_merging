@@ -161,20 +161,20 @@ ok("crosswalk: rCSIBorrow no longer uses another item's column", {
   z <- d$crosswalk[d$crosswalk$variable == "rCSIBorrow", ]
   stopifnot(!any(z$source %in% "rCSILessQlty"), all(z$source[z$round_id %in% c("R07", "R09", "R10")] == "rCSIBorrow"))
 })
-ok("flags and checks agree: rCSI is cleared, other defects stay", stopifnot(!"rcsi" %in% d$flags$indicator_group, all(c("fcs", "lcs", "abi") %in% d$flags$indicator_group), sum(d$checks$status == "fail") > 0))
+ok("flags and checks agree: rCSI and FCS are cleared, other defects stay", stopifnot(!any(c("rcsi", "fcs") %in% d$flags$indicator_group), all(c("lcs", "abi") %in% d$flags$indicator_group), sum(d$checks$status == "fail") > 0))
 
 section("Comparison rules")
 nat <- d$ind_round
 ok("compare: same series only", { c1 <- ind_compare(nat, "rcsi_mean", "R08", "m", d); stopifnot(c1$base_id == "R06") })
 ok("compare: flagged base is skipped", { c2 <- ind_compare(nat, "rcsi_mean", "R05", "m", d); stopifnot(c2$base_id == "R03"); c3 <- ind_compare(nat, "lcs_ce", "R05", "m", d); stopifnot(is.na(c3$diff)) })
-ok("compare: flagged round has no change", { c4 <- ind_compare(nat, "fcs_pb", "R03", "m", d); stopifnot(c4$flagged, is.na(c4$diff)) })
+ok("compare: flagged round has no change", { c4 <- ind_compare(nat, "lcs_ce", "R03", "m", d); stopifnot(c4$flagged, is.na(c4$diff)) })
 ok("compare: corrected view compares it", { c5 <- ind_compare(nat, "fcs_pb", "R05", "c", d); stopifnot(c5$base_id == "R03", abs(c5$diff - (nat$fcs_pb_c[nat$round_id == "R05"] - nat$fcs_pb_c[nat$round_id == "R03"])) < 1e-9) })
 ok("compare: first round has no base", stopifnot(is.na(ind_compare(nat, "fcs_pb", "R01", "m", d)$diff)))
 ok("flags: unresolved stay flagged in the corrected view", stopifnot("R02" %in% flagged_rounds(d, "lcs_ce", "c"), !"R10" %in% flagged_rounds(d, "lcs_ce", "c")))
 ok("attention: serious point on a flagged round", stopifnot(any(vapply(attention_points(d, "R10", "m"), function(p) p$level == "serious", TRUE))))
 
 section("Figures against an independent recomputation from the merged file")
-merged_path <- file.path(Sys.getenv("WFP_MERGED_DIR", "C:/Users/AHema/OneDrive - CGIAR/Desktop/2024/WFP/CBA - Chad/data"), "WFP_Chad_2018-2023_20261105.dta")
+merged_path <- file.path(Sys.getenv("WFP_MERGED_DIR", "C:/Users/AHema/OneDrive - CGIAR/Desktop/2024/WFP/CBA - Chad/data"), "WFP_Chad_2018-2023_20261105_v2.dta")
 if (file.exists(merged_path) && !demo_mode()) {
   x <- haven::zap_labels(haven::read_dta(merged_path))
   x$rid <- sprintf("R%02d", x$ROUND)
@@ -199,7 +199,12 @@ if (file.exists(merged_path) && !demo_mode()) {
 
   section("Claims of config/issues.csv")
   mean_r <- function(col, r) mean(x[[col]][x$rid == r], na.rm = TRUE)
-  ok("claim: FCS 2020 PDM mean 11.9, all Poor, SCA 53.2", stopifnot(round(mean_r("FCS", "R03"), 1) == 11.9, all(x$FCSCat28[x$rid == "R03"] == 1), round(mean_r("SCA", "R03"), 1) == 53.2))
+  ok("claim: FCS fixed: 2020 PDM takes the SCA, mean 53.2, groups 24/61/186, main groups empty", {
+    z <- x[x$rid == "R03", ]
+    stopifnot(all(z$FCS == z$SCA), round(mean(z$FCS), 1) == 53.2, all(as.integer(table(z$FCSCat28)) == c(24, 61, 186)), all(is.na(z[c("FCSStap", "FCSPulse", "FCSDairy", "FCSPr", "FCSVeg", "FCSFruit", "FCSFat", "FCSSugar")])))
+    stopifnot(all(!is.na(z[c("FCSPrMeatF", "FCSVegGre", "FCSCond")])), nat$fcs_pb_m[nat$round_id == "R03"] == nat$fcs_pb_c[nat$round_id == "R03"])
+    ck <- d$checks[d$checks$check == "Rounds without day counts use the analysts' score and groups", ]; stopifnot(ck$status == "pass", grepl("2020 PDM", ck$observed))
+  })
   ok("claim: rCSI fixed: merged equals the analysts' value in rounds 7, 9 and 10", {
     stopifnot(all(round(nat$rcsi_mean_m[nat$round_id %in% c("R07", "R09", "R10")], 2) == c(7.59, 4.63, 4.89)), all(nat$rcsi_mean_m == nat$rcsi_mean_c))
     z <- d$rcsi[d$rcsi$round_id %in% c("R07", "R09", "R10"), ]; stopifnot(all(z$merged_same == 100))

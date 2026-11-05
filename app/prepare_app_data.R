@@ -19,7 +19,7 @@ env_dir <- function(name, default) { v <- Sys.getenv(name); if (nzchar(v)) v els
 DIR_INPUT <- env_dir("WFP_INPUT_DIR", file.path(base, "WFP Resilience dataset/data/input_data/Chad"))
 DIR_MODULES <- env_dir("WFP_MODULES_DIR", file.path(base, "WFP Resilience dataset/data/output_data/Chad"))
 DIR_MERGED <- env_dir("WFP_MERGED_DIR", file.path(base, "2024/WFP/CBA - Chad/data"))
-FINAL_FILE <- "WFP_Chad_2018-2023_20261105.dta"
+FINAL_FILE <- "WFP_Chad_2018-2023_20261105_v2.dta"
 REPO <- ".."
 MIN_CELL <- 30
 OUT <- "data"
@@ -242,7 +242,8 @@ say("Recomputing scores...")
 num <- function(v) as.numeric(v)
 fcs_calc <- with(x, FCSStap * 2 + FCSPulse * 3 + FCSDairy * 4 + FCSPr * 4 + FCSVeg + FCSFruit + FCSFat * .5 + FCSSugar * .5)
 rcsi_calc <- with(x, rCSILessQlty + 2 * rCSIBorrow + rCSIMealNb + rCSIMealSize + 3 * rCSIMealAdult)
-add_check("Formulas", "FCS follows the WFP formula", pass_if(all(abs(fcs_calc - x$FCS) < 1e-6)), sum(abs(fcs_calc - x$FCS) >= 1e-6), "0 differences", "Cereals x2, pulses x3, dairy x4, protein x4, vegetables x1, fruit x1, fat x0.5, sugar x0.5.")
+# A round with no main-group day counts has nothing to recompute from: the check below covers it.
+add_check("Formulas", "FCS follows the WFP formula", pass_if(all(abs(fcs_calc - x$FCS) < 1e-6, na.rm = TRUE)), sum(abs(fcs_calc - x$FCS) >= 1e-6, na.rm = TRUE), "0 differences", "Cereals x2, pulses x3, dairy x4, protein x4, vegetables x1, fruit x1, fat x0.5, sugar x0.5. Tested on rounds with day counts.")
 cat28 <- ifelse(x$FCS <= 28, 1, ifelse(x$FCS <= 42, 2, 3)); cat21 <- ifelse(x$FCS <= 21, 1, ifelse(x$FCS <= 35, 2, 3))
 add_check("Formulas", "FCS groups follow the 28/42 and 21/35 thresholds", pass_if(all(cat28 == x$FCSCat28) && all(cat21 == x$FCSCat21)), sum(cat28 != x$FCSCat28) + sum(cat21 != x$FCSCat21), "0 differences")
 add_check("Formulas", "rCSI follows the WFP formula", pass_if(all(abs(rcsi_calc - x$rCSI) < 1e-6, na.rm = TRUE)), sum(abs(rcsi_calc - x$rCSI) >= 1e-6, na.rm = TRUE), "0 differences", "Less preferred x1, borrow x2, meal number x1, meal size x1, adults x3.")
@@ -275,11 +276,21 @@ days_bad <- sum(x[c("FCSStap", "FCSPulse", "FCSDairy", "FCSPr", "FCSVeg", "FCSFr
 add_check("Formulas", "FCS and rCSI day counts do not exceed 7", pass_if(days_bad == 0), days_bad, "0 values")
 
 # FCS: a round whose day counts are only 0 or 1 has not recorded days.
-binary_rounds <- x |> group_by(round_id) |> summarise(mx = max(c(FCSStap, FCSVeg, FCSFat, FCSSugar), na.rm = TRUE)) |> filter(mx <= 1) |> pull(round_id)
-add_check("Plausibility", "FCS day counts hold more than 0/1 in every round", pass_if(!length(binary_rounds)),
-          if (length(binary_rounds)) rounds_txt(binary_rounds) else "All rounds", "All rounds",
-          sprintf("The mapped jour_conso_* variables of %s hold 0/1 flags, so the FCS averages %.1f and %.0f%% of households are Poor. The analysts' own SCA in the same file averages %.1f.",
-                  rounds_txt(binary_rounds), mean(x$FCS[x$round_id %in% binary_rounds]), 100 * mean(x$FCSCat28[x$round_id %in% binary_rounds] == 1), mean(x$SCA[x$round_id %in% binary_rounds], na.rm = TRUE)))
+fcs_days_max <- x |> group_by(round_id) |> summarise(mx = suppressWarnings(max(c(FCSStap, FCSVeg, FCSFat, FCSSugar), na.rm = TRUE)))
+binary_rounds <- fcs_days_max |> filter(is.finite(mx), mx <= 1) |> pull(round_id)
+add_check("Plausibility", "FCS day counts hold more than 0/1 where they exist", pass_if(!length(binary_rounds)),
+          if (length(binary_rounds)) rounds_txt(binary_rounds) else "No round with flags", "No round with flags",
+          if (length(binary_rounds)) sprintf("The mapped jour_conso_* variables of %s hold 0/1 flags, so the FCS averages %.1f and %.0f%% of households are Poor. The analysts' own SCA in the same file averages %.1f.",
+                  rounds_txt(binary_rounds), mean(x$FCS[x$round_id %in% binary_rounds]), 100 * mean(x$FCSCat28[x$round_id %in% binary_rounds] == 1), mean(x$SCA[x$round_id %in% binary_rounds], na.rm = TRUE)) else "")
+# A round without day counts must carry the analysts' score and groups, household by household.
+no_days_rounds <- fcs_days_max |> filter(!is.finite(mx)) |> pull(round_id)
+fcs_from_analysts <- vapply(no_days_rounds, function(rid) {
+  ds <- cfg_rounds$dataset[cfg_rounds$round_id == rid]; i <- x$round_id == rid
+  all(abs(x$FCS[i] - as.numeric(raw_for_round(ds, "SCA"))) < 1e-6) && all(x$FCSCat28[i] == as.numeric(raw_for_round(ds, "SCA_Group")))
+}, TRUE)
+add_check("Plausibility", "Rounds without day counts use the analysts' score and groups", pass_if(all(fcs_from_analysts)),
+          if (length(no_days_rounds)) rounds_txt(no_days_rounds) else "No such round", "Same as raw SCA and SCA_Group",
+          if (length(no_days_rounds)) sprintf("The main food groups of %s are empty, because the raw file holds only 0/1 flags. FCS and FCSCat28 are compared with the raw SCA and SCA_Group for each household.", rounds_txt(no_days_rounds)) else "")
 
 # rCSI: the workbook maps rCSIBorrow to another column in some rounds; the raw rCSI settles which is right.
 rcsi_workbook_bad <- map_dups |> filter(source == "rCSILessQlty") |> pull(round_id)

@@ -96,11 +96,13 @@ The merge itself holds up: all 17,270 raw rows are accounted for (14 duplicates 
 | R10 | Coping answers not recoded, so "No need" counts as coping | `05_*.Rmd` | Emergency coping 56.7% | 5.8% |
 | R3 | Raw coping code 0 recoded to Yes | `05_*.Rmd` | Emergency coping 49.4% | 8.5% |
 | R1 | Raw coping code 0 recoded to Yes | `05_*.Rmd` | Emergency coping 29.6% | 21.2% |
-| R3 | FCS built from 0/1 flags instead of days | Workbook, `04_*.Rmd` | Mean FCS 11.9, all households Poor | Analysts' score averages 53.2 |
 | R8 | Recode sets every asset benefit answer to 0 | `07_*.Rmd` | Mean ABI 0.0 | 5.8 |
 | 9 of 10 rounds | `LhCSIStress1` emptied | `05_*.Rmd` | No answers kept | Answers exist in the raw files |
 
-**Fixed:** in R7, R9 and R10, `rCSIBorrow` was mapped to the `rCSILessQlty` column. The workbook and the merged file dated 5 November 2026 are corrected: mean rCSI is now 7.59, 4.63 and 4.89 instead of 9.10, 5.48 and 5.89, and equals the analysts' for 100% of households. Results built on the file of 23 April 2025 keep the old values until rebuilt.
+**Fixed in the merged file dated 5 November 2026 (`_v2`).** Results built on earlier files keep the old values until rebuilt.
+
+- **`rCSIBorrow`, R7, R9 and R10:** it was mapped to the `rCSILessQlty` column. Mean rCSI is now 7.59, 4.63 and 4.89 instead of 9.10, 5.48 and 5.89, and equals the analysts' for 100% of households.
+- **FCS, R3:** the main food groups hold 0/1 flags instead of days, and the day counts cannot be rebuilt. FCS now takes the analysts' SCA, so the mean is 53.2 instead of 11.9, and the groups match the analysts' for all 271 households. The eight main food groups are empty in this round. Compare this round with care: in R1, R2 and R5, the SCA runs 2 to 3 points above the recomputed FCS.
 
 The rebuilt values are indicative and need review. The meaning of raw code 0 in R1 and R3, and of 1 in the R8 asset benefit answers, should be confirmed with the questionnaires or WFP. All 27 issues are in [`app/config/issues.csv`](app/config/issues.csv) and on the dashboard's Data issues page.
 
@@ -139,7 +141,7 @@ Then double-click `app/run_app.bat`, or open `app/app.R` in RStudio and choose *
 ```
 ├── harmonization/                      step 1: one Rmd per module
 │   └── Chad_Harmonization.xlsx         variable mapping across rounds
-├── merge/                              step 2: do-files 12 and 13, with Rmd copies for the report; 14 applies the rCSIBorrow fix
+├── merge/                              step 2: do-files 12 and 13, with Rmd copies for the report; 14 and 15 apply the rCSIBorrow and FCS fixes
 │   └── RCS_table.xlsx                  resilience capacity table from do-file 12
 ├── app/                                step 3: dashboard, see app/README.md
 ├── costs/                              cost data rules and script, see costs/README.md

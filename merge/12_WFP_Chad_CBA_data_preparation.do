@@ -2248,6 +2248,13 @@ drop FCS FCSCat21 FCSCat28
 
 	label var FCS "Food Consumption Score"
 
+** 2020 PDM: the main food groups hold 0/1 flags, not days, and the day counts cannot be rebuilt.
+** Use the analysts' SCA from the raw file, and do not keep the flags as if they were days.
+	replace FCS = SCA if YEAR == 2020 & SURVEY == "PDM"
+	foreach v of varlist FCSStap FCSPulse FCSDairy FCSPr FCSVeg FCSFruit FCSFat FCSSugar {
+		replace `v' = . if YEAR == 2020 & SURVEY == "PDM"
+	}
+
 ** Create FCG groups based on 21/35 or 28/42 thresholds
 *** Use this when analyzing a country with low consumption of sugar and oil
 

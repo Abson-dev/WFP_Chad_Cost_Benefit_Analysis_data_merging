@@ -15,7 +15,7 @@ suppressPackageStartupMessages({ library(haven); library(dplyr); library(readr) 
 if (!file.exists("app/config/issues.csv")) stop("Run this script from the repository's root.", call. = FALSE)
 
 DIR_MERGED <- Sys.getenv("WFP_MERGED_DIR", "C:/Users/AHema/OneDrive - CGIAR/Desktop/2024/WFP/CBA - Chad/data")
-FINAL_FILE <- "WFP_Chad_2018-2023_20261105.dta"
+FINAL_FILE <- "WFP_Chad_2018-2023_20261105_v2.dta"
 OUT <- file.path(DIR_MERGED, "dataverse_deposit")
 PRIVATE <- file.path(DIR_MERGED, "dataverse_deposit_private")
 dir.create(OUT, showWarnings = FALSE); dir.create(PRIVATE, showWarnings = FALSE)
@@ -133,7 +133,7 @@ write_csv(treatment, file.path(OUT, "900_variable_treatment.csv"), na = "")
 
 # ---- Codebook ------------------------------------------------------------------------------------
 DERIVED <- c(
-  FCS = "Cereals x2 + pulses x3 + dairy x4 + protein x4 + vegetables x1 + fruit x1 + fat x0.5 + sugar x0.5, days in the last 7. Missing items count as 0.",
+  FCS = "Cereals x2 + pulses x3 + dairy x4 + protein x4 + vegetables x1 + fruit x1 + fat x0.5 + sugar x0.5, days in the last 7. Missing items count as 0. Round 3 (2020 PDM) takes the analysts' SCA instead, as its main food groups were recorded as 0/1 flags and are left empty.",
   FCSCat28 = "From FCS: Poor up to 28, Borderline up to 42, Acceptable above.", FCSCat21 = "From FCS: Poor up to 21, Borderline up to 35, Acceptable above.",
   rCSI = "Less preferred x1 + borrow x2 + meal number x1 + meal size x1 + adults x3, days in the last 7.",
   stress_coping_FS = "1 if any stress strategy is answered Yes or already exhausted.", crisis_coping_FS = "1 if any crisis strategy is answered Yes or already exhausted.",
@@ -185,7 +185,7 @@ writeLines(enc2utf8(c(
   "",
   "IMPORTANT",
   "- These files keep the values of the merged file, including known defects that change results in several rounds.",
-  "  Read 902_known_issues.csv before any analysis. Main ones: emergency coping in rounds 1, 3 and 10; FCS in round 3; ABI in round 8.",
+  "  Read 902_known_issues.csv before any analysis. Main ones: emergency coping in rounds 1, 3 and 10; ABI in round 8.",
   "- There are no sampling weights. Figures describe the households surveyed in WFP programme areas, not a population.",
   "- Lean-season (PDM) and post-harvest (baseline, annual) rounds differ systematically: compare within a series.",
   "- Regions covered change between rounds.",
