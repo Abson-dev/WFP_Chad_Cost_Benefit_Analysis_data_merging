@@ -23,7 +23,7 @@ plotly_json <- function(p) { jsonlite::fromJSON(plotly::plotly_json(p, jsonedit 
 section <- function(s) cat("-", s, "\n")
 
 section("UI builders")
-for (m in c("situation", "merge", "validation", "issues", "trends", "regions", "assistance", "approach", "process", "crosswalk", "rounds", "data", "about")) {
+for (m in c("situation", "merge", "validation", "issues", "variables", "trends", "regions", "assistance", "approach", "process", "crosswalk", "rounds", "data", "about")) {
   ok(paste("ui:", m), get(paste0(m, "_ui"))(m, d))
 }
 
@@ -84,6 +84,22 @@ testServer(issues_server, args = list(d = d), {
   session$setInputs(severity = "High", state = "Open"); ok("issues high open", { output$cards; stopifnot(all(shown()$severity == "High")) })
   session$setInputs(severity = "Low", state = "Open"); ok("issues low open", output$cards)
 })
+section("Variables page: every column of the merged file")
+ok("variables: all 305 columns listed once", stopifnot(nrow(d$merged_columns) == d$manifest$columns, !anyDuplicated(d$merged_columns$variable)))
+ok("variables: completeness for every column and round", stopifnot(nrow(d$column_coverage) == d$manifest$columns * nrow(d$rounds)))
+ok("variables: every column has a kind", stopifnot(all(d$merged_columns$kind %in% c("categorical", "numeric", "hidden"))))
+testServer(variables_server, args = list(d = d), {
+  session$setInputs(family = "", gaps = "")
+  ok("variables table", { output$table; output$count; output$profile_head; output$dist; output$cover; output$dist_note })
+  ok("variables csv", stopifnot(file.size(output$dl_list) > 0, file.size(output$dl_values) > 0))
+  session$setInputs(family = "Household", gaps = "gaps"); ok("variables filtered", output$table)
+  session$setInputs(family = "", gaps = "one"); ok("variables one round", output$table)
+  for (v in d$merged_columns$variable) {
+    selected(v)
+    ok(sprintf("variables profile[%s]", v), { output$profile_head; output$dist; output$cover; output$dist_note })
+  }
+})
+
 testServer(approach_server, args = list(d = d), ok("approach", output$hh_plot))
 testServer(process_server, args = list(d = d), {
   ok("process", { output$flow; output$node_detail; output$domains })
@@ -115,6 +131,7 @@ for (rid in c("R01", "R03", "R10")) {
 
 section("Column content")
 ok("crosswalk: label holds the SPSS label, not the round", stopifnot(!any(d$crosswalk$label %in% as.character(d$rounds$label))))
+ok("crosswalk and columns: a label is never a bare number", stopifnot(!any(grepl("^[0-9.-]+$", d$crosswalk$label)), !any(grepl("^[0-9.-]+$", d$merged_columns$label))))
 ok("crosswalk: rCSIBorrow's source is the wrong column in 3 rounds", {
   z <- d$crosswalk[d$crosswalk$variable == "rCSIBorrow", ]
   stopifnot(setequal(z$round_id[z$source == "rCSILessQlty"], c("R07", "R09", "R10")))
@@ -182,7 +199,10 @@ ok("no household columns in data/", {
     stopifnot(!any(c("ID", "hh_id", "uuid", "village", "Longitude", "Latitude") %in% hdr))
   }
 })
-ok("no household rows: largest table is small", stopifnot(max(vapply(list.files("data", pattern = "\\.csv$", full.names = TRUE), function(f) length(readLines(f, warn = FALSE)), 0L)) < 5000))
+ok("no household rows: every table is smaller than the survey", stopifnot(max(vapply(list.files("data", pattern = "\\.csv$", full.names = TRUE), function(f) length(readLines(f, warn = FALSE)), 0L)) < d$manifest$households))
+hidden_cols <- c("ID", "village", "Longitude", "Latitude", "Longitude_precision", "Latitude_precision", "DateDerniereAssist_other", "IP_var", "SvyDate")
+ok("identifying columns have no values or ranges", stopifnot(!any(d$variable_values$variable %in% hidden_cols), !any(d$variable_numeric$variable %in% hidden_cols), all(hidden_cols %in% d$merged_columns$variable[d$merged_columns$kind == "hidden"])))
+ok("answers under 5 households have no count or share", stopifnot(all(is.na(d$variable_values$households[d$variable_values$suppressed])), all(is.na(d$variable_values$pct[d$variable_values$suppressed])), all(d$variable_values$households[!d$variable_values$suppressed] >= 5)))
 ok("regional cells under 30 households suppressed", {
   small <- d$ind_region[d$ind_region$households < 30, ]; cols <- grep("_[mc]$", names(small), value = TRUE)
   stopifnot(nrow(small) > 0, all(is.na(small[, cols])))

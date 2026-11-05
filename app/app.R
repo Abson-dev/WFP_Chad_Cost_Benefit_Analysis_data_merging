@@ -38,6 +38,7 @@ ui <- protect_ui(page_navbar(
   nav_panel("Merge", icon = bsicons::bs_icon("sign-merge-right"), merge_ui("merge", d)),
   nav_panel("Validation", icon = bsicons::bs_icon("patch-check"), validation_ui("validation", d)),
   nav_panel("Data issues", icon = bsicons::bs_icon("exclamation-triangle"), issues_ui("issues", d)),
+  nav_panel("Variables", icon = bsicons::bs_icon("list-columns-reverse"), variables_ui("variables", d)),
   nav_menu(
     "Results", icon = bsicons::bs_icon("bar-chart-line"),
     nav_panel("Trends", icon = bsicons::bs_icon("graph-up"), trends_ui("trends", d)),
@@ -92,6 +93,7 @@ server <- function(input, output, session) {
   merge_server("merge", d)
   validation_server("validation", d)
   issues_server("issues", d)
+  variables_server("variables", d)
   trends_server("trends", d, ref, est)
   regions_server("regions", d, ref, est)
   assistance_server("assistance", d, ref)

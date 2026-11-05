@@ -16,6 +16,7 @@ The **reference round** and the **figures** option in the left panel drive Overv
 | **Merge** | Is every household and column accounted for? Rows from raw file to merged file, each merge step, which module reaches which round, Cadre Harmonisé link, place names |
 | **Validation** | Do the data match their sources? All checks, what the defects do to the indicators, rCSI against the analysts' rCSI, coping strategies by round |
 | **Data issues** | What was found, where does it come from and what should be done? |
+| **Variables** | What does each of the 305 merged columns hold? Label, completeness and distribution by round. Columns that can identify households show their completeness only, and answers from fewer than 5 households are hidden |
 | **Results** | *Trends*, *Regions* and *Assistance*: indicators over time and by region, and the 20 intervention variables with their recoding audit |
 | **Method** | *Approach*, *Process* (pipeline diagram), *Crosswalk* (217 variables x 10 rounds, downloads), *Rounds* (fieldwork, inventory, departments) |
 | **Data** | Filter the aggregate indicators and download them as CSV or Excel |

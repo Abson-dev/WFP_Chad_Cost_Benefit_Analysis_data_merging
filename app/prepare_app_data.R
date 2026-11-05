@@ -27,8 +27,8 @@ dir.create(OUT, showWarnings = FALSE)
 for (d in c(DIR_INPUT, DIR_MODULES, DIR_MERGED)) if (!dir.exists(d)) stop("Folder not found: ", d, call. = FALSE)
 
 say <- function(...) cat(sprintf(...), "\n")
-# Some source labels are stored as several strings (one per answer); the first holds the question.
 clean_text <- function(x) trimws(gsub("\\s+", " ", gsub("<[^>]+>", " ", x[1])))
+clean_text2 <- function(x) trimws(gsub("\\s+", " ", gsub("<[^>]+>", " ", x)))
 write_out <- function(x, name) { readr::write_csv(x, file.path(OUT, name), na = ""); say("  %-32s %5d rows", name, nrow(x)) }
 
 # ---- Configuration ------------------------------------------------------------------------------
@@ -44,7 +44,7 @@ x <- haven::zap_labels(final_lab)
 x$ID <- as.character(x$ID)
 x$round_id <- rid_of(x$ROUND)
 N_FINAL <- nrow(x)
-final_var_labels <- vapply(final_lab, function(v) { l <- attr(v, "label"); if (is.null(l)) "" else clean_text(l) }, "")
+final_var_labels <- vapply(final_lab, function(v) { l <- attr(v, "label", exact = TRUE); if (is.null(l)) "" else clean_text(l) }, "")
 
 wb_path <- file.path(DIR_INPUT, "Chad_Harmonization.xlsx")
 hv <- as.data.frame(readxl::read_excel(wb_path, "variables_harmonization"))
@@ -198,7 +198,7 @@ crosswalk <- bind_rows(lapply(seq_len(nrow(cfg_rounds)), function(i) {
                                                         coverage = NA_real_, range = NA_character_, label = NA_character_, value_labels = NA_character_))
     z <- r[[s]]; zz <- haven::zap_labels(z)
     nonmiss <- if (is.character(zz)) !is.na(zz) & nzchar(trimws(zz)) else !is.na(zz)
-    lab <- attr(z, "label"); vl <- attr(z, "labels"); sens <- v %in% SENSITIVE_META
+    lab <- attr(z, "label", exact = TRUE); vl <- attr(z, "labels", exact = TRUE); sens <- v %in% SENSITIVE_META
     rng <- if (!sens && is.numeric(zz) && any(nonmiss)) sprintf("%s to %s", format(min(zz[nonmiss]), trim = TRUE), format(max(zz[nonmiss]), trim = TRUE)) else NA_character_
     data.frame(variable = v, round_id = cr$round_id, source = s,
                type = if (inherits(z, "haven_labelled")) "labelled" else if (is.character(zz)) "text" else if (inherits(z, "Date")) "date" else "numeric",
@@ -403,7 +403,7 @@ date_tab <- cfg_rounds |> rowwise() |> mutate(
   missing = sum(is.na(dts[x$round_id == round_id]))) |> ungroup()
 add_check("Plausibility", "Interview dates fall in the round's fieldwork", pass_if(sum(date_tab$outside) == 0, "warn"), sprintf("%d outside, %d missing", sum(date_tab$outside), sum(date_tab$missing)), "0",
           "The month is imputed before the link to Cadre Harmonisé, so these dates do not change the phase.")
-mont_lab <- attr(raw$Chad_ea_2019[[source_of("Chad_ea_2019", "Montant")]], "label")
+mont_lab <- attr(raw$Chad_ea_2019[[source_of("Chad_ea_2019", "Montant")]], "label", exact = TRUE)
 mont_wrong <- grepl("income", final_var_labels[["Montant"]], ignore.case = TRUE)
 add_check("Documentation", "Montant keeps its meaning", pass_if(!mont_wrong, "warn"), if (mont_wrong) "Label changed" else "Kept", "Cash received",
           sprintf("The source question is about cash received at the last distribution (%s...); the merged file labels it \"%s\".", substr(clean_text(mont_lab), 1, 45), final_var_labels[["Montant"]]))
@@ -560,6 +560,50 @@ final_cols <- final_cols |> left_join(final_cov |> group_by(variable) |> summari
 family_cov <- final_cov |> left_join(select(final_cols, variable, family), by = "variable") |> group_by(family, round_id) |>
   summarise(pct = round(mean(pct), 1), columns_with_data = sum(pct > 0), .groups = "drop")
 
+# ---- Every column of the merged file: summaries by round, for the Variables page -----------------
+# Identifying columns get completeness only. Answer counts under 5 households are not written.
+say("Summarising all %d columns...", length(vars_final))
+MIN_VALUE_COUNT <- 5
+HIDDEN_VALUES <- c("ID", "village", "Longitude", "Latitude", "Longitude_precision", "Latitude_precision", "DateDerniereAssist_other", "IP_var", "SvyDate")
+kind_of <- function(v) {
+  z <- x[[v]]
+  if (v %in% HIDDEN_VALUES) return("hidden")
+  if (is.character(z)) return("categorical")
+  if (!is.null(attr(final_lab[[v]], "labels")) || length(unique(z[!is.na(z)])) <= 15) return("categorical")
+  "numeric"
+}
+var_kind <- vapply(vars_final, kind_of, "")
+final_cols$kind <- unname(var_kind[final_cols$variable])
+final_cols$type <- vapply(final_cols$variable, function(v) if (is.character(x[[v]])) "text" else if (inherits(x[[v]], "Date")) "date" else "number", "", USE.NAMES = FALSE)
+final_cols$coverage <- vapply(final_cols$variable, function(v) { z <- x[[v]]; round(100 * mean(if (is.character(z)) !is.na(z) & nzchar(trimws(z)) else !is.na(z)), 1) }, 0, USE.NAMES = FALSE)
+final_cols$value_labels <- vapply(final_cols$variable, function(v) {
+  if (v %in% HIDDEN_VALUES) return(NA_character_)
+  l <- attr(final_lab[[v]], "labels")
+  if (is.null(l)) NA_character_ else substr(clean_text(paste(paste0(l, " = ", names(l)), collapse = "; ")), 1, 400)
+}, "", USE.NAMES = FALSE)
+variable_values <- bind_rows(lapply(vars_final[var_kind == "categorical"], function(v) {
+  z <- x[[v]]; if (is.character(z)) z[!nzchar(trimws(z))] <- NA
+  l <- attr(final_lab[[v]], "labels")
+  d <- data.frame(round_id = x$round_id, value = as.character(z), stringsAsFactors = FALSE)
+  d <- d[!is.na(d$value), , drop = FALSE]
+  if (!nrow(d)) return(NULL)
+  out <- d |> count(round_id, value, name = "households") |> group_by(round_id) |> mutate(answered = sum(households)) |> ungroup()
+  out$variable <- v
+  out$label <- if (is.null(l)) out$value else { k <- match(out$value, as.character(unname(l))); ifelse(is.na(k), out$value, clean_text2(names(l)[k])) }
+  out$suppressed <- out$households < MIN_VALUE_COUNT
+  out$pct <- ifelse(out$suppressed, NA, round(100 * out$households / out$answered, 1))
+  out$households[out$suppressed] <- NA
+  out[, c("variable", "round_id", "value", "label", "households", "answered", "pct", "suppressed")]
+}))
+variable_numeric <- bind_rows(lapply(vars_final[var_kind == "numeric"], function(v) {
+  bind_rows(lapply(cfg_rounds$round_id, function(r) {
+    z <- as.numeric(x[[v]][x$round_id == r]); z <- z[!is.na(z)]
+    if (length(z) < MIN_VALUE_COUNT) return(NULL)
+    q <- stats::quantile(z, c(.1, .5, .9), names = FALSE, type = 7)
+    data.frame(variable = v, round_id = r, answered = length(z), mean = round(mean(z), 2), p10 = round(q[1], 2), median = round(q[2], 2), p90 = round(q[3], 2), min = round(min(z), 2), max = round(max(z), 2))
+  }))
+}))
+
 # Place-name corrections, from the do-file and the module files.
 do_lines <- readLines(file.path(REPO, "merge", "12_WFP_Chad_CBA_data_preparation.do"), warn = FALSE, encoding = "UTF-8")
 admin_block <- do_lines[seq(grep("Correct inconsistencies in Village and Admin 2", do_lines)[1], grep("save \"\\$output_data\\\\WFP_Chad_admin.dta\"", do_lines)[1])]
@@ -615,6 +659,9 @@ write_out(assist_audit, "assistance_audit.csv")
 write_out(doc_diff, "assistance_documented_differences.csv")
 write_out(nutrition, "nutrition_rows.csv")
 write_out(final_cols, "merged_columns.csv")
+write_out(final_cov, "merged_column_coverage.csv")
+write_out(variable_values, "variable_values.csv")
+write_out(variable_numeric, "variable_numeric.csv")
 write_out(family_cov, "merged_family_coverage.csv")
 write_out(places, "place_corrections.csv")
 write_out(checks_df, "checks.csv")

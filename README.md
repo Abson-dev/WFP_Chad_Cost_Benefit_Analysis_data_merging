@@ -139,6 +139,7 @@ Then double-click `app/run_app.bat`, or open `app/app.R` in RStudio and choose *
 ├── merge/                              step 2: do-files 12 and 13, with Rmd copies for the report
 │   └── RCS_table.xlsx                  resilience capacity table from do-file 12
 ├── app/                                step 3: dashboard, see app/README.md
+├── deposit/                            step 4: package for IFPRI Dataverse, see deposit/README.md
 ├── report/
 │   ├── Issues on WFP Resilience [...].docx   report on the issues in the source data
 │   └── knitted/                        archived HTML and Markdown output of the Rmds
