@@ -19,7 +19,7 @@ This repository builds the household dataset for the cost-benefit analysis (CBA)
 
 *The dashboard's Overview page. The estimates in this screenshot are synthetic.*
 
-> **Read this before using the merged file.** An audit found defects in the merged file dated 23 April 2025 that change results in several rounds. They are not yet fixed in the pipeline. See [Known issues](#known-issues).
+> **Read this before using the merged file.** An audit found defects in the merged file that change results in several rounds. The latest version is dated 5 November 2026, and most defects are not yet fixed. See [Known issues](#known-issues).
 
 ## Contents
 
@@ -98,8 +98,9 @@ The merge itself holds up: all 17,270 raw rows are accounted for (14 duplicates 
 | R1 | Raw coping code 0 recoded to Yes | `05_*.Rmd` | Emergency coping 29.6% | 21.2% |
 | R3 | FCS built from 0/1 flags instead of days | Workbook, `04_*.Rmd` | Mean FCS 11.9, all households Poor | Analysts' score averages 53.2 |
 | R8 | Recode sets every asset benefit answer to 0 | `07_*.Rmd` | Mean ABI 0.0 | 5.8 |
-| R7, R9, R10 | `rCSIBorrow` mapped to the `rCSILessQlty` column | Workbook | Mean rCSI 9.10, 5.48, 5.89 | 7.59, 4.63, 4.89 |
 | 9 of 10 rounds | `LhCSIStress1` emptied | `05_*.Rmd` | No answers kept | Answers exist in the raw files |
+
+**Fixed:** in R7, R9 and R10, `rCSIBorrow` was mapped to the `rCSILessQlty` column. The workbook and the merged file dated 5 November 2026 are corrected: mean rCSI is now 7.59, 4.63 and 4.89 instead of 9.10, 5.48 and 5.89, and equals the analysts' for 100% of households. Results built on the file of 23 April 2025 keep the old values until rebuilt.
 
 The rebuilt values are indicative and need review. The meaning of raw code 0 in R1 and R3, and of 1 in the R8 asset benefit answers, should be confirmed with the questionnaires or WFP. All 27 issues are in [`app/config/issues.csv`](app/config/issues.csv) and on the dashboard's Data issues page.
 
@@ -138,7 +139,7 @@ Then double-click `app/run_app.bat`, or open `app/app.R` in RStudio and choose *
 ```
 ├── harmonization/                      step 1: one Rmd per module
 │   └── Chad_Harmonization.xlsx         variable mapping across rounds
-├── merge/                              step 2: do-files 12 and 13, with Rmd copies for the report
+├── merge/                              step 2: do-files 12 and 13, with Rmd copies for the report; 14 applies the rCSIBorrow fix
 │   └── RCS_table.xlsx                  resilience capacity table from do-file 12
 ├── app/                                step 3: dashboard, see app/README.md
 ├── costs/                              cost data rules and script, see costs/README.md

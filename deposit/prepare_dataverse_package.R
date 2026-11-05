@@ -15,7 +15,7 @@ suppressPackageStartupMessages({ library(haven); library(dplyr); library(readr) 
 if (!file.exists("app/config/issues.csv")) stop("Run this script from the repository's root.", call. = FALSE)
 
 DIR_MERGED <- Sys.getenv("WFP_MERGED_DIR", "C:/Users/AHema/OneDrive - CGIAR/Desktop/2024/WFP/CBA - Chad/data")
-FINAL_FILE <- "WFP_Chad_2018-2023_20250423.dta.dta"
+FINAL_FILE <- "WFP_Chad_2018-2023_20261105.dta"
 OUT <- file.path(DIR_MERGED, "dataverse_deposit")
 PRIVATE <- file.path(DIR_MERGED, "dataverse_deposit_private")
 dir.create(OUT, showWarnings = FALSE); dir.create(PRIVATE, showWarnings = FALSE)
@@ -185,7 +185,7 @@ writeLines(enc2utf8(c(
   "",
   "IMPORTANT",
   "- These files keep the values of the merged file, including known defects that change results in several rounds.",
-  "  Read 902_known_issues.csv before any analysis. Main ones: emergency coping in rounds 1, 3 and 10; FCS in round 3; ABI in round 8; rCSI in rounds 7, 9 and 10.",
+  "  Read 902_known_issues.csv before any analysis. Main ones: emergency coping in rounds 1, 3 and 10; FCS in round 3; ABI in round 8.",
   "- There are no sampling weights. Figures describe the households surveyed in WFP programme areas, not a population.",
   "- Lean-season (PDM) and post-harvest (baseline, annual) rounds differ systematically: compare within a series.",
   "- Regions covered change between rounds.",

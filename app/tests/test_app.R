@@ -157,11 +157,11 @@ for (rid in c("R01", "R03", "R10")) {
 section("Column content")
 ok("crosswalk: label holds the SPSS label, not the round", stopifnot(!any(d$crosswalk$label %in% as.character(d$rounds$label))))
 ok("crosswalk and columns: a label is never a bare number", stopifnot(!any(grepl("^[0-9.-]+$", d$crosswalk$label)), !any(grepl("^[0-9.-]+$", d$merged_columns$label))))
-ok("crosswalk: rCSIBorrow's source is the wrong column in 3 rounds", {
+ok("crosswalk: rCSIBorrow no longer uses another item's column", {
   z <- d$crosswalk[d$crosswalk$variable == "rCSIBorrow", ]
-  stopifnot(setequal(z$round_id[z$source == "rCSILessQlty"], c("R07", "R09", "R10")))
+  stopifnot(!any(z$source %in% "rCSILessQlty"), all(z$source[z$round_id %in% c("R07", "R09", "R10")] == "rCSIBorrow"))
 })
-ok("flags and checks agree", stopifnot(setequal(d$flags$round_id[d$flags$indicator_group == "rcsi"], c("R07", "R09", "R10")), sum(d$checks$status == "fail") > 0))
+ok("flags and checks agree: rCSI is cleared, other defects stay", stopifnot(!"rcsi" %in% d$flags$indicator_group, all(c("fcs", "lcs", "abi") %in% d$flags$indicator_group), sum(d$checks$status == "fail") > 0))
 
 section("Comparison rules")
 nat <- d$ind_round
@@ -174,7 +174,7 @@ ok("flags: unresolved stay flagged in the corrected view", stopifnot("R02" %in% 
 ok("attention: serious point on a flagged round", stopifnot(any(vapply(attention_points(d, "R10", "m"), function(p) p$level == "serious", TRUE))))
 
 section("Figures against an independent recomputation from the merged file")
-merged_path <- file.path(Sys.getenv("WFP_MERGED_DIR", "C:/Users/AHema/OneDrive - CGIAR/Desktop/2024/WFP/CBA - Chad/data"), "WFP_Chad_2018-2023_20250423.dta.dta")
+merged_path <- file.path(Sys.getenv("WFP_MERGED_DIR", "C:/Users/AHema/OneDrive - CGIAR/Desktop/2024/WFP/CBA - Chad/data"), "WFP_Chad_2018-2023_20261105.dta")
 if (file.exists(merged_path) && !demo_mode()) {
   x <- haven::zap_labels(haven::read_dta(merged_path))
   x$rid <- sprintf("R%02d", x$ROUND)
@@ -200,7 +200,10 @@ if (file.exists(merged_path) && !demo_mode()) {
   section("Claims of config/issues.csv")
   mean_r <- function(col, r) mean(x[[col]][x$rid == r], na.rm = TRUE)
   ok("claim: FCS 2020 PDM mean 11.9, all Poor, SCA 53.2", stopifnot(round(mean_r("FCS", "R03"), 1) == 11.9, all(x$FCSCat28[x$rid == "R03"] == 1), round(mean_r("SCA", "R03"), 1) == 53.2))
-  ok("claim: rCSI merged and corrected", stopifnot(all(round(nat$rcsi_mean_m[nat$round_id %in% c("R07", "R09", "R10")], 2) == c(9.10, 5.48, 5.89)), all(round(nat$rcsi_mean_c[nat$round_id %in% c("R07", "R09", "R10")], 2) == c(7.59, 4.63, 4.89))))
+  ok("claim: rCSI fixed: merged equals the analysts' value in rounds 7, 9 and 10", {
+    stopifnot(all(round(nat$rcsi_mean_m[nat$round_id %in% c("R07", "R09", "R10")], 2) == c(7.59, 4.63, 4.89)), all(nat$rcsi_mean_m == nat$rcsi_mean_c))
+    z <- d$rcsi[d$rcsi$round_id %in% c("R07", "R09", "R10"), ]; stopifnot(all(z$merged_same == 100))
+  })
   ok("claim: emergency coping", stopifnot(max(abs(nat$lcs_em_m[nat$round_id %in% c("R01", "R03", "R10")] - c(29.6, 49.4, 56.7))) < .06, max(abs(nat$lcs_em_c[nat$round_id %in% c("R01", "R03", "R10")] - c(21.2, 8.5, 5.8))) < .06))
   ok("claim: ABI 2022 Annual", stopifnot(sum(x$rid == "R08" & !is.na(x$ABIScore)) == 1701, all(x$ABIScore[x$rid == "R08"] == 0, na.rm = TRUE), round(nat$abi_mean_c[nat$round_id == "R08"], 1) == 5.8))
   ok("claim: LhCSIStress1 empty in 9 rounds", stopifnot(sum(tapply(x$LhCSIStress1, x$rid, function(v) all(v == 4))) == 9, !all(x$LhCSIStress1[x$rid == "R02"] == 4)))

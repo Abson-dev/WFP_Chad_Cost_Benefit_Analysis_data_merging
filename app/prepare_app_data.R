@@ -19,7 +19,7 @@ env_dir <- function(name, default) { v <- Sys.getenv(name); if (nzchar(v)) v els
 DIR_INPUT <- env_dir("WFP_INPUT_DIR", file.path(base, "WFP Resilience dataset/data/input_data/Chad"))
 DIR_MODULES <- env_dir("WFP_MODULES_DIR", file.path(base, "WFP Resilience dataset/data/output_data/Chad"))
 DIR_MERGED <- env_dir("WFP_MERGED_DIR", file.path(base, "2024/WFP/CBA - Chad/data"))
-FINAL_FILE <- "WFP_Chad_2018-2023_20250423.dta.dta"
+FINAL_FILE <- "WFP_Chad_2018-2023_20261105.dta"
 REPO <- ".."
 MIN_CELL <- 30
 OUT <- "data"
@@ -282,9 +282,16 @@ add_check("Plausibility", "FCS day counts hold more than 0/1 in every round", pa
                   rounds_txt(binary_rounds), mean(x$FCS[x$round_id %in% binary_rounds]), 100 * mean(x$FCSCat28[x$round_id %in% binary_rounds] == 1), mean(x$SCA[x$round_id %in% binary_rounds], na.rm = TRUE)))
 
 # rCSI: the workbook maps rCSIBorrow to another column in some rounds; the raw rCSI settles which is right.
-rcsi_map_bad <- map_dups |> filter(source == "rCSILessQlty") |> pull(round_id)
-add_check("Workbook", "No two rCSI items share a source column", pass_if(!length(rcsi_map_bad)), if (length(rcsi_map_bad)) rounds_txt(rcsi_map_bad) else "None", "None",
-          "rCSIBorrow points to the rCSILessQlty column in the workbook, although the raw files have an rCSIBorrow column.")
+rcsi_workbook_bad <- map_dups |> filter(source == "rCSILessQlty") |> pull(round_id)
+add_check("Workbook", "No two rCSI items share a source column", pass_if(!length(rcsi_workbook_bad)), if (length(rcsi_workbook_bad)) rounds_txt(rcsi_workbook_bad) else "None", "None",
+          if (length(rcsi_workbook_bad)) "rCSIBorrow points to the rCSILessQlty column in the workbook, although the raw files have an rCSIBorrow column." else "")
+# The merged file decides, not the workbook: a corrected workbook does not fix a merged file built before it.
+rcsi_map_bad <- cfg_rounds$round_id[vapply(cfg_rounds$dataset, function(ds) {
+  if (!"rCSIBorrow" %in% names(raw[[ds]])) return(FALSE)
+  a <- as.numeric(raw_for_round(ds, "rCSIBorrow")); b <- x$rCSIBorrow[x$round_id == cfg_rounds$round_id[cfg_rounds$dataset == ds]]
+  mean(a == b, na.rm = TRUE) < .99
+}, TRUE)]
+add_check("Plausibility", "Merged rCSIBorrow equals its raw column", pass_if(!length(rcsi_map_bad)), if (length(rcsi_map_bad)) rounds_txt(rcsi_map_bad) else "All rounds with that column", "All", "")
 rcsi_true <- x$rCSI; borrow_true <- x$rCSIBorrow
 rcsi_rows <- list()
 for (rid in cfg_rounds$round_id) {

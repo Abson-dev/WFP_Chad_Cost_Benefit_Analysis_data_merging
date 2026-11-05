@@ -58,8 +58,10 @@ validation_server <- function(id, d) {
       lab <- factor(x$label, levels = r$label)
       changed <- !is.na(a) & !is.na(b) & abs(a - b) > 1e-9
       flagged <- x$round_id %in% flagged_rounds(d, id, "m")
-      plotly::plot_ly() |>
-        plotly::add_segments(x = lab[changed], xend = lab[changed], y = a[changed], yend = b[changed], line = list(color = "#B1B3B6", width = 2), showlegend = FALSE, hoverinfo = "skip") |>
+      p <- plotly::plot_ly()
+      # Once a defect is fixed, the two values agree and there is nothing to join.
+      if (any(changed)) p <- plotly::add_segments(p, x = lab[changed], xend = lab[changed], y = a[changed], yend = b[changed], line = list(color = "#B1B3B6", width = 2), showlegend = FALSE, hoverinfo = "skip")
+      p |>
         plotly::add_markers(x = lab, y = b, name = "With indicative corrections", marker = list(size = 11, color = COL$blue),
                             text = fmt_ind(b, id), hovertemplate = "%{x}, corrected: %{text}<extra></extra>") |>
         plotly::add_markers(x = lab, y = a, name = "As merged", marker = list(size = 11, color = ifelse(flagged, COL$red, "#939598"), symbol = ifelse(flagged, "x", "circle")),
