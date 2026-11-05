@@ -1,5 +1,5 @@
 ---
-title: "WFP datasets wrangling - Chad : Consistency check"
+title: "WFP datasets wrangling - Chad : MDDW indicator"
 author: "Aboubacar HEMA"
 date: "`r Sys.Date()`"
 output: 
@@ -27,6 +27,8 @@ knitr::opts_chunk$set(
 
 
 # MDDW indicator
+
+In this section, we harmonize variables needed to compute MDDW score.
 
 ```{r}
 library(haven)

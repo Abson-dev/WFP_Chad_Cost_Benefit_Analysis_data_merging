@@ -1,5 +1,5 @@
 ---
-title: "WFP datasets wrangling - Chad : HDDS"
+title: "WFP Chad CBA data preparation"
 author: "Aboubacar HEMA"
 date: "`r Sys.Date()`"
 output: 
@@ -13,6 +13,8 @@ output:
 ---
 
 # WFP Chad CBA data preparation II
+
+In this section we prepare data for cost benefit data analysis.
 
 ```{r eval=FALSE, include=TRUE}
 clear all

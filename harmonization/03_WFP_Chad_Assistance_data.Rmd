@@ -24,6 +24,8 @@ knitr::opts_chunk$set(
 
 # Assistance
 
+In this section, we harmonize WFP intervention variables.
+
 
 
 ```{r 03 packages needed}

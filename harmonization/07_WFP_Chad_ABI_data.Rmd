@@ -28,9 +28,9 @@ knitr::opts_chunk$set(
 
 
 
-# ASSET BENEFIT INDICATOR (ABI) 
+# Asset benefit indicator (ABI) 
 
-
+In this section, we harmonize variables needed to compute asset benefit indicator.
 
 ```{r 07 packages needed}
 library(haven)

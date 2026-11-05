@@ -25,6 +25,8 @@ knitr::opts_chunk$set(
 
 # Household characteristics
 
+In this section, we harmonize household characteristics variables.
+
 
 ```{r 02 packages needed}
 library(haven)

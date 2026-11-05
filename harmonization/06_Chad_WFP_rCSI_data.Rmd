@@ -28,6 +28,8 @@ knitr::opts_chunk$set(
 
 # Reduced coping strategy index ou l’indice réduit des stratégies de survie (rCSI)
 
+In this section, we harmonize variables needed to compute reduced coping strategy index score.
+
 
 ```{r 06 packages needed}
 library(haven)

@@ -27,6 +27,7 @@ knitr::opts_chunk$set(
 
 # HDDS indicator
 
+In this section, we harmonize variables needed to compute HDDS score.
 
 ```{r}
 library(haven)

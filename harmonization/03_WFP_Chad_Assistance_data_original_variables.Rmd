@@ -23,6 +23,8 @@ knitr::opts_chunk$set(
 
 ## Keep assistance original variables
 
+In this section, we just keep WFP interventions original variables.
+
 ```{r 03bis packages needed}
 library(haven)
 library(labelled) # for general functions to work with labelled data
