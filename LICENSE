@@ -1,0 +1,11 @@
+Copyright (c) 2025-2026 International Food Policy Research Institute (IFPRI).
+All rights reserved.
+
+This covers the code and documentation in this repository, unless a file or
+folder states otherwise. No permission to reuse them is granted by this notice.
+For permission, contact IFPRI or the author named in README.md.
+
+Not covered:
+- The Open Sans fonts in app/www/fonts/, under the SIL Open Font License
+  (app/www/fonts/OFL.txt).
+- The survey data, which are not in this repository and belong to their owners.

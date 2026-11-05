@@ -31,6 +31,7 @@ This repository builds the household dataset for the cost-benefit analysis (CBA)
 - [Run the dashboard](#run-the-dashboard)
 - [Repository structure](#repository-structure)
 - [Contact](#contact)
+- [Copyright](#copyright)
 
 ## How the data are built
 
@@ -149,3 +150,7 @@ The `.html` and `.md` files next to each Rmd are its knitted output.
 ## Contact
 
 Aboubacar Hema, IFPRI. Please open an [issue](https://github.com/Abson-dev/WFP_Chad_Cost_Benefit_Analysis_data_merging/issues) for questions on the code.
+
+## Copyright
+
+Copyright (c) 2025-2026 International Food Policy Research Institute (IFPRI). All rights reserved. See [LICENSE](LICENSE).
