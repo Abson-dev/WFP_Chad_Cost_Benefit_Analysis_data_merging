@@ -49,7 +49,7 @@ final_var_labels <- vapply(final_lab, function(v) { l <- attr(v, "label"); if (i
 wb_path <- file.path(DIR_INPUT, "Chad_Harmonization.xlsx")
 hv <- as.data.frame(readxl::read_excel(wb_path, "variables_harmonization"))
 de <- as.data.frame(readxl::read_excel(wb_path, "description"))
-repo_hv <- as.data.frame(readxl::read_excel(file.path(REPO, "Chad_Harmonization.xlsx"), "variables_harmonization"))
+repo_hv <- as.data.frame(readxl::read_excel(file.path(REPO, "harmonization", "Chad_Harmonization.xlsx"), "variables_harmonization"))
 
 say("Reading the 10 raw SPSS files...")
 raw <- list()
@@ -261,7 +261,7 @@ rcs_items <- c("HHRCSBounce", "HHRCSRevenue", "HHRCSIncrease", "HHRCSFinAccess",
 rcs_calc <- 100 * (rowMeans(x[rcs_items], na.rm = TRUE) - 1) / 4
 # Stata stores RCS as a float, hence the wider tolerance.
 add_check("Formulas", "Resilience Capacity Score follows its formula", pass_if(all(abs(rcs_calc - x$RCS) < 1e-3, na.rm = TRUE)), sum(abs(rcs_calc - x$RCS) >= 1e-3, na.rm = TRUE), "0 differences", "Mean of 9 statements on a 1-to-5 scale, rescaled to 0-100.")
-rcs_tab <- suppressMessages(as.data.frame(readxl::read_excel(file.path(REPO, "RCS_table.xlsx"))))
+rcs_tab <- suppressMessages(as.data.frame(readxl::read_excel(file.path(REPO, "merge", "RCS_table.xlsx"))))
 rcs_saved <- as.numeric(rcs_tab[rcs_tab[[1]] %in% "Resilience capacity", 2:4])
 rcs_now <- as.numeric(prop.table(table(factor(x$RCSCat33, 1:3))))
 add_check("Formulas", "RCS groups match the saved RCS_table.xlsx", pass_if(all(abs(rcs_saved - rcs_now) < 1e-3)), sprintf("%.1f / %.1f / %.1f%%", 100 * rcs_now[1], 100 * rcs_now[2], 100 * rcs_now[3]), sprintf("%.1f / %.1f / %.1f%%", 100 * rcs_saved[1], 100 * rcs_saved[2], 100 * rcs_saved[3]))
@@ -561,7 +561,7 @@ family_cov <- final_cov |> left_join(select(final_cols, variable, family), by = 
   summarise(pct = round(mean(pct), 1), columns_with_data = sum(pct > 0), .groups = "drop")
 
 # Place-name corrections, from the do-file and the module files.
-do_lines <- readLines(file.path(REPO, "12_WFP_Chad_CBA_data_preparation.do"), warn = FALSE, encoding = "UTF-8")
+do_lines <- readLines(file.path(REPO, "merge", "12_WFP_Chad_CBA_data_preparation.do"), warn = FALSE, encoding = "UTF-8")
 admin_block <- do_lines[seq(grep("Correct inconsistencies in Village and Admin 2", do_lines)[1], grep("save \"\\$output_data\\\\WFP_Chad_admin.dta\"", do_lines)[1])]
 places <- data.frame(
   measure = c("Village names before cleaning", "Village names in the merged file", "Households with no usable village name", "Households without a department before cleaning",
@@ -578,8 +578,8 @@ inputs <- bind_rows(
   hash_row(wb_path, "Harmonisation workbook"),
   bind_rows(lapply(cfg_modules$file, function(f) hash_row(file.path(DIR_MERGED, paste0(f, ".dta")), "Cleaned module file"))),
   hash_row(file.path(DIR_MERGED, FINAL_FILE), "Merged dataset"),
-  hash_row(file.path(REPO, "12_WFP_Chad_CBA_data_preparation.do"), "Merge code"),
-  hash_row(file.path(REPO, "13_WFP_Chad_OriginalAssistenciesVariables.do"), "Merge code"))
+  hash_row(file.path(REPO, "merge", "12_WFP_Chad_CBA_data_preparation.do"), "Merge code"),
+  hash_row(file.path(REPO, "merge", "13_WFP_Chad_OriginalAssistenciesVariables.do"), "Merge code"))
 
 # ---- Crosswalk workbook for download ------------------------------------------------------------
 wide <- crosswalk |> select(variable, round_id, source) |> mutate(round = cfg_rounds$label[match(round_id, cfg_rounds$round_id)]) |>

@@ -9,9 +9,9 @@ This repository builds the household dataset for the cost-benefit analysis (CBA)
 
 | Part | What it is | Where |
 |---|---|---|
-| Harmonisation | R Markdown files that rename and recode each module, round by round | `01_` to `11_*.Rmd` |
-| Merge | Stata do-files that clean, merge and compute the indicators | `12_*.do`, `13_*.do` |
-| Report | Bookdown report on harmonisation issues | [Read online](https://bookdown.org/aboubacarhema94/WFP_Chad_Cost_Benefit_Analysis_data_merging/) |
+| Harmonisation | R Markdown files that rename and recode each module, round by round | [`harmonization/`](harmonization/) |
+| Merge | Stata do-files that clean, merge and compute the indicators | [`merge/`](merge/) |
+| Report | Bookdown report on harmonisation issues | [Read online](https://bookdown.org/aboubacarhema94/WFP_Chad_Cost_Benefit_Analysis_data_merging/), [`report/`](report/) |
 | Dashboard | R Shiny app showing the merge, its checks and the results | [`app/`](app/README.md) |
 
 ![Overview page of the dashboard, with synthetic estimates](app/docs/screenshots/01-overview.png)
@@ -113,11 +113,11 @@ The repository does hold the harmonisation workbook, the code, the report, and t
 You need the source files, R, and Stata.
 
 1. **Set the folders.** The paths are written into the code, so change them on your computer: `dir_input_data` and `dir_output_data` at the top of each Rmd, and `global input_data` and `global output_data` in each do-file.
-2. **Build the modules.** Knit the Rmds from `01_` to `11_`, in order. They need `haven`, `labelled`, `tidyverse`, `Hmisc`, `gtsummary`, `readxl`, `foreign`, `sjPlot`, `sjmisc`, `sjlabelled`, `stringr`, `expss` and `plyr`.
-3. **Merge.** Run `12_WFP_Chad_CBA_data_preparation.do`, then `13_WFP_Chad_OriginalAssistenciesVariables.do`. Do-file 12 also needs the Cadre Harmonisé workbook in its data folder.
+2. **Build the modules.** Knit the Rmds in `harmonization/`, in order. They overwrite the module files in `dir_output_data`. They need `haven`, `labelled`, `tidyverse`, `Hmisc`, `gtsummary`, `readxl`, `foreign`, `sjPlot`, `sjmisc`, `sjlabelled`, `stringr`, `expss` and `plyr`.
+3. **Merge.** From the `merge/` folder, run `12_WFP_Chad_CBA_data_preparation.do`, then `13_WFP_Chad_OriginalAssistenciesVariables.do`. Do-file 12 also needs the Cadre Harmonisé workbook in its data folder, and writes `RCS_table.xlsx` to Stata's working directory.
 4. **Check.** Refresh the dashboard (below): it recomputes all checks from the new files.
 
-To rebuild the report, run `bookdown::render_book("index.Rmd")`. The chapters are listed in `_bookdown.yml`.
+To rebuild the report, run `bookdown::render_book("index.Rmd")` from the repository's root. The chapters are listed in `_bookdown.yml`. This reruns the harmonisation Rmds, so it overwrites the module files too.
 
 ## Run the dashboard
 
@@ -134,18 +134,20 @@ Then double-click `app/run_app.bat`, or open `app/app.R` in RStudio and choose *
 ## Repository structure
 
 ```
-├── 00-Overview.Rmd, index.Rmd          report front matter
-├── 01_ to 11_*.Rmd                     harmonisation, one file per module
-├── 12_*.do, 13_*.do                    clean, merge, indicators (with Rmd copies for the report)
-├── Chad_Harmonization.xlsx             variable mapping across rounds
-├── RCS_table.xlsx                      resilience capacity table from do-file 12
-├── Issues on WFP Resilience [...].docx report on the issues in the source data
-├── _book/                              rendered report
-├── _bookdown.yml, _output.yml, ...     report configuration and styling
-└── app/                                dashboard: see app/README.md
+├── harmonization/                      step 1: one Rmd per module
+│   └── Chad_Harmonization.xlsx         variable mapping across rounds
+├── merge/                              step 2: do-files 12 and 13, with Rmd copies for the report
+│   └── RCS_table.xlsx                  resilience capacity table from do-file 12
+├── app/                                step 3: dashboard, see app/README.md
+├── report/
+│   ├── Issues on WFP Resilience [...].docx   report on the issues in the source data
+│   └── knitted/                        archived HTML and Markdown output of the Rmds
+├── _book/                              rendered bookdown report
+├── index.Rmd, 00-Overview.Rmd          report front matter
+└── _bookdown.yml, _output.yml, ...     report configuration and styling
 ```
 
-The `.html` and `.md` files next to each Rmd are its knitted output.
+The report's configuration stays at the root, where bookdown and RStudio's Build Book expect it. Knitting an Rmd now writes its output next to it; Git ignores that output, so `report/knitted/` keeps the older copies until you replace them.
 
 ## Contact
 

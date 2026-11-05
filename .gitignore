@@ -12,6 +12,12 @@
 _bookdown_files/
 _main_files/
 rsconnect/
+harmonization/*.html
+harmonization/*.md
+harmonization/*_files/
+merge/*.html
+merge/*.md
+merge/*_files/
 
 # Dashboard: generated data, accounts and secrets stay on this computer
 app/data/
