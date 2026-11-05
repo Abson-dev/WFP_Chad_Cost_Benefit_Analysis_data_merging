@@ -17,7 +17,7 @@ The **reference round** and the **figures** option in the left panel drive Overv
 | **Validation** | Do the data match their sources? All checks, what the defects do to the indicators, rCSI against the analysts' rCSI, coping strategies by round |
 | **Data issues** | What was found, where does it come from and what should be done? |
 | **Variables** | What does each of the 305 merged columns hold? Label, completeness and distribution by round. Columns that can identify households show their completeness only, and answers from fewer than 5 households are hidden |
-| **Results** | *Trends*, *Regions* and *Assistance*: indicators over time and by region, and the 20 intervention variables with their recoding audit |
+| **Results** | *Trends*, *Regions*, *Assistance* and *Costs*: indicators over time and by region; the 20 intervention variables with their recoding audit; WFP's costs reconciled, grouped by activity and linked to the surveys by department and year |
 | **Method** | *Approach*, *Process* (pipeline diagram), *Crosswalk* (217 variables x 10 rounds, downloads), *Rounds* (fieldwork, inventory, departments) |
 | **Data** | Filter the aggregate indicators and download them as CSV or Excel |
 | **About** | How to refresh, data statement, SHA-256 of each input |
@@ -37,7 +37,7 @@ Tested with R 4.5.2, shiny 1.14.0, bslib 0.11.0, plotly 4.12.0, reactable 0.4.5,
 
 ## Refresh the data
 
-`data/` is generated and not versioned. After a change in the pipeline, from this folder:
+`data/` is generated and not versioned. After a change in the cost data, first run `Rscript costs/prepare_cost_data.R` from the repository's root. After a change in the pipeline, from this folder:
 
 ```bash
 Rscript prepare_app_data.R     # needs haven, readxl, digest in addition to the app's packages

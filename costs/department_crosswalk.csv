@@ -1,0 +1,17 @@
+cost_department,cost_area,region,survey_department,adm2_ocha,link_type,note
+Ouara,Ouara,Ouaddai,Ouara,TD1401,Same name,
+Assoungha,Assoungha,Ouaddai,Assoungha,TD1403,Same name,
+Kanem centre,Kanem,Kanem,Kanem,TD0601,Renamed,Mao sub-office. Taken as the department of Kanem; Nord Kanem has no cost data.
+Abtouyour et Barh Signakha,Abtouyour + Barh-Signaka,Guera,Abtouyour,TD0402,Combined,Costs are not split between the two departments.
+Abtouyour et Barh Signakha,Abtouyour + Barh-Signaka,Guera,Barh-Signaka,TD0403,Combined,Costs are not split between the two departments.
+Guéra et Mangalmé,Guera + Mangalme,Guera,Guera,TD0401,Combined,Costs are not split between the two departments.
+Guéra et Mangalmé,Guera + Mangalme,Guera,Mangalme,TD0404,Combined,Costs are not split between the two departments.
+Batha Est,Batha Est,Batha,Batha Est,TD0102,Same name,
+Batha Ouest,Batha Ouest,Batha,Batha Ouest,TD0101,Same name,
+Kaya et Mamdi,Kaya + Mamdi,Lac,Kaya,TD0703,Combined,Costs are not split between the two departments.
+Kaya et Mamdi,Kaya + Mamdi,Lac,Mamdi,TD0701,Combined,Costs are not split between the two departments.
+BEG SUD,Barh-El-Gazel Sud,Barh-El-Gazel,Barh-El-Gazel Sud,TD1901,Renamed,
+Dartama,Dar-Tama,Wadi Fira,Dar-Tama,TD1702,Renamed,Gueréda sub-office.
+Ennedi Est,Wadi Hawar,Ennedi Est,Wadi Hawar,TD2002,Assumed,The cost sheet gives the region as the department (Amdjarass sub-office). Wadi Hawar is the only surveyed department there. To confirm with WFP.
+Sila,Kimiti,Sila,Kimiti,TD2101,Assumed,The cost sheet gives the region as the department (Goz Beida sub-office). Kimiti is the only surveyed department there. To confirm with WFP.
+"IRIBA, Dougouba","Iriba, Dougouba",Wadi Fira,,,No survey department,No surveyed department matches this name. To confirm with WFP.

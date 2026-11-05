@@ -57,7 +57,7 @@ if (length(args) > 3 && args[4] == "corrected") {
   wait_idle()
 }
 pages <- c(Overview = "01-overview", Merge = "02-merge", Validation = "03-validation", `Data issues` = "04-data-issues", Trends = "05-trends", Regions = "06-regions",
-           Assistance = "07-assistance", Approach = "08-approach", Process = "09-process", Crosswalk = "10-crosswalk", Rounds = "11-rounds", Data = "12-data", About = "13-about", Variables = "14-variables")
+           Assistance = "07-assistance", Approach = "08-approach", Process = "09-process", Crosswalk = "10-crosswalk", Rounds = "11-rounds", Data = "12-data", About = "13-about", Variables = "14-variables", Costs = "15-costs")
 for (p in names(pages)) {
   go(p)
   shot(paste0(pages[[p]], ".png"))

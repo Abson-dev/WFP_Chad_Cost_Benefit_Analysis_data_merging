@@ -43,7 +43,8 @@ ui <- protect_ui(page_navbar(
     "Results", icon = bsicons::bs_icon("bar-chart-line"),
     nav_panel("Trends", icon = bsicons::bs_icon("graph-up"), trends_ui("trends", d)),
     nav_panel("Regions", icon = bsicons::bs_icon("geo-alt"), regions_ui("regions", d)),
-    nav_panel("Assistance", icon = bsicons::bs_icon("box-seam"), assistance_ui("assistance", d))
+    nav_panel("Assistance", icon = bsicons::bs_icon("box-seam"), assistance_ui("assistance", d)),
+    nav_panel("Costs", icon = bsicons::bs_icon("cash-stack"), costs_ui("costs", d))
   ),
   nav_menu(
     "Method", icon = bsicons::bs_icon("diagram-3"),
@@ -97,6 +98,7 @@ server <- function(input, output, session) {
   trends_server("trends", d, ref, est)
   regions_server("regions", d, ref, est)
   assistance_server("assistance", d, ref)
+  costs_server("costs", d)
   approach_server("approach", d)
   process_server("process", d)
   crosswalk_server("crosswalk", d)

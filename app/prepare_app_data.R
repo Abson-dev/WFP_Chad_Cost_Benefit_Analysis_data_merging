@@ -635,6 +635,17 @@ writexl::write_xlsx(list(
   Rounds = rounds |> select(Round = label, Survey = survey, Series = series, `Raw file` = raw_file, `Raw rows` = raw_rows, `Merged rows` = final_rows)
 ), file.path(OUT, "WFP_Chad_crosswalk_2018-2023.xlsx"))
 
+# ---- Costs: tables built by costs/prepare_cost_data.R. Activity texts, which name villages, stay out. ----
+DIR_COSTS <- file.path(DIR_MERGED, "cost data clean")
+COST_TABLES <- c("cost_reconciliation", "cost_by_category", "cost_by_area", "cost_by_partner", "cost_lump_sum_activities", "cost_survey_link", "cost_department_crosswalk", "composition_usd")
+absent_costs <- COST_TABLES[!file.exists(file.path(DIR_COSTS, paste0(COST_TABLES, ".csv")))]
+if (length(absent_costs)) stop("Run Rscript costs/prepare_cost_data.R from the repository's root first. Missing: ", paste(absent_costs, collapse = ", "), call. = FALSE)
+for (t in COST_TABLES) {
+  ct <- readr::read_csv(file.path(DIR_COSTS, paste0(t, ".csv")), show_col_types = FALSE)
+  if ("activity" %in% names(ct)) stop("Activity text in ", t, call. = FALSE)
+  write_out(ct, paste0(t, ".csv"))
+}
+
 # ---- Write --------------------------------------------------------------------------------------
 say("Writing %s/ ...", OUT)
 checks_df <- bind_rows(checks) |> mutate(status = factor(status, c("fail", "warn", "pass"))) |> arrange(status, group) |> mutate(status = as.character(status))

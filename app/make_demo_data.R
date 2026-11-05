@@ -45,6 +45,10 @@ for (k in c("merged", "corrected", "analysts")) rc[[k]] <- round(jitter_rel(rc[[
 write(rc, "rcsi_comparison.csv")
 ch <- read("ch_phase_by_round.csv"); ch$households <- round(jitter_rel(ch$households, .25)); write(ch, "ch_phase_by_round.csv")
 
+for (f in c("cost_by_category.csv", "cost_by_area.csv", "cost_by_partner.csv")) { x <- read(f); x$cash_xaf <- round(jitter_rel(x$cash_xaf, .25)); write(x, f) }
+x <- read("cost_survey_link.csv"); for (k in c("cost_xaf", "cost_activity_xaf", "cost_lump_sum_xaf")) x[[k]] <- round(jitter_rel(x[[k]], .25)); write(x, "cost_survey_link.csv")
+x <- read("cost_reconciliation.csv"); for (k in c("stated_total_xaf", "reconciled_total_xaf", "difference_xaf")) x[[k]] <- round(jitter_rel(x[[k]], .25)); write(x, "cost_reconciliation.csv")
+
 # Text with figures: replaced, so that no real estimate leaves in a screenshot.
 ck <- read("checks.csv")
 ck$detail <- ifelse(ck$status == "pass", ck$detail, "Illustration: detail hidden in the synthetic version.")

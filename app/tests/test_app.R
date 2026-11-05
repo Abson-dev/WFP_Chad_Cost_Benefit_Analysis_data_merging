@@ -23,7 +23,7 @@ plotly_json <- function(p) { jsonlite::fromJSON(plotly::plotly_json(p, jsonedit 
 section <- function(s) cat("-", s, "\n")
 
 section("UI builders")
-for (m in c("situation", "merge", "validation", "issues", "variables", "trends", "regions", "assistance", "approach", "process", "crosswalk", "rounds", "data", "about")) {
+for (m in c("situation", "merge", "validation", "issues", "variables", "costs", "trends", "regions", "assistance", "approach", "process", "crosswalk", "rounds", "data", "about")) {
   ok(paste("ui:", m), get(paste0(m, "_ui"))(m, d))
 }
 
@@ -84,6 +84,31 @@ testServer(issues_server, args = list(d = d), {
   session$setInputs(severity = "High", state = "Open"); ok("issues high open", { output$cards; stopifnot(all(shown()$severity == "High")) })
   session$setInputs(severity = "Low", state = "Open"); ok("issues low open", output$cards)
 })
+section("Costs page")
+testServer(costs_server, args = list(d = d), {
+  ok("costs outputs", { output$by_period; output$recon; output$link; output$cat_heat; output$types; output$crosswalk; output$composition; output$partners })
+})
+cost_total <- d$cost_recon$reconciled_total_xaf[d$cost_recon$period == "All"]
+ok("costs: reconciled total", stopifnot(abs(cost_total - 8629285049) < 1, abs(d$cost_recon$difference_xaf[d$cost_recon$period == "All"] - 211503517) < 1))
+ok("costs: only 2019 differs from the workbook", stopifnot(all(abs(d$cost_recon$difference_xaf[!d$cost_recon$period %in% c("2019", "All")]) < 1)))
+ok("costs: every table adds up to the total", stopifnot(abs(sum(d$cost_category$cash_xaf) - cost_total) < 1, abs(sum(d$cost_area$cash_xaf) - cost_total) < 1, abs(sum(d$cost_partner$cash_xaf) - cost_total) < 1, abs(sum(d$cost_link$cost_xaf, na.rm = TRUE) - cost_total) < 1))
+ok("costs: lump sums stay apart, in one period", {
+  l <- d$cost_category[d$cost_category$amount_category == LUMP_CATEGORY, ]
+  stopifnot(identical(unique(l$period), "2020 Apr-Dec"), abs(sum(l$cash_xaf) - 2350967290) < 1, !any(d$cost_category$period == "2020 Apr-Dec" & d$cost_category$amount_category != LUMP_CATEGORY))
+})
+ok("costs: 2020 keeps two periods", stopifnot(all(c("2020 Jan-Mar", "2020 Apr-Dec") %in% d$cost_recon$period)))
+ok("costs: unclear activities stay few", stopifnot(sum(d$cost_category$cash_xaf[d$cost_category$amount_category == "Other or unclear"]) < 0.01 * cost_total))
+ok("costs: every category has a colour", stopifnot(all(d$cost_category$amount_category %in% names(CATEGORY_COL))))
+ok("costs: crosswalk codes are surveyed departments", {
+  xw <- d$cost_crosswalk[!is.na(d$cost_crosswalk$adm2_ocha), ]
+  stopifnot(!anyDuplicated(xw$adm2_ocha))
+})
+ok("costs: composition is in USD, 6 packages", stopifnot(nrow(unique(d$composition[, c("programme", "target")])) == 6, min(d$composition$value_usd_per_person_month) == 10.9, max(d$composition$value_usd_per_person_month) == 31.75))
+ok("costs: no activity text or village in the app's tables", {
+  for (f in list.files("data", pattern = "^(cost|composition)", full.names = TRUE)) stopifnot(!"activity" %in% names(readr::read_csv(f, n_max = 1, show_col_types = FALSE)))
+  stopifnot(!any(grepl("Ngueri|Doubane|Korbo|Fassaladjoul", unlist(lapply(list.files("data", pattern = "^cost", full.names = TRUE), readLines, warn = FALSE)))))
+})
+
 section("Variables page: every column of the merged file")
 ok("variables: all 305 columns listed once", stopifnot(nrow(d$merged_columns) == d$manifest$columns, !anyDuplicated(d$merged_columns$variable)))
 ok("variables: completeness for every column and round", stopifnot(nrow(d$column_coverage) == d$manifest$columns * nrow(d$rounds)))

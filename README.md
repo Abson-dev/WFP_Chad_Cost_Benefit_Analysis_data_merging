@@ -12,7 +12,8 @@ This repository builds the household dataset for the cost-benefit analysis (CBA)
 | Harmonisation | R Markdown files that rename and recode each module, round by round | [`harmonization/`](harmonization/) |
 | Merge | Stata do-files that clean, merge and compute the indicators | [`merge/`](merge/) |
 | Report | Bookdown report on harmonisation issues | [Read online](https://bookdown.org/aboubacarhema94/WFP_Chad_Cost_Benefit_Analysis_data_merging/), [`report/`](report/) |
-| Dashboard | R Shiny app showing the merge, its checks and the results | [`app/`](app/README.md) |
+| Costs | WFP's cost data reconciled, grouped by activity and linked to the surveys by department and year | [`costs/`](costs/README.md) |
+| Dashboard | R Shiny app showing the merge, its checks, the results and the costs | [`app/`](app/README.md) |
 
 ![Overview page of the dashboard, with synthetic estimates](app/docs/screenshots/01-overview.png)
 
@@ -124,6 +125,7 @@ To rebuild the report, run `bookdown::render_book("index.Rmd")` from the reposit
 Without the source files, a fresh clone cannot run the dashboard, as `app/data/` is generated. With them:
 
 ```bash
+Rscript costs/prepare_cost_data.R   # cost tables, from the repository's root; reads the source files, read-only
 cd app
 Rscript prepare_app_data.R     # aggregates and checks; reads the source files, read-only
 Rscript tests/test_app.R       # tests every page, the figures and the data boundary
@@ -139,6 +141,7 @@ Then double-click `app/run_app.bat`, or open `app/app.R` in RStudio and choose *
 ├── merge/                              step 2: do-files 12 and 13, with Rmd copies for the report
 │   └── RCS_table.xlsx                  resilience capacity table from do-file 12
 ├── app/                                step 3: dashboard, see app/README.md
+├── costs/                              cost data rules and script, see costs/README.md
 ├── deposit/                            step 4: package for IFPRI Dataverse, see deposit/README.md
 ├── report/
 │   ├── Issues on WFP Resilience [...].docx   report on the issues in the source data
