@@ -1,0 +1,638 @@
+# Build the dashboard's data folder from the merging pipeline's files. From the app/ folder:
+#   Rscript prepare_app_data.R
+#
+# Reads the raw SPSS files, the harmonisation workbook, the module files and the merged dataset, all
+# read-only. Writes to data/ ONLY aggregates and metadata: no household identifier, no village name,
+# no GPS, and any regional cell under 30 households is suppressed. Everything the Validation page
+# reports is computed here, so a rerun after a pipeline fix updates the checks by itself.
+#
+# Folders can be overridden with the environment variables below.
+
+suppressPackageStartupMessages({
+  library(haven); library(dplyr); library(tidyr); library(readxl); library(readr); library(jsonlite); library(digest)
+})
+options(dplyr.summarise.inform = FALSE)
+if (!file.exists("app.R")) stop("Run this script from the app/ folder.", call. = FALSE)
+
+base <- "C:/Users/AHema/OneDrive - CGIAR/Desktop"
+env_dir <- function(name, default) { v <- Sys.getenv(name); if (nzchar(v)) v else default }
+DIR_INPUT <- env_dir("WFP_INPUT_DIR", file.path(base, "WFP Resilience dataset/data/input_data/Chad"))
+DIR_MODULES <- env_dir("WFP_MODULES_DIR", file.path(base, "WFP Resilience dataset/data/output_data/Chad"))
+DIR_MERGED <- env_dir("WFP_MERGED_DIR", file.path(base, "2024/WFP/CBA - Chad/data"))
+FINAL_FILE <- "WFP_Chad_2018-2023_20250423.dta.dta"
+REPO <- ".."
+MIN_CELL <- 30
+OUT <- "data"
+dir.create(OUT, showWarnings = FALSE)
+for (d in c(DIR_INPUT, DIR_MODULES, DIR_MERGED)) if (!dir.exists(d)) stop("Folder not found: ", d, call. = FALSE)
+
+say <- function(...) cat(sprintf(...), "\n")
+# Some source labels are stored as several strings (one per answer); the first holds the question.
+clean_text <- function(x) trimws(gsub("\\s+", " ", gsub("<[^>]+>", " ", x[1])))
+write_out <- function(x, name) { readr::write_csv(x, file.path(OUT, name), na = ""); say("  %-32s %5d rows", name, nrow(x)) }
+
+# ---- Configuration ------------------------------------------------------------------------------
+cfg_rounds <- readr::read_csv("config/rounds.csv", show_col_types = FALSE)
+cfg_modules <- readr::read_csv("config/modules.csv", show_col_types = FALSE)
+cfg_interv <- readr::read_csv("config/interventions.csv", show_col_types = FALSE, col_types = readr::cols(.default = "c"))
+rid_of <- function(r) cfg_rounds$round_id[match(r, cfg_rounds$round)]
+
+# ---- Sources ------------------------------------------------------------------------------------
+say("Reading the merged dataset and the workbook...")
+final_lab <- haven::read_dta(file.path(DIR_MERGED, FINAL_FILE))
+x <- haven::zap_labels(final_lab)
+x$ID <- as.character(x$ID)
+x$round_id <- rid_of(x$ROUND)
+N_FINAL <- nrow(x)
+final_var_labels <- vapply(final_lab, function(v) { l <- attr(v, "label"); if (is.null(l)) "" else clean_text(l) }, "")
+
+wb_path <- file.path(DIR_INPUT, "Chad_Harmonization.xlsx")
+hv <- as.data.frame(readxl::read_excel(wb_path, "variables_harmonization"))
+de <- as.data.frame(readxl::read_excel(wb_path, "description"))
+repo_hv <- as.data.frame(readxl::read_excel(file.path(REPO, "Chad_Harmonization.xlsx"), "variables_harmonization"))
+
+say("Reading the 10 raw SPSS files...")
+raw <- list()
+for (i in seq_len(nrow(de))) raw[[de$Name[i]]] <- haven::read_sav(file.path(DIR_INPUT, de$Data[i]))
+source_of <- function(ds, v) { s <- hv[hv$NewVariable_Name == v, ds]; if (length(s) && !is.na(s)) s else NA_character_ }
+# IDs as the pipeline builds them: PDM 2022 has no ID column, so the Rmds use the row number.
+raw_ids <- function(ds) {
+  if (ds == "Chad_pdm_2022") return(as.character(seq_len(nrow(raw[[ds]]))))
+  as.character(raw[[ds]][[source_of(ds, "ID")]])
+}
+# Value of a raw variable for the merged households of a round, in merged-file order.
+raw_for_round <- function(ds, rawvar) {
+  ids <- raw_ids(ds); keep <- !duplicated(ids)
+  rid <- cfg_rounds$round_id[cfg_rounds$dataset == ds]
+  j <- match(x$ID[x$round_id == rid], ids[keep])
+  haven::zap_labels(raw[[ds]][[rawvar]])[keep][j]
+}
+
+# ---- Checks: every result below ends up on the Validation page ----------------------------------
+checks <- list()
+add_check <- function(group, check, status, observed, expected = "", detail = "") {
+  checks[[length(checks) + 1]] <<- data.frame(group = group, check = check, status = status, observed = as.character(observed),
+                                              expected = as.character(expected), detail = detail, stringsAsFactors = FALSE)
+}
+pass_if <- function(ok, otherwise = "fail") if (isTRUE(ok)) "pass" else otherwise
+rounds_txt <- function(rids) paste(cfg_rounds$label[match(rids, cfg_rounds$round_id)], collapse = ", ")
+
+# ---- Rows: raw file to merged file --------------------------------------------------------------
+say("Row flow...")
+flow <- bind_rows(lapply(seq_len(nrow(cfg_rounds)), function(i) {
+  cr <- cfg_rounds[i, ]; ids <- raw_ids(cr$dataset)
+  data.frame(round_id = cr$round_id, raw_rows = length(ids), raw_cols = ncol(raw[[cr$dataset]]),
+             mapped_vars = sum(!is.na(hv[[cr$dataset]])), duplicates_removed = sum(duplicated(ids)),
+             final_rows = sum(x$round_id == cr$round_id))
+})) |> mutate(empty_removed = raw_rows - duplicates_removed - final_rows)
+
+mod_files <- setNames(cfg_modules$file, cfg_modules$module)
+read_mod <- function(dir, m) { y <- haven::zap_labels(haven::read_dta(file.path(dir, paste0(mod_files[[m]], ".dta")))); y$ID <- as.character(y$ID); y }
+adm_pre <- read_mod(DIR_MODULES, "admin")
+
+# Duplicated IDs before the do-file's "duplicates drop ID, force": true duplicates or different interviews?
+dup_groups <- adm_pre |> group_by(ID) |> filter(n() > 1) |>
+  summarise(rows = n(), n_rounds = n_distinct(paste(YEAR, SURVEY)), round = paste(YEAR[1], SURVEY[1]),
+            same = n_distinct(paste(ADMIN2Name, village, SvyDatePDM)) == 1) |> ungroup()
+
+add_check("Rows", "Raw rows minus removed rows equal the merged rows",
+          pass_if(sum(flow$raw_rows) - sum(flow$duplicates_removed) - sum(flow$empty_removed) == N_FINAL),
+          sprintf("%s - %d - %d = %s", format(sum(flow$raw_rows), big.mark = ","), sum(flow$duplicates_removed), sum(flow$empty_removed), format(N_FINAL, big.mark = ",")),
+          "Exact", "Every household in the 10 raw files is accounted for.")
+add_check("Rows", "ID is unique in the merged file", pass_if(!anyDuplicated(x$ID)), sum(duplicated(x$ID)), "0 duplicates")
+add_check("Rows", "Every round keeps one survey and year", pass_if(all(table(paste(x$YEAR, x$SURVEY), x$ROUND) %in% c(0, flow$final_rows))),
+          n_distinct(paste(x$YEAR, x$SURVEY, x$ROUND)), "10 combinations")
+add_check("Rows", "No ID is shared across rounds", pass_if(all(dup_groups$n_rounds == 1)), sum(dup_groups$n_rounds > 1), "0 IDs",
+          "The merge is 1:1 on ID alone, so an ID reused across rounds would silently merge two households.")
+add_check("Rows", "Removed duplicates are true repeats of one interview", pass_if(all(dup_groups$same), "warn"),
+          sprintf("%d of %d duplicated IDs identical", sum(dup_groups$same), nrow(dup_groups)), "All identical",
+          sprintf("All duplicates are in %s. %d ID has rows with a different place or date; the do-file keeps the first row.",
+                  paste(unique(dup_groups$round), collapse = ", "), sum(!dup_groups$same)))
+
+# ---- Merge replay -------------------------------------------------------------------------------
+say("Replaying the 1:1 merge...")
+clean_mods <- lapply(setNames(cfg_modules$module, cfg_modules$module), function(m) read_mod(DIR_MERGED, m))
+mod_ids <- lapply(clean_mods, `[[`, "ID")
+cur <- mod_ids$admin
+merge_steps <- bind_rows(lapply(cfg_modules$module, function(m) {
+  i <- mod_ids[[m]]
+  r <- data.frame(module = m, master_before = length(cur), using_rows = length(i), using_duplicates = sum(duplicated(i)),
+                  matched = length(intersect(cur, i)), master_only = length(setdiff(cur, i)), using_only = length(setdiff(i, cur)),
+                  columns_added = ncol(clean_mods[[m]]) - 1)
+  cur <<- union(cur, i)
+  r
+})) |> left_join(select(cfg_modules, module, label, rmd, merge_order, description), by = "module")
+
+module_round <- expand.grid(module = cfg_modules$module, round_id = cfg_rounds$round_id, stringsAsFactors = FALSE) |>
+  rowwise() |>
+  mutate(households = sum(x$ID[x$round_id == round_id] %in% mod_ids[[module]]),
+         round_total = sum(x$round_id == round_id), pct = round(100 * households / round_total, 1)) |>
+  ungroup()
+
+add_check("Merge", "All module files are unique on ID", pass_if(all(merge_steps$using_duplicates == 0)), sum(merge_steps$using_duplicates), "0 duplicates")
+add_check("Merge", "No household exists only in a later module", pass_if(all(merge_steps$using_only == 0)), sum(merge_steps$using_only), "0 households",
+          "The administrative file is the master: every other module's households are found in it.")
+add_check("Merge", "The replayed merge gives the merged file's households", pass_if(setequal(cur, x$ID)), length(cur), format(N_FINAL, big.mark = ","))
+miss_ch <- sum(is.na(x$phase_class))
+add_check("Merge", "Every household links to a Cadre Harmonisé phase", pass_if(miss_ch == 0, "warn"), sprintf("%d without a phase", miss_ch), "0",
+          sprintf("In %s, where %d of them also have no department, the link's key. The comment in the do-file records 41 unmatched when it was written.",
+                  rounds_txt(unique(x$round_id[is.na(x$phase_class)])), sum(is.na(x$phase_class) & (is.na(x$ADMIN2Name) | x$ADMIN2Name == ""))))
+
+# Do the module files re-knitted after the merge still give what the merge used?
+stale <- bind_rows(lapply(cfg_modules$module, function(m) {
+  a <- read_mod(DIR_MODULES, m); b <- clean_mods[[m]]
+  a <- a[!duplicated(a$ID), ]; j <- match(b$ID, a$ID)
+  com <- setdiff(intersect(names(a), names(b)), "ID")
+  diff <- vapply(com, function(v) sum(!(as.character(a[[v]][j]) == as.character(b[[v]]) | (is.na(a[[v]][j]) & is.na(b[[v]]))), na.rm = TRUE), 0)
+  data.frame(module = m, columns_changed = sum(diff > 0))
+}))
+add_check("Merge", "Module files re-knitted in May 2025 match the files used by the merge",
+          pass_if(all(stale$columns_changed[stale$module != "admin"] == 0)),
+          sprintf("%d columns changed", sum(stale$columns_changed[stale$module != "admin"])), "0 columns",
+          sprintf("Outside the administrative module, whose %d changed columns are the do-file's intended place-name corrections.", stale$columns_changed[stale$module == "admin"]))
+
+# Workbook
+same_wb <- identical(hv, repo_hv)
+add_check("Workbook", "The repository's workbook is the one the pipeline reads", pass_if(same_wb), if (same_wb) "Identical" else "Different", "Identical")
+missing_map <- unlist(lapply(names(raw), function(n) setdiff(stats::na.omit(hv[[n]]), names(raw[[n]]))))
+add_check("Workbook", "Every mapped source variable exists in its raw file", pass_if(!length(missing_map)), length(missing_map), "0 missing",
+          sprintf("%s mappings tested across the 10 rounds.", format(sum(!is.na(hv[, names(raw)])), big.mark = ",")))
+map_dups <- bind_rows(lapply(names(raw), function(n) {
+  m <- hv[!is.na(hv[[n]]), c("NewVariable_Name", n)]; names(m) <- c("target", "source")
+  m |> group_by(source) |> filter(n() > 1) |> summarise(targets = paste(target, collapse = ", ")) |> ungroup() |>
+    mutate(round_id = cfg_rounds$round_id[cfg_rounds$dataset == n])
+}))
+# ---- Crosswalk ----------------------------------------------------------------------------------
+say("Crosswalk...")
+family_of <- function(v) {
+  dplyr::case_when(
+    v %in% c("ID", "Key_with_subset_data", "SvyDatePDM", "RESPConsent") ~ "Identification",
+    v %in% c("ADMIN1Name", "ADMIN2Name", "ADMIN3Name", "sous_bureau", "site", "site_autre", "village", "village_autre", "Longitude", "Latitude", "Longitude_precision", "Latitude_precision") ~ "Geography",
+    v %in% c("RESPAge", "RESPSex", "RelationWith_HHH") ~ "Respondent",
+    grepl("^HH", v) ~ "Household",
+    grepl("^FCS|^SCA$", v) ~ "Food consumption (FCS)",
+    grepl("^rCSI", v) ~ "Reduced coping (rCSI)",
+    grepl("^LhCSI", v) ~ "Livelihood coping (LCS)",
+    grepl("^SERS", v) ~ "Resilience (SERS)",
+    grepl("^ABI|^Actif|^BeneficieEmploi|^TRavail", v) ~ "Asset benefit (ABI)",
+    grepl("Assist|Montant|TransfBenef", v) | v %in% cfg_interv$variable ~ "Assistance",
+    grepl("Epargne|Pret|chocs|Gravite|CACRetab", v) ~ "Savings and shocks",
+    grepl("Migration|Migrants|DestinationMig|DureeMig|TendanceMig|RaisonHausse|RaisonBaisse|RaisonMig|RaisonAcces|AutreRaison", v) ~ "Migration",
+    grepl("^SCI", v) ~ "Social capital",
+    grepl("^PW|^MDDW", v) ~ "Women's diet (MDDW)",
+    grepl("^MAD|^PCMAD|^PCIYC|^EverBreast", v) ~ "Child diet (MAD)",
+    TRUE ~ "Other"
+  )
+}
+FAMILY_ORDER <- c("Identification", "Geography", "Respondent", "Household", "Food consumption (FCS)", "Reduced coping (rCSI)",
+                  "Livelihood coping (LCS)", "Assistance", "Resilience (SERS)", "Asset benefit (ABI)", "Savings and shocks",
+                  "Migration", "Social capital", "Women's diet (MDDW)", "Child diet (MAD)", "Other")
+SENSITIVE_META <- c("ID", "Key_with_subset_data", "ADMIN1Name", "ADMIN2Name", "ADMIN3Name", "sous_bureau", "site", "site_autre", "village", "village_autre", "Longitude", "Latitude", "Longitude_precision", "Latitude_precision")
+final_names <- c(names(x), "SvyDatePDM")
+
+crosswalk <- bind_rows(lapply(seq_len(nrow(cfg_rounds)), function(i) {
+  cr <- cfg_rounds[i, ]; r <- raw[[cr$dataset]]
+  bind_rows(lapply(hv$NewVariable_Name, function(v) {
+    s <- source_of(cr$dataset, v)
+    if (is.na(s) || !s %in% names(r)) return(data.frame(variable = v, round_id = cr$round_id, source = NA_character_, type = NA_character_,
+                                                        coverage = NA_real_, range = NA_character_, label = NA_character_, value_labels = NA_character_))
+    z <- r[[s]]; zz <- haven::zap_labels(z)
+    nonmiss <- if (is.character(zz)) !is.na(zz) & nzchar(trimws(zz)) else !is.na(zz)
+    lab <- attr(z, "label"); vl <- attr(z, "labels"); sens <- v %in% SENSITIVE_META
+    rng <- if (!sens && is.numeric(zz) && any(nonmiss)) sprintf("%s to %s", format(min(zz[nonmiss]), trim = TRUE), format(max(zz[nonmiss]), trim = TRUE)) else NA_character_
+    data.frame(variable = v, round_id = cr$round_id, source = s,
+               type = if (inherits(z, "haven_labelled")) "labelled" else if (is.character(zz)) "text" else if (inherits(z, "Date")) "date" else "numeric",
+               coverage = round(100 * mean(nonmiss), 1), range = rng,
+               label = if (is.null(lab)) NA_character_ else clean_text(lab),
+               value_labels = if (sens || is.null(vl)) NA_character_ else substr(clean_text(paste(paste0(vl, " = ", names(vl)), collapse = "; ")), 1, 400))
+  }))
+})) |> mutate(family = family_of(variable), in_final = variable %in% final_names)
+
+crosswalk_summary <- crosswalk |> group_by(variable, family, in_final) |>
+  summarise(rounds_mapped = sum(!is.na(source)), .groups = "drop") |>
+  mutate(order = match(variable, hv$NewVariable_Name)) |> arrange(match(family, FAMILY_ORDER), order)
+n_duplicate_map <- nrow(map_dups)
+
+# ---- Source to merged agreement -----------------------------------------------------------------
+say("Comparing raw values with the merged file...")
+pass_vars <- setdiff(intersect(hv$NewVariable_Name, names(x)), c("ID", "Key_with_subset_data", "village", "ADMIN1Name", "ADMIN2Name", "Longitude", "Latitude", "Longitude_precision", "Latitude_precision"))
+source_agree <- bind_rows(lapply(seq_len(nrow(cfg_rounds)), function(i) {
+  cr <- cfg_rounds[i, ]
+  xx <- x[x$round_id == cr$round_id, ]
+  bind_rows(lapply(pass_vars, function(v) {
+    s <- source_of(cr$dataset, v)
+    if (is.na(s) || !s %in% names(raw[[cr$dataset]])) return(NULL)
+    a <- suppressWarnings(as.numeric(raw_for_round(cr$dataset, s))); b <- suppressWarnings(as.numeric(xx[[v]]))
+    k <- !is.na(a) & !is.na(b)
+    if (!any(k)) return(NULL)
+    data.frame(variable = v, family = family_of(v), round_id = cr$round_id, compared = sum(k), same = sum(a[k] == b[k]), pct_same = round(100 * mean(a[k] == b[k]), 1))
+  }))
+}))
+agree_family <- source_agree |> group_by(family, round_id) |>
+  summarise(compared = sum(compared), pct_same = round(100 * sum(same) / sum(compared), 1), .groups = "drop")
+
+# PDM 2022 has row-number IDs in every Rmd: do the rows still line up?
+r7 <- x[x$round_id == "R07", ]; y7 <- raw$Chad_pdm_2022
+align <- mean(as.numeric(haven::zap_labels(y7$rCSIMealSize))[as.integer(r7$ID)] == r7$rCSIMealSize, na.rm = TRUE)
+add_check("Merge", "PDM 2022 rows still line up with their row-number IDs", pass_if(align == 1), sprintf("%.1f%% same", 100 * align), "100%",
+          "This round has no ID in the raw file; each Rmd assigns the row number before any filter.")
+
+# ---- Scores and the indicative corrections ------------------------------------------------------
+say("Recomputing scores...")
+num <- function(v) as.numeric(v)
+fcs_calc <- with(x, FCSStap * 2 + FCSPulse * 3 + FCSDairy * 4 + FCSPr * 4 + FCSVeg + FCSFruit + FCSFat * .5 + FCSSugar * .5)
+rcsi_calc <- with(x, rCSILessQlty + 2 * rCSIBorrow + rCSIMealNb + rCSIMealSize + 3 * rCSIMealAdult)
+add_check("Formulas", "FCS follows the WFP formula", pass_if(all(abs(fcs_calc - x$FCS) < 1e-6)), sum(abs(fcs_calc - x$FCS) >= 1e-6), "0 differences", "Cereals x2, pulses x3, dairy x4, protein x4, vegetables x1, fruit x1, fat x0.5, sugar x0.5.")
+cat28 <- ifelse(x$FCS <= 28, 1, ifelse(x$FCS <= 42, 2, 3)); cat21 <- ifelse(x$FCS <= 21, 1, ifelse(x$FCS <= 35, 2, 3))
+add_check("Formulas", "FCS groups follow the 28/42 and 21/35 thresholds", pass_if(all(cat28 == x$FCSCat28) && all(cat21 == x$FCSCat21)), sum(cat28 != x$FCSCat28) + sum(cat21 != x$FCSCat21), "0 differences")
+add_check("Formulas", "rCSI follows the WFP formula", pass_if(all(abs(rcsi_calc - x$rCSI) < 1e-6, na.rm = TRUE)), sum(abs(rcsi_calc - x$rCSI) >= 1e-6, na.rm = TRUE), "0 differences", "Less preferred x1, borrow x2, meal number x1, meal size x1, adults x3.")
+
+LCS_S <- c("LhCSIStress1", "LhCSIStress2", "LhCSIStress3", "LhCSIStress4")
+LCS_C <- c("LhCSICrisis1", "LhCSICrisis2", "LhCSICrisis3")
+LCS_E <- c("LhCSIEmergency1", "LhCSIEmergency2", "LhCSIEmergency3")
+LCS_ALL <- c(LCS_S, LCS_C, LCS_E)
+max_coping <- function(d) {
+  a <- function(v) rowSums(sapply(d[v], function(k) k %in% c(2, 3))) > 0
+  ifelse(a(LCS_E), 4, ifelse(a(LCS_C), 3, ifelse(a(LCS_S), 2, 1)))
+}
+add_check("Formulas", "Maximum coping category follows its rule", pass_if(all(max_coping(x) == x$Max_coping_behaviourFS)), sum(max_coping(x) != x$Max_coping_behaviourFS), "0 differences", "Highest level with a strategy answered Yes or already exhausted.")
+
+rcs_items <- c("HHRCSBounce", "HHRCSRevenue", "HHRCSIncrease", "HHRCSFinAccess", "HHRCSSupportCommunity", "HHRCSLessonsLearnt", "HHRCSFutureChallenge", "HHRCSWarningAccess", "HHRCSSupportPublic")
+rcs_calc <- 100 * (rowMeans(x[rcs_items], na.rm = TRUE) - 1) / 4
+# Stata stores RCS as a float, hence the wider tolerance.
+add_check("Formulas", "Resilience Capacity Score follows its formula", pass_if(all(abs(rcs_calc - x$RCS) < 1e-3, na.rm = TRUE)), sum(abs(rcs_calc - x$RCS) >= 1e-3, na.rm = TRUE), "0 differences", "Mean of 9 statements on a 1-to-5 scale, rescaled to 0-100.")
+rcs_tab <- suppressMessages(as.data.frame(readxl::read_excel(file.path(REPO, "RCS_table.xlsx"))))
+rcs_saved <- as.numeric(rcs_tab[rcs_tab[[1]] %in% "Resilience capacity", 2:4])
+rcs_now <- as.numeric(prop.table(table(factor(x$RCSCat33, 1:3))))
+add_check("Formulas", "RCS groups match the saved RCS_table.xlsx", pass_if(all(abs(rcs_saved - rcs_now) < 1e-3)), sprintf("%.1f / %.1f / %.1f%%", 100 * rcs_now[1], 100 * rcs_now[2], 100 * rcs_now[3]), sprintf("%.1f / %.1f / %.1f%%", 100 * rcs_saved[1], 100 * rcs_saved[2], 100 * rcs_saved[3]))
+abi_items <- c("ABIProteger", "ABIProduction", "ABIdifficultes", "ABIMarches", "ABIGererActifs", "ABIEnvironnement", "ABIutiliseractifs")
+abi_calc <- rowSums(x[abi_items] == 1, na.rm = TRUE); abi_ok <- !is.na(x$ABIScore)
+add_check("Formulas", "ABI score counts the 7 Yes answers", pass_if(all(abi_calc[abi_ok] == x$ABIScore[abi_ok])), sum(abi_calc[abi_ok] != x$ABIScore[abi_ok]), "0 differences")
+
+out_of_range <- c(FCS = sum(x$FCS < 0 | x$FCS > 112), rCSI = sum(x$rCSI < 0 | x$rCSI > 56, na.rm = TRUE), HDDS = sum(x$HDDS_hema < 0 | x$HDDS_hema > 12, na.rm = TRUE), RCS = sum(x$RCS < 0 | x$RCS > 100, na.rm = TRUE), ABI = sum(x$ABIScore < 0 | x$ABIScore > 7, na.rm = TRUE))
+add_check("Formulas", "Scores stay in their possible range", pass_if(all(out_of_range == 0)), sum(out_of_range), "0 values", "FCS 0-112, rCSI 0-56, HDDS 0-12, RCS 0-100, ABI 0-7.")
+days_bad <- sum(x[c("FCSStap", "FCSPulse", "FCSDairy", "FCSPr", "FCSVeg", "FCSFruit", "FCSFat", "FCSSugar", "rCSILessQlty", "rCSIBorrow", "rCSIMealNb", "rCSIMealSize", "rCSIMealAdult")] > 7, na.rm = TRUE)
+add_check("Formulas", "FCS and rCSI day counts do not exceed 7", pass_if(days_bad == 0), days_bad, "0 values")
+
+# FCS: a round whose day counts are only 0 or 1 has not recorded days.
+binary_rounds <- x |> group_by(round_id) |> summarise(mx = max(c(FCSStap, FCSVeg, FCSFat, FCSSugar), na.rm = TRUE)) |> filter(mx <= 1) |> pull(round_id)
+add_check("Plausibility", "FCS day counts hold more than 0/1 in every round", pass_if(!length(binary_rounds)),
+          if (length(binary_rounds)) rounds_txt(binary_rounds) else "All rounds", "All rounds",
+          sprintf("The mapped jour_conso_* variables of %s hold 0/1 flags, so the FCS averages %.1f and %.0f%% of households are Poor. The analysts' own SCA in the same file averages %.1f.",
+                  rounds_txt(binary_rounds), mean(x$FCS[x$round_id %in% binary_rounds]), 100 * mean(x$FCSCat28[x$round_id %in% binary_rounds] == 1), mean(x$SCA[x$round_id %in% binary_rounds], na.rm = TRUE)))
+
+# rCSI: the workbook maps rCSIBorrow to another column in some rounds; the raw rCSI settles which is right.
+rcsi_map_bad <- map_dups |> filter(source == "rCSILessQlty") |> pull(round_id)
+add_check("Workbook", "No two rCSI items share a source column", pass_if(!length(rcsi_map_bad)), if (length(rcsi_map_bad)) rounds_txt(rcsi_map_bad) else "None", "None",
+          "rCSIBorrow points to the rCSILessQlty column in the workbook, although the raw files have an rCSIBorrow column.")
+rcsi_true <- x$rCSI; borrow_true <- x$rCSIBorrow
+rcsi_rows <- list()
+for (rid in cfg_rounds$round_id) {
+  ds <- cfg_rounds$dataset[cfg_rounds$round_id == rid]; here <- x$round_id == rid
+  has_raw <- "rCSI" %in% names(raw[[ds]])
+  raw_rcsi <- if (has_raw) as.numeric(raw_for_round(ds, "rCSI")) else rep(NA_real_, sum(here))
+  if (rid %in% rcsi_map_bad) {
+    b <- as.numeric(raw_for_round(ds, "rCSIBorrow")); borrow_true[here] <- b
+    rcsi_true[here] <- with(x[here, ], rCSILessQlty + 2 * b + rCSIMealNb + rCSIMealSize + 3 * rCSIMealAdult)
+  }
+  rcsi_rows[[rid]] <- data.frame(round_id = rid, merged = mean(x$rCSI[here], na.rm = TRUE), corrected = mean(rcsi_true[here], na.rm = TRUE),
+                                 analysts = if (has_raw) mean(raw_rcsi, na.rm = TRUE) else NA_real_,
+                                 merged_same = if (has_raw) mean(abs(x$rCSI[here] - raw_rcsi) < .01, na.rm = TRUE) else NA_real_,
+                                 corrected_same = if (has_raw) mean(abs(rcsi_true[here] - raw_rcsi) < .01, na.rm = TRUE) else NA_real_)
+}
+rcsi_compare <- bind_rows(rcsi_rows) |> mutate(across(c(merged, corrected, analysts), ~ round(.x, 2)), across(c(merged_same, corrected_same), ~ round(100 * .x, 1)))
+bad_rcsi <- rcsi_compare |> filter(!is.na(merged_same), merged_same < 99, round_id %in% rcsi_map_bad)
+add_check("Plausibility", "rCSI matches the analysts' rCSI where the mapping is at fault", pass_if(!nrow(bad_rcsi)),
+          if (nrow(bad_rcsi)) rounds_txt(bad_rcsi$round_id) else "All", "All",
+          if (nrow(bad_rcsi)) sprintf("Merged rCSI equals the analysts' for %.0f%% to %.0f%% of households. Using the true rCSIBorrow column reproduces it for %.0f%%.",
+                                      min(bad_rcsi$merged_same), max(bad_rcsi$merged_same), min(bad_rcsi$corrected_same)) else "")
+other_rcsi <- rcsi_compare |> filter(!is.na(merged_same), merged_same < 99, !round_id %in% rcsi_map_bad)
+add_check("Plausibility", "rCSI matches the analysts' rCSI in the other rounds", pass_if(!nrow(other_rcsi), "warn"),
+          if (nrow(other_rcsi)) rounds_txt(other_rcsi$round_id) else "All", "All",
+          if (nrow(other_rcsi)) sprintf("%s: mean %.2f against the analysts' %.2f, same value for %.0f%% of households. No mapping error here; the analysts may have used another formula.",
+                                        rounds_txt(other_rcsi$round_id[1]), other_rcsi$merged[1], other_rcsi$analysts[1], other_rcsi$merged_same[1]) else "")
+
+# ABI: all-zero rounds, and the score the raw answers imply.
+abi_means <- x |> filter(!is.na(ABIScore)) |> group_by(round_id) |> summarise(m = mean(ABIScore))
+abi_zero <- abi_means$round_id[abi_means$m == 0]
+abi_true <- x$ABIScore
+for (rid in abi_zero) {
+  ds <- cfg_rounds$dataset[cfg_rounds$round_id == rid]; here <- which(x$round_id == rid)
+  m <- sapply(abi_items, function(v) as.numeric(raw_for_round(ds, source_of(ds, v))))
+  abi_true[here] <- ifelse(rowSums(!is.na(m)) > 0, rowSums(m == 1, na.rm = TRUE), NA)
+}
+add_check("Plausibility", "ABI score is not zero for a whole round", pass_if(!length(abi_zero)), if (length(abi_zero)) rounds_txt(abi_zero) else "None", "None",
+          sprintf("The recode in Rmd 07 reads 1 as No, following the labels, but the raw answers are coded 0/1. The raw answers imply a mean of %.1f.", mean(abi_true[x$round_id %in% abi_zero], na.rm = TRUE)))
+
+# LCS: restate each round's answers on the common scale from the raw file, with the scale its labels declare.
+# yes_code: raw code meaning Yes; the others follow the file's labels. Raw 0 is treated as No (labelled Non in 2018).
+lcs_scale <- list(
+  R01 = c("0" = 1, "1" = 3, "2" = 2, "3" = 1, "4" = 4), R02 = c("1" = 1, "2" = 2, "3" = 3, "4" = 4),
+  R03 = c("0" = 1, "1" = 3, "2" = 1, "3" = 2, "4" = 4), R04 = c("1" = 3, "2" = 1, "3" = 2, "4" = 4),
+  R05 = c("1" = 3, "2" = 1, "3" = 2, "4" = 4), R06 = c("1" = 1, "2" = 2, "3" = 3, "4" = 4),
+  R07 = c("1" = 1, "2" = 2, "3" = 3, "4" = 4), R08 = c("1" = 1, "2" = 2, "3" = 3, "4" = 4),
+  R09 = c("1" = 1, "2" = 2, "3" = 3, "4" = 4), R10 = c("1" = 3, "2" = 1, "3" = 2, "4" = 4))
+lcs_c <- x[LCS_ALL]
+lcs_item_rows <- list()
+for (rid in cfg_rounds$round_id) {
+  ds <- cfg_rounds$dataset[cfg_rounds$round_id == rid]; here <- which(x$round_id == rid)
+  for (v in LCS_ALL) {
+    s <- source_of(ds, v)
+    if (is.na(s)) { lcs_c[[v]][here] <- 4; lcs_item_rows[[length(lcs_item_rows) + 1]] <- data.frame(item = v, round_id = rid, raw_answered = NA_real_, merged_answered = round(100 * mean(x[[v]][here] != 4), 1), merged_yes = round(100 * mean(x[[v]][here] %in% c(2, 3)), 1), corrected_yes = 0, mapped = FALSE); next }
+    r <- as.character(raw_for_round(ds, s)); r[!nzchar(trimws(r))] <- NA
+    v2 <- unname(lcs_scale[[rid]][r]); v2[is.na(v2)] <- 4
+    lcs_c[[v]][here] <- v2
+    lcs_item_rows[[length(lcs_item_rows) + 1]] <- data.frame(item = v, round_id = rid, raw_answered = round(100 * mean(r %in% c("0", "1", "2", "3")), 1),
+                                                             merged_answered = round(100 * mean(x[[v]][here] != 4), 1),
+                                                             merged_yes = round(100 * mean(x[[v]][here] %in% c(2, 3)), 1), corrected_yes = round(100 * mean(v2 %in% c(2, 3)), 1), mapped = TRUE)
+  }
+}
+lcs_items <- bind_rows(lcs_item_rows)
+coping_c <- max_coping(lcs_c)
+stress1 <- lcs_items |> filter(item == "LhCSIStress1")
+stress1_lost <- stress1$round_id[stress1$merged_answered == 0 & stress1$raw_answered > 0]
+add_check("Plausibility", "Every mapped coping strategy keeps its answers", pass_if(!length(stress1_lost)), sprintf("LhCSIStress1 empty in %d rounds", length(stress1_lost)), "None",
+          sprintf("LhCSIStress1 (selling non-productive assets) has answers in the raw files but is 4 (Not applicable) for all households in %s.", rounds_txt(stress1_lost)))
+ce <- function(v, rid) 100 * mean(v[x$round_id == rid] == 4)
+# A round is left unrecoded if its labels say 1 = Oui and the merged codes still equal the raw ones.
+scale_state <- bind_rows(lapply(seq_len(nrow(cfg_rounds)), function(i) {
+  cr <- cfg_rounds[i, ]; s <- source_of(cr$dataset, "LhCSIEmergency1")
+  z <- raw[[cr$dataset]][[s]]; l <- attr(z, "labels")
+  yes_first <- !is.null(l) && any(unname(l) == 1 & grepl("^Oui", names(l)))
+  r <- as.numeric(raw_for_round(cr$dataset, s)); m <- x$LhCSIEmergency1[x$round_id == cr$round_id]
+  zero_to_yes <- sum(vapply(setdiff(LCS_ALL, "LhCSIStress1"), function(v) {
+    sv <- source_of(cr$dataset, v); if (is.na(sv)) return(0)
+    rv <- suppressWarnings(as.numeric(raw_for_round(cr$dataset, sv))); sum(rv == 0 & x[[v]][x$round_id == cr$round_id] == 3, na.rm = TRUE)
+  }, 0))
+  data.frame(round_id = cr$round_id, labelled = !is.null(l), yes_first = yes_first, unchanged = mean(r == m, na.rm = TRUE) > .99, zero_to_yes = zero_to_yes)
+}))
+scale_bad <- scale_state$round_id[scale_state$yes_first & scale_state$unchanged]
+zero_bad <- scale_state$round_id[scale_state$zero_to_yes > 0]
+unlabelled <- scale_state$round_id[!scale_state$labelled]
+add_check("Plausibility", "Coping answers share one scale after recoding", pass_if(!length(scale_bad)), if (length(scale_bad)) rounds_txt(scale_bad) else "All rounds", "All rounds",
+          if (length(scale_bad)) sprintf("In %s the file's labels are 1 = Yes, 2 = No need, but the codes pass through unchanged, so No need counts as coping. Emergency coping reads %.1f%%; recoded, it is %.1f%%.",
+                                         rounds_txt(scale_bad), ce(x$Max_coping_behaviourFS, scale_bad[1]), ce(coping_c, scale_bad[1])) else "")
+add_check("Plausibility", "Raw coping code 0 stays a No", pass_if(!length(zero_bad)), if (length(zero_bad)) rounds_txt(zero_bad) else "All rounds", "All rounds",
+          if (length(zero_bad)) paste0("Rmd 05 recodes raw 0 to Yes, although 0 is labelled Non in 2018 and has no label in 2020 PDM. Emergency coping if 0 is No: ",
+                                       paste(sprintf("%s %.1f%% merged, %.1f%%", cfg_rounds$label[match(zero_bad, cfg_rounds$round_id)], vapply(zero_bad, function(r) ce(x$Max_coping_behaviourFS, r), 0), vapply(zero_bad, function(r) ce(coping_c, r), 0)), collapse = "; "), ".") else "")
+# Codes with no value labels: the scale can only be inferred. Shown as a scenario, never as a correction.
+alt_scale <- c("1" = 3, "2" = 1, "3" = 2, "4" = 4); lcs_alt <- lcs_c
+for (rid in unlabelled) {
+  ds <- cfg_rounds$dataset[cfg_rounds$round_id == rid]; here <- which(x$round_id == rid)
+  for (v in LCS_ALL) { s <- source_of(ds, v); if (is.na(s)) next; r <- as.character(raw_for_round(ds, s)); r[!nzchar(trimws(r))] <- NA; a <- unname(alt_scale[r]); a[is.na(a)] <- 4; lcs_alt[[v]][here] <- a }
+}
+alt_cope <- max_coping(lcs_alt)
+add_check("Plausibility", "Every round's coping codes have value labels", pass_if(!length(unlabelled), "warn"), if (length(unlabelled)) rounds_txt(unlabelled) else "All rounds", "All rounds",
+          if (length(unlabelled)) sprintf("The file has no labels, and the pipeline reads 2 as already exhausted. Its answers look like the 1 = Yes, 2 = No need scale of the neighbouring rounds. If so, emergency coping is %.1f%%, not %.1f%%. Only the questionnaire can settle this.",
+                                          ce(alt_cope, unlabelled[1]), ce(x$Max_coping_behaviourFS, unlabelled[1])) else "")
+no_crisis1 <- lcs_items$round_id[lcs_items$item == "LhCSICrisis1" & !lcs_items$mapped]
+add_check("Plausibility", "All 10 coping strategies have a source in all rounds", pass_if(!length(no_crisis1), "warn"), sprintf("%d rounds with 9 strategies", length(no_crisis1)), "0",
+          sprintf("LhCSICrisis1 (selling productive assets) has no source in %s, so crisis coping rests on fewer strategies there.", rounds_txt(no_crisis1)))
+
+# Household size, dates, labels, documentation
+hh_big <- x |> group_by(round_id) |> summarise(n = sum(HHSize > 30), mx = max(HHSize)) |> filter(n > 0)
+add_check("Plausibility", "Household size is below 30", pass_if(!nrow(hh_big), "warn"), sprintf("%d households", sum(hh_big$n)), "0",
+          sprintf("%s. Largest: %d. Means are distorted: 2022 PDM averages %.1f members, %.1f without them.",
+                  paste(sprintf("%s: %d", cfg_rounds$label[match(hh_big$round_id, cfg_rounds$round_id)], hh_big$n), collapse = ", "), max(hh_big$mx),
+                  mean(x$HHSize[x$round_id == "R07"]), mean(x$HHSize[x$round_id == "R07" & x$HHSize <= 30])))
+hh_zero <- sum(x$HHSize == 0)
+add_check("Plausibility", "Household size is at least 1", pass_if(hh_zero == 0, "warn"), hh_zero, "0 households", "Size is the sum of the composition variables, so an empty composition gives 0.")
+dts <- as.Date(x$SvyDate)
+date_tab <- cfg_rounds |> rowwise() |> mutate(
+  outside = { d <- dts[x$round_id == round_id]; sum(d < as.Date(expected_start) | d > as.Date(expected_end), na.rm = TRUE) },
+  missing = sum(is.na(dts[x$round_id == round_id]))) |> ungroup()
+add_check("Plausibility", "Interview dates fall in the round's fieldwork", pass_if(sum(date_tab$outside) == 0, "warn"), sprintf("%d outside, %d missing", sum(date_tab$outside), sum(date_tab$missing)), "0",
+          "The month is imputed before the link to Cadre Harmonisé, so these dates do not change the phase.")
+mont_lab <- attr(raw$Chad_ea_2019[[source_of("Chad_ea_2019", "Montant")]], "label")
+mont_wrong <- grepl("income", final_var_labels[["Montant"]], ignore.case = TRUE)
+add_check("Documentation", "Montant keeps its meaning", pass_if(!mont_wrong, "warn"), if (mont_wrong) "Label changed" else "Kept", "Cash received",
+          sprintf("The source question is about cash received at the last distribution (%s...); the merged file labels it \"%s\".", substr(clean_text(mont_lab), 1, 45), final_var_labels[["Montant"]]))
+
+# Assistance: are harmonised answers the original answers?
+say("Assistance...")
+assist_vars <- cfg_interv$variable
+assist_rows <- bind_rows(lapply(assist_vars, function(v) x |> group_by(round_id) |> summarise(
+  variable = v, yes = sum(.data[[v]] == 1, na.rm = TRUE), no = sum(.data[[v]] == 2, na.rm = TRUE), dont_know = sum(.data[[v]] == 3, na.rm = TRUE),
+  answered = sum(!is.na(.data[[v]])), households = n()))) |>
+  mutate(yes_pct = ifelse(answered > 0, round(100 * yes / answered, 1), NA), answered_pct = round(100 * answered / households, 1))
+assist_region <- bind_rows(lapply(assist_vars, function(v) x |> group_by(round_id, region = ADMIN1Name) |> summarise(
+  variable = v, answered = sum(!is.na(.data[[v]])), yes = sum(.data[[v]] == 1, na.rm = TRUE), .groups = "drop"))) |>
+  mutate(yes_pct = ifelse(answered >= MIN_CELL, round(100 * yes / answered, 1), NA)) |> select(round_id, region, variable, answered, yes_pct) |>
+  filter(answered > 0)
+audit_rows <- list()
+for (v in setdiff(assist_vars, c("VivreContreTravail", "ArgentContreTravail"))) for (i in 2:10) {
+  o <- paste0(v, i)
+  if (!o %in% names(final_lab)) next
+  here <- x$ROUND == i
+  orig <- final_lab[[o]][here]
+  # The 2020 PDM training composite built in do-file 13 is already labelled yes/no.
+  oy <- (if (is.character(orig)) orig else as.character(haven::as_factor(orig))) %in% c("Oui", "yes")
+  oy[is.na(orig)] <- NA
+  h <- x[[v]][here]; k <- !is.na(oy) & !is.na(h)
+  if (!any(k)) next
+  audit_rows[[length(audit_rows) + 1]] <- data.frame(variable = v, round_id = rid_of(i), compared = sum(k), same = sum(oy[k] == (h[k] == 1)))
+}
+assist_audit <- bind_rows(audit_rows) |> mutate(pct_same = round(100 * same / compared, 1))
+add_check("Assistance", "Harmonised Yes equals the original Oui", pass_if(all(assist_audit$pct_same == 100), "warn"),
+          sprintf("%d of %d variable x round pairs identical", sum(assist_audit$pct_same == 100), nrow(assist_audit)), "All",
+          "Against the original answers kept in the merged file. Food for assets and cash for assets are left out: they are recoded on purpose.")
+vct <- x$VivreContreTravail
+add_check("Assistance", "Food for assets recoded to cash, as advised by WFP Chad", pass_if(sum(vct == 1, na.rm = TRUE) == 0), sum(vct == 1, na.rm = TRUE), "0 Yes", "Food for assets ended, but the name stayed while payments were in cash; these households are counted under cash for assets.")
+documented <- cfg_interv |> rowwise() |> mutate(documented = list(as.integer(strsplit(documented_rounds, ";")[[1]]))) |> ungroup()
+doc_diff <- bind_rows(lapply(seq_len(nrow(documented)), function(i) {
+  v <- documented$variable[i]; have <- which(vapply(1:10, function(r) sum(!is.na(x[[v]][x$ROUND == r])) > 0, TRUE))
+  bind_rows(lapply(union(setdiff(have, documented$documented[[i]]), setdiff(documented$documented[[i]], have)), function(r)
+    data.frame(variable = v, round_id = rid_of(r), status = if (r %in% have) "In the data, not in the report" else "In the report, not in the data")))
+}))
+add_check("Documentation", "The Issues report's Table 1 matches the data", pass_if(!nrow(doc_diff), "warn"), sprintf("%d cells differ", nrow(doc_diff)), "0 cells",
+          "Table 1 of the Word report on assistance variables, against the rounds with answers in the merged file.")
+
+# MAD and MDDW: built, not merged.
+say("MAD and MDDW...")
+nut_files <- data.frame(
+  module = rep(c("MAD", "MDDW"), each = 5),
+  file = c(paste0("consent_PCMADRepeat623_", c("Decembre_2021", "Juillet_2022", "Decembre_2022", "Juillet_2023", "Decembre_2023"), ".sav"),
+           paste0("consent_HHSize1549F_MDDW_rpt_", c("Decembre_2021", "Juillet_2022", "Decembre_2022", "Juillet_2023", "Decembre_2023"), ".sav")),
+  round_id = rep(c("R06", "R07", "R08", "R09", "R10"), 2), stringsAsFactors = FALSE)
+nut_files$rows <- vapply(nut_files$file, function(f) nrow(haven::read_sav(file.path(DIR_INPUT, "MAD_MDDW data", f))), 0L)
+nut_in_final <- any(grepl("^PCMAD|^PWMDDW", names(x)))
+nut_mod <- lapply(c(MAD = "WFP_Chad_MAD", MDDW = "WFP_Chad_MDDW"), function(f) as.character(haven::read_dta(file.path(DIR_MODULES, paste0(f, ".dta")), col_select = "ID")$ID))
+nut_counts <- bind_rows(lapply(names(nut_mod), function(m) as.data.frame(table(round_id = x$round_id[match(nut_mod[[m]], x$ID)]), responseName = "module_rows", stringsAsFactors = FALSE) |> mutate(module = m)))
+nutrition <- nut_files |> select(module, round_id, raw_rows = rows) |> left_join(nut_counts, by = c("module", "round_id"))
+nut_more <- nutrition |> filter(module_rows != raw_rows)
+add_check("Merge", "MAD and MDDW module files have the rows of their raw repeat files", pass_if(!nrow(nut_more), "warn"), sprintf("%d of %d differ", nrow(nut_more), nrow(nutrition)), "0",
+          "The module files hold more rows than the raw repeat files read by Rmds 09 and 10. These modules are not merged, so the merged file is not affected.")
+add_check("Merge", "MAD and MDDW are in the merged file", pass_if(nut_in_final, "warn"), if (nut_in_final) "Yes" else "No", "Yes",
+          sprintf("Rmds 09 and 10 build them (%s child and %s woman rows), but the do-file merges 9 modules, not these two. They hold one row per person, so they need a choice of level before merging.",
+                  format(length(nut_mod$MAD), big.mark = ","), format(length(nut_mod$MDDW), big.mark = ",")))
+
+# ---- Indicators ---------------------------------------------------------------------------------
+say("Indicators...")
+x$fcs_c <- ifelse(x$round_id %in% binary_rounds, x$SCA, x$FCS)
+x$fcat_c <- ifelse(x$fcs_c <= 28, 1, ifelse(x$fcs_c <= 42, 2, 3))
+x$rcsi_c <- rcsi_true; x$abi_c <- abi_true; x$coping_c <- coping_c
+x$hhsize_c <- ifelse(x$HHSize > 30, NA, x$HHSize)
+
+pct <- function(cond) if (all(is.na(cond))) NA_real_ else 100 * mean(cond, na.rm = TRUE)
+avg <- function(v) if (all(is.na(v))) NA_real_ else mean(v, na.rm = TRUE)
+valid <- function(v) sum(!is.na(v))
+indicators <- function(d) {
+  tibble(
+    households = nrow(d),
+    fcs_pb_m = pct(d$FCSCat28 <= 2), fcs_pb_c = pct(d$fcat_c <= 2), fcs_poor_m = pct(d$FCSCat28 == 1), fcs_poor_c = pct(d$fcat_c == 1),
+    fcs_border_m = pct(d$FCSCat28 == 2), fcs_border_c = pct(d$fcat_c == 2), fcs_accept_m = pct(d$FCSCat28 == 3), fcs_accept_c = pct(d$fcat_c == 3),
+    fcs_mean_m = avg(d$FCS), fcs_mean_c = avg(d$fcs_c),
+    rcsi_mean_m = avg(d$rCSI), rcsi_mean_c = avg(d$rcsi_c), rcsi_p3_m = pct(d$rCSI >= 19), rcsi_p3_c = pct(d$rcsi_c >= 19),
+    lcs_none_m = pct(d$Max_coping_behaviourFS == 1), lcs_none_c = pct(d$coping_c == 1), lcs_stress_m = pct(d$Max_coping_behaviourFS == 2), lcs_stress_c = pct(d$coping_c == 2),
+    lcs_crisis_m = pct(d$Max_coping_behaviourFS == 3), lcs_crisis_c = pct(d$coping_c == 3), lcs_em_m = pct(d$Max_coping_behaviourFS == 4), lcs_em_c = pct(d$coping_c == 4),
+    lcs_ce_m = pct(d$Max_coping_behaviourFS >= 3), lcs_ce_c = pct(d$coping_c >= 3),
+    hdds_mean_m = avg(d$HDDS_hema), hdds_mean_c = avg(d$HDDS_hema), hdds_low_m = pct(d$HDDS_hema <= 4), hdds_low_c = pct(d$HDDS_hema <= 4),
+    abi_mean_m = avg(d$ABIScore), abi_mean_c = avg(d$abi_c),
+    rcs_mean_m = avg(d$RCS), rcs_mean_c = avg(d$RCS), rcs_low_m = pct(d$RCSCat33 == 1), rcs_low_c = pct(d$RCSCat33 == 1), rcs_high_m = pct(d$RCSCat33 == 3), rcs_high_c = pct(d$RCSCat33 == 3),
+    ch_p3_m = pct(d$phase_class >= 3), ch_p3_c = pct(d$phase_class >= 3),
+    female_head_m = pct(d$HHHSex == 1), female_head_c = pct(d$HHHSex == 1), hh_size_m = avg(d$HHSize), hh_size_c = avg(d$hhsize_c)
+  )
+}
+ind_round <- x |> group_by(round_id) |> group_modify(~ indicators(.x)) |> ungroup()
+ind_region <- x |> group_by(round_id, region = ADMIN1Name) |> group_modify(~ indicators(.x)) |> ungroup()
+# Small cells: below MIN_CELL households, no estimate leaves this script.
+est_cols <- grep("_[mc]$", names(ind_region), value = TRUE)
+ind_region[ind_region$households < MIN_CELL, est_cols] <- NA
+ind_round <- mutate(ind_round, across(all_of(est_cols), ~ round(.x, 2)))
+ind_region <- mutate(ind_region, across(all_of(est_cols), ~ round(.x, 2)))
+
+# Departments: households only, cells under the threshold not shown.
+admin2 <- x |> group_by(region = ADMIN1Name, department = ADMIN2Name, round_id) |> summarise(households = n(), .groups = "drop") |>
+  mutate(households = ifelse(households < MIN_CELL, NA, households), small_cell = is.na(households))
+
+ch_phase <- x |> filter(!is.na(phase_class)) |> group_by(round_id, phase = phase_class) |>
+  summarise(households = n(), districts = n_distinct(IP_var), .groups = "drop")
+
+# ---- Flags: which indicator cells the app hatches. Computed from the checks, so a fix clears them. --
+# fixed = TRUE: the indicative corrections rebuild the value. FALSE: they cannot, so it stays flagged.
+flag <- function(group, rids, reason, fixed = TRUE) if (length(rids)) data.frame(indicator_group = group, round_id = rids, reason = reason, fixed = fixed)
+hh_rounds <- x |> group_by(round_id) |> summarise(n = sum(HHSize > 30)) |> filter(n > 0) |> pull(round_id)
+flags <- bind_rows(
+  flag("fcs", binary_rounds, "The day counts of this round are 0/1 flags, not days, so the FCS cannot exceed about 16."),
+  flag("rcsi", rcsi_map_bad, "rCSIBorrow is mapped to the rCSILessQlty column."),
+  flag("lcs", zero_bad, "Raw code 0 is recoded to Yes."),
+  flag("lcs", scale_bad, "The answer scale is not recoded: code 2 (No need) counts as coping."),
+  flag("lcs", unlabelled, "The codes have no value labels, and may follow the 1 = Yes scale. Check against the questionnaire.", FALSE),
+  flag("abi", abi_zero, "The recode turns every answer into 0, so the score is 0 for all households."),
+  flag("hhsize", hh_rounds, "Household composition holds impossible values (households above 30 members).")
+)
+
+# ---- Rounds table -------------------------------------------------------------------------------
+fw <- x |> mutate(d = dts) |> group_by(round_id) |> summarise(
+  date_p01 = as.Date(stats::quantile(d, .01, type = 1, na.rm = TRUE)), date_median = as.Date(stats::median(d, na.rm = TRUE)),
+  date_p99 = as.Date(stats::quantile(d, .99, type = 1, na.rm = TRUE)), linked_month = paste(sort(unique(SvyMonth)), collapse = ", "),
+  regions = n_distinct(ADMIN1Name), departments = n_distinct(ADMIN2Name), villages = n_distinct(village), gps_pct = round(100 * mean(!is.na(Longitude)), 1))
+rounds <- cfg_rounds |> left_join(flow, by = "round_id") |> left_join(fw, by = "round_id") |>
+  left_join(select(date_tab, round_id, dates_outside = outside, dates_missing = missing), by = "round_id") |>
+  mutate(raw_file = de$Data[match(dataset, de$Name)])
+
+# ---- Final dataset's columns --------------------------------------------------------------------
+col_family <- function(v) {
+  dplyr::case_when(
+    grepl("^(exercise|reference|adm[012]_name|adm[012]_pcod|chtype|population|phase|p_phase|IP_var)", v) ~ "Cadre Harmonisé",
+    v %in% c("ID", "SvyDate", "YEAR", "SvyMonth", "SURVEY", "ROUND", "round_id") ~ "Identification",
+    v %in% c("ADMIN0Name", "adm0_ocha", "ADMIN1Name", "adm1_ocha", "ADMIN2Name", "adm2_ocha", "village", "Longitude", "Latitude", "Longitude_precision", "Latitude_precision") ~ "Geography",
+    grepl("^HDDS", v) ~ "Dietary diversity (HDDS)",
+    grepl("^HH(RCS)|^RCS|^SERS", v) ~ "Resilience (SERS / RCS)",
+    grepl("^ABI|^HHAsset|^HHFFA|^HHTraining|^HHWork|^Actif|^BeneficieEmploi|^TRavail", v) ~ "Asset benefit (ABI)",
+    grepl("^HH", v) ~ "Household",
+    grepl("^FCS|^SCA$", v) ~ "Food consumption (FCS)",
+    grepl("^rCSI", v) ~ "Reduced coping (rCSI)",
+    grepl("^LhCSI|coping", v) ~ "Livelihood coping (LCS)",
+    grepl("[0-9]$", v) & sub("[0-9]+$", "", v) %in% cfg_interv$variable ~ "Assistance: original answers",
+    v %in% cfg_interv$variable | grepl("Montant|DateDerniere", v) ~ "Assistance: harmonised",
+    TRUE ~ "Other"
+  )
+}
+vars_final <- setdiff(names(final_lab), character(0))
+final_cols <- data.frame(variable = vars_final, family = col_family(vars_final), label = unname(final_var_labels[vars_final]), stringsAsFactors = FALSE)
+sensitive_cols <- c("Longitude", "Latitude", "Longitude_precision", "Latitude_precision", "village", "ID")
+final_cov <- bind_rows(lapply(vars_final, function(v) {
+  z <- x[[v]]; nm <- if (is.character(z)) !is.na(z) & nzchar(trimws(z)) else !is.na(z)
+  data.frame(variable = v, round_id = x$round_id, nm = nm) |> group_by(variable, round_id) |> summarise(pct = round(100 * mean(nm), 1), .groups = "drop")
+}))
+final_cols <- final_cols |> left_join(final_cov |> group_by(variable) |> summarise(rounds_with_data = sum(pct > 0)), by = "variable")
+family_cov <- final_cov |> left_join(select(final_cols, variable, family), by = "variable") |> group_by(family, round_id) |>
+  summarise(pct = round(mean(pct), 1), columns_with_data = sum(pct > 0), .groups = "drop")
+
+# Place-name corrections, from the do-file and the module files.
+do_lines <- readLines(file.path(REPO, "12_WFP_Chad_CBA_data_preparation.do"), warn = FALSE, encoding = "UTF-8")
+admin_block <- do_lines[seq(grep("Correct inconsistencies in Village and Admin 2", do_lines)[1], grep("save \"\\$output_data\\\\WFP_Chad_admin.dta\"", do_lines)[1])]
+places <- data.frame(
+  measure = c("Village names before cleaning", "Village names in the merged file", "Households with no usable village name", "Households without a department before cleaning",
+              "Households without a department in the merged file", "Village correction lines in the do-file", "Department correction lines in the do-file", "Region correction lines in the do-file"),
+  value = c(n_distinct(adm_pre$village), n_distinct(x$village), sum(is.na(x$village) | x$village %in% c("", "UNKNOWN")), sum(is.na(adm_pre$ADMIN2Name) | adm_pre$ADMIN2Name == ""),
+            sum(is.na(x$ADMIN2Name) | x$ADMIN2Name == ""), sum(grepl("^\\s*replace village", admin_block)), sum(grepl("^\\s*replace (ADMIN2Name|adm2_ocha)", admin_block)), sum(grepl("^\\s*replace (ADMIN1Name|adm1_ocha)", admin_block))))
+
+# ---- Provenance ---------------------------------------------------------------------------------
+say("Hashing inputs...")
+hash_row <- function(path, role, round_id = NA) data.frame(role = role, round_id = round_id, file = basename(path), size_mb = round(file.size(path) / 1e6, 2),
+                                                           modified = format(file.mtime(path), "%Y-%m-%d"), sha256 = digest::digest(file = path, algo = "sha256"))
+inputs <- bind_rows(
+  bind_rows(lapply(seq_len(nrow(rounds)), function(i) hash_row(file.path(DIR_INPUT, rounds$raw_file[i]), "Raw survey file", rounds$round_id[i]))),
+  hash_row(wb_path, "Harmonisation workbook"),
+  bind_rows(lapply(cfg_modules$file, function(f) hash_row(file.path(DIR_MERGED, paste0(f, ".dta")), "Cleaned module file"))),
+  hash_row(file.path(DIR_MERGED, FINAL_FILE), "Merged dataset"),
+  hash_row(file.path(REPO, "12_WFP_Chad_CBA_data_preparation.do"), "Merge code"),
+  hash_row(file.path(REPO, "13_WFP_Chad_OriginalAssistenciesVariables.do"), "Merge code"))
+
+# ---- Crosswalk workbook for download ------------------------------------------------------------
+wide <- crosswalk |> select(variable, round_id, source) |> mutate(round = cfg_rounds$label[match(round_id, cfg_rounds$round_id)]) |>
+  select(-round_id) |> pivot_wider(names_from = round, values_from = source)
+writexl::write_xlsx(list(
+  Crosswalk = left_join(select(crosswalk_summary, Family = family, Variable = variable, `Rounds mapped` = rounds_mapped, `In merged file` = in_final), wide, by = c(Variable = "variable")),
+  Details = crosswalk |> transmute(Family = family, Variable = variable, Round = cfg_rounds$label[match(round_id, cfg_rounds$round_id)], Source = source, Type = type, `Coverage %` = coverage, Range = range, Label = label, `Value labels` = value_labels),
+  `Merged file columns` = final_cols,
+  Rounds = rounds |> select(Round = label, Survey = survey, Series = series, `Raw file` = raw_file, `Raw rows` = raw_rows, `Merged rows` = final_rows)
+), file.path(OUT, "WFP_Chad_crosswalk_2018-2023.xlsx"))
+
+# ---- Write --------------------------------------------------------------------------------------
+say("Writing %s/ ...", OUT)
+checks_df <- bind_rows(checks) |> mutate(status = factor(status, c("fail", "warn", "pass"))) |> arrange(status, group) |> mutate(status = as.character(status))
+write_out(rounds, "rounds.csv")
+write_out(ind_round, "indicators_by_round.csv")
+write_out(ind_region, "indicators_by_round_region.csv")
+write_out(admin2, "households_by_department.csv")
+write_out(ch_phase, "ch_phase_by_round.csv")
+write_out(merge_steps, "merge_steps.csv")
+write_out(module_round, "module_by_round.csv")
+write_out(stale, "module_rebuild_check.csv")
+write_out(crosswalk, "crosswalk_long.csv")
+write_out(crosswalk_summary, "crosswalk_summary.csv")
+write_out(map_dups, "mapping_duplicates.csv")
+write_out(source_agree, "source_agreement_variable.csv")
+write_out(agree_family, "source_agreement_family.csv")
+write_out(rcsi_compare, "rcsi_comparison.csv")
+write_out(lcs_items, "lcs_items.csv")
+write_out(assist_rows, "assistance_by_round.csv")
+write_out(assist_region, "assistance_by_region.csv")
+write_out(assist_audit, "assistance_audit.csv")
+write_out(doc_diff, "assistance_documented_differences.csv")
+write_out(nutrition, "nutrition_rows.csv")
+write_out(final_cols, "merged_columns.csv")
+write_out(family_cov, "merged_family_coverage.csv")
+write_out(places, "place_corrections.csv")
+write_out(checks_df, "checks.csv")
+write_out(flags, "flags.csv")
+jsonlite::write_json(list(
+  run_utc = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"), merged_file = FINAL_FILE,
+  households = N_FINAL, columns = ncol(final_lab), min_cell = MIN_CELL,
+  mapped_variables = nrow(hv), mapped_in_final = sum(crosswalk_summary$in_final),
+  software = list(r = paste(R.version$major, R.version$minor, sep = "."), haven = as.character(packageVersion("haven"))),
+  inputs = inputs
+), file.path(OUT, "manifest.json"), pretty = TRUE, auto_unbox = TRUE, dataframe = "rows")
+
+# Boundary check on what was written: refuse to leave household-level content behind.
+forbidden <- c("ID", "hh_id", "uuid", "village", "Longitude", "Latitude")
+for (f in list.files(OUT, pattern = "\\.csv$", full.names = TRUE)) {
+  hdr <- strsplit(readLines(f, n = 1, warn = FALSE), ",")[[1]]
+  if (any(gsub("\"", "", hdr) %in% forbidden)) stop("Household-level column in ", f, call. = FALSE)
+}
+cat("\n"); print(table(checks_df$status))
+print(as.data.frame(checks_df[checks_df$status != "pass", c("status", "check", "observed")]), right = FALSE)
+say("Done: %s households, %d columns.", format(N_FINAL, big.mark = ","), ncol(final_lab))

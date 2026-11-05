@@ -1,0 +1,10 @@
+module,file,label,rmd,merge_order,description
+admin,WFP_Chad_admin,Administrative,01_WFP_Chad_Admin.Rmd,0,"Interview date, survey, region, department, village and GPS. Village and department spellings corrected in the do-file, then OCHA codes attached."
+assistance,WFP_Chad_assistance,Assistance,03_WFP_Chad_Assistance_data.Rmd,1,"The 20 WFP intervention variables, last assistance date and cash amount."
+FCS,WFP_Chad_FCS,Food consumption (FCS),04_WFP_Chad_FCS_data.Rmd,2,"Days eaten per food group over 7 days and food sources. The FCS and its 21/35 and 28/42 groups are recomputed after the merge."
+HH,WFP_Chad_HH,Household,02_WFP_Chad_HH_data.Rmd,3,"Head of household (sex, age, education, activity, marital status), income source and household composition."
+LhCSI,WFP_Chad_LhCSI,Livelihood coping (LCS),05_WFP_Chad_LhCSI_data.Rmd,4,"10 livelihood coping strategies recoded to one scale. The maximum coping category is computed after the merge."
+rCSI,WFP_Chad_rCSI,Reduced coping (rCSI),06_Chad_WFP_rCSI_data.Rmd,5,"5 consumption coping strategies. The rCSI is recomputed after the merge."
+SERS,WFP_Chad_SERS,Resilience (SERS / RCS),08_WFP_Chad_SERS_data.Rmd,6,"10 self-evaluated resilience statements. The Resilience Capacity Score and its 33/66 groups are computed after the merge."
+ABI,WFP_Chad_ABI,Asset benefit (ABI),07_WFP_Chad_ABI_data.Rmd,7,"Asset benefit questions and the ABI score (0 to 7), for rounds after the baseline."
+HDDS,WFP_Chad_HDDS,Dietary diversity (HDDS),11_WFP_Chad_HDDS_data.Rmd,8,"12 food groups eaten in the last 24 hours, from PDM 2022. Built directly from the raw HDDS columns, outside the harmonisation workbook."

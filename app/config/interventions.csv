@@ -1,0 +1,21 @@
+variable,label,group,documented_rounds
+ArgentContreTravail,Cash for assets,Asset creation,2;3;4;5;6;7;8;9;10
+VivreContreTravail,Food for assets (recoded to cash),Asset creation,6;7;8;9;10
+FormationRenfCapacite,Training and capacity building,Asset creation,2;5;6;7;8;9;10
+BanqueCerealiere,Cereal bank,Asset creation,6;7;8;9;10
+DistribVivresSoudure,Lean-season food distribution,Lean-season support,6;7;8;9;10
+DistribArgentSoudure,Lean-season cash distribution,Lean-season support,6;7;8;9;10
+DistribVivresArgentSoudure,Lean-season food or cash (combined item),Lean-season support,2;3;4;5;6
+CashTransfert,Cash transfer,Lean-season support,6;7;8;9;10
+BlanketFeedingChildren,Blanket feeding: children,Nutrition,6;7;8;9;10
+BlanketFeedingWomen,Blanket feeding: women,Nutrition,6;7;8;9;10
+BlanketFeedingChildrenWomen,Blanket feeding: children or women (combined item),Nutrition,2;3;4;5;6
+MAMChildren,Moderate acute malnutrition treatment: children,Nutrition,6;7;8;9;10
+MASChildren,Severe acute malnutrition treatment: children,Nutrition,6;7;8;9;10
+MAMPLWomen,Moderate acute malnutrition treatment: pregnant and lactating women,Nutrition,6;7;8;9;10
+MAMMASChildrenMAMPLWomen,Malnutrition treatment (combined item),Nutrition,2;3;4;5;6
+FARNcommunaut,Community nutrition rehabilitation (FARN),Nutrition,3;4;5;6;7;8;9;10
+CantineScolaire,School feeding,School,2;4;5;6;7;8;9;10
+BoursesAdo,Scholarships for adolescent girls,School,6;7;8;9;10
+CantineScolaireBoursesAdo,School feeding or scholarships (combined item),School,3;6;7;8;9;10
+AutreTransferts,Other transfers,Other,6;7;8;9;10

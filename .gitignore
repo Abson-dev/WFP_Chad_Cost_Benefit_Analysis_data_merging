@@ -2,3 +2,11 @@
 .Rhistory
 .RData
 .Ruserdata
+
+# Dashboard: generated data, accounts and secrets stay on this computer
+app/data/
+app/demo_data/
+app/accounts.sqlite
+app/accounts_passwords.csv
+app/.Renviron
+app/rsconnect/

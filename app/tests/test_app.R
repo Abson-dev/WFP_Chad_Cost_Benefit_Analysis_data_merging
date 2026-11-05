@@ -1,0 +1,221 @@
+# Checks of the whole app: every page and output for every round, the figures against an independent
+# recomputation from the merged file, the claims of config/issues.csv, the data boundary and the login.
+# Run from the app/ folder, after prepare_app_data.R:   Rscript tests/test_app.R
+# Exits with status 1 if any check fails. The merged file is read only if it is found on this computer.
+
+Sys.setenv(WFP_CBA_LOCAL = "1")
+suppressPackageStartupMessages({ library(shiny); library(bslib) })
+for (f in list.files("R", full.names = TRUE)) source(f)
+d <- load_app_data("data")
+cat(sprintf("data: %d rounds, %d variables, %d checks, %d flags\n", nrow(d$rounds), nrow(d$crosswalk_summary), nrow(d$checks), nrow(d$flags)))
+
+failures <- 0; n_checks <- 0; verbose <- "--verbose" %in% commandArgs(trailingOnly = TRUE)
+ok <- function(label, expr) {
+  n_checks <<- n_checks + 1
+  r <- tryCatch({ force(expr); "OK" }, error = function(e) {
+    if (inherits(e, "shiny.silent.error")) "OK" else paste("ERROR:", conditionMessage(e))
+  })
+  if (r != "OK") failures <<- failures + 1
+  if (verbose || r != "OK") cat(sprintf("%-55s %s\n", label, r))
+}
+# A chart must serialise to valid JSON: named vectors or wrong lengths fail only in the browser.
+plotly_json <- function(p) { jsonlite::fromJSON(plotly::plotly_json(p, jsonedit = FALSE, pretty = FALSE)); invisible(TRUE) }
+section <- function(s) cat("-", s, "\n")
+
+section("UI builders")
+for (m in c("situation", "merge", "validation", "issues", "trends", "regions", "assistance", "approach", "process", "crosswalk", "rounds", "data", "about")) {
+  ok(paste("ui:", m), get(paste0(m, "_ui"))(m, d))
+}
+
+section("Pages that follow the reference round, for every round and both views")
+for (rid in d$round_ids) for (e in c("m", "c")) {
+  ref <- shiny::reactive(rid); est <- shiny::reactive(e)
+  testServer(situation_server, args = list(d = d, ref = ref, est = est), {
+    ok(sprintf("situation[%s,%s]", rid, e), { output$chip; output$kpis; output$attention; output$table })
+    for (g in c("g_fcs", "g_rcsi", "g_lcs")) ok(sprintf("situation %s[%s,%s]", g, rid, e), output[[g]])
+  })
+  testServer(trends_server, args = list(d = d, ref = ref, est = est), {
+    session$setInputs(indicator = "fcs_pb", geo = "")
+    ok(sprintf("trends[%s,%s]", rid, e), { output$season; output$table; output$fcs; output$lcs; output$title })
+  })
+  testServer(regions_server, args = list(d = d, ref = ref, est = est), {
+    session$setInputs(region = "Lac", metric = "fcs_pb", compare = c("Lac", "Kanem", "Batha"))
+    ok(sprintf("regions[%s,%s]", rid, e), { output$kpis; output$rank; output$heat; output$trend; output$table; output$table_title; output$rank_title; output$heat_title })
+    session$setInputs(region = "Ennedi Est")  # surveyed in one round only
+    ok(sprintf("regions Ennedi Est[%s,%s]", rid, e), { output$kpis; output$table })
+  })
+  testServer(assistance_server, args = list(d = d, ref = ref), {
+    session$setInputs(variable = "CashTransfert")
+    ok(sprintf("assistance[%s]", rid), { output$chip; output$matrix; output$trend; output$region; output$audit; output$documented })
+  })
+}
+
+section("All indicators, all areas")
+ref <- shiny::reactive("R10"); est <- shiny::reactive("m")
+testServer(trends_server, args = list(d = d, ref = ref, est = est), {
+  for (id in IND$id) for (geo in c("", "Lac", "Ennedi Est")) {
+    session$setInputs(indicator = id, geo = geo)
+    ok(sprintf("trends[%s,%s]", id, geo), { output$season; output$table })
+  }
+})
+testServer(regions_server, args = list(d = d, ref = ref, est = est), {
+  for (id in IND$id) {
+    session$setInputs(region = "Lac", metric = id, compare = c("Lac", "Kanem"))
+    ok(sprintf("regions[%s]", id), { output$rank; output$heat; output$trend })
+  }
+})
+testServer(assistance_server, args = list(d = d, ref = ref), {
+  for (v in d$interventions$variable) { session$setInputs(variable = v); ok(sprintf("assistance[%s]", v), { output$trend; output$region }) }
+})
+
+section("Other pages")
+testServer(merge_server, args = list(d = d), {
+  ok("merge", { output$rows; output$flow; output$steps; output$modules; output$families; output$ch; output$places; output$nutrition; output$columns })
+})
+testServer(validation_server, args = list(d = d), {
+  for (s in c("", "fail", "warn", "pass")) { session$setInputs(status = s, sens = "lcs_ce", lcs_view = "merged_yes"); ok(sprintf("validation[%s]", s), output$checks) }
+  for (id in SENSITIVITY) { session$setInputs(sens = unname(id)); ok(sprintf("validation sens[%s]", id), output$sens_plot) }
+  for (v in c("merged_yes", "corrected_yes")) { session$setInputs(lcs_view = v); ok(sprintf("validation lcs[%s]", v), output$lcs) }
+  ok("validation others", { output$rcsi; output$agree })
+})
+testServer(issues_server, args = list(d = d), {
+  session$setInputs(severity = "All", state = "All"); ok("issues all", { output$count; output$cards })
+  ok("issues count", stopifnot(nrow(shown()) == nrow(d$issues)))
+  session$setInputs(severity = "High", state = "Open"); ok("issues high open", { output$cards; stopifnot(all(shown()$severity == "High")) })
+  session$setInputs(severity = "Low", state = "Open"); ok("issues low open", output$cards)
+})
+testServer(approach_server, args = list(d = d), ok("approach", output$hh_plot))
+testServer(process_server, args = list(d = d), {
+  ok("process", { output$flow; output$node_detail; output$domains })
+  session$setInputs(node = 4); ok("process node", output$node_detail)
+})
+testServer(crosswalk_server, args = list(d = d), {
+  all_f <- unique(d$crosswalk_summary$family)
+  session$setInputs(families = all_f, gaps_only = FALSE, jump = "")
+  ok("crosswalk all", { output$matrix_ui; output$matrix; output$table; output$details; output$dups; output$concept_card; output$concept_rounds })
+  session$setInputs(jump = "LhCSIStress1"); ok("crosswalk jump", { output$concept_card; output$concept_rounds })
+  session$setInputs(families = c("Reduced coping (rCSI)"), gaps_only = TRUE); ok("crosswalk filtered", { output$matrix; output$table })
+  ok("crosswalk csv", stopifnot(file.size(output$dl_csv) > 0)); ok("crosswalk xlsx", stopifnot(file.size(output$dl_xlsx) > 0))
+})
+testServer(rounds_server, args = list(d = d), ok("rounds", { output$calendar; output$inventory; output$departments }))
+testServer(data_server, args = list(d = d), {
+  session$setInputs(indicators = NULL, geo = NULL, rounds = NULL, series = "")
+  ok("data all", { output$count; output$table; stopifnot(nrow(shown()) == nrow(d$ind_long)) })
+  session$setInputs(indicators = IND$label[1], geo = "Lac", rounds = "2023 Annual", series = "Post-harvest")
+  ok("data one row", stopifnot(nrow(shown()) == 1))
+  ok("data csv", stopifnot(file.size(output$csv) > 0)); ok("data excel", stopifnot(file.size(output$excel) > 0))
+})
+testServer(about_server, args = list(d = d), ok("about", output$inputs))
+
+section("Charts serialise to valid JSON")
+for (rid in c("R01", "R03", "R10")) {
+  x <- d$ind_round
+  ok(sprintf("series_bars json[%s]", rid), plotly_json(series_bars(x, "fcs_pb", rid, "m", d, "#FBC4A8", "#F0512D")))
+}
+
+section("Column content")
+ok("crosswalk: label holds the SPSS label, not the round", stopifnot(!any(d$crosswalk$label %in% as.character(d$rounds$label))))
+ok("crosswalk: rCSIBorrow's source is the wrong column in 3 rounds", {
+  z <- d$crosswalk[d$crosswalk$variable == "rCSIBorrow", ]
+  stopifnot(setequal(z$round_id[z$source == "rCSILessQlty"], c("R07", "R09", "R10")))
+})
+ok("flags and checks agree", stopifnot(setequal(d$flags$round_id[d$flags$indicator_group == "rcsi"], c("R07", "R09", "R10")), sum(d$checks$status == "fail") > 0))
+
+section("Comparison rules")
+nat <- d$ind_round
+ok("compare: same series only", { c1 <- ind_compare(nat, "rcsi_mean", "R08", "m", d); stopifnot(c1$base_id == "R06") })
+ok("compare: flagged base is skipped", { c2 <- ind_compare(nat, "rcsi_mean", "R05", "m", d); stopifnot(c2$base_id == "R03"); c3 <- ind_compare(nat, "lcs_ce", "R05", "m", d); stopifnot(is.na(c3$diff)) })
+ok("compare: flagged round has no change", { c4 <- ind_compare(nat, "fcs_pb", "R03", "m", d); stopifnot(c4$flagged, is.na(c4$diff)) })
+ok("compare: corrected view compares it", { c5 <- ind_compare(nat, "fcs_pb", "R05", "c", d); stopifnot(c5$base_id == "R03", abs(c5$diff - (nat$fcs_pb_c[nat$round_id == "R05"] - nat$fcs_pb_c[nat$round_id == "R03"])) < 1e-9) })
+ok("compare: first round has no base", stopifnot(is.na(ind_compare(nat, "fcs_pb", "R01", "m", d)$diff)))
+ok("flags: unresolved stay flagged in the corrected view", stopifnot("R02" %in% flagged_rounds(d, "lcs_ce", "c"), !"R10" %in% flagged_rounds(d, "lcs_ce", "c")))
+ok("attention: serious point on a flagged round", stopifnot(any(vapply(attention_points(d, "R10", "m"), function(p) p$level == "serious", TRUE))))
+
+section("Figures against an independent recomputation from the merged file")
+merged_path <- file.path(Sys.getenv("WFP_MERGED_DIR", "C:/Users/AHema/OneDrive - CGIAR/Desktop/2024/WFP/CBA - Chad/data"), "WFP_Chad_2018-2023_20250423.dta.dta")
+if (file.exists(merged_path) && !demo_mode()) {
+  x <- haven::zap_labels(haven::read_dta(merged_path))
+  x$rid <- sprintf("R%02d", x$ROUND)
+  chk <- function(id, fn, tol = 0.006) {
+    ok(sprintf("figures: %s", id), {
+      a <- nat[[paste0(id, "_m")]]; b <- vapply(d$round_ids, function(r) fn(x[x$rid == r, ]), 0)
+      k <- !is.na(a) & !is.na(b); stopifnot(sum(k) >= 4, max(abs(a[k] - b[k])) < tol, identical(which(is.na(a)), unname(which(is.na(b)))))
+    })
+  }
+  m_or_na <- function(v) if (all(is.na(v))) NA_real_ else mean(v, na.rm = TRUE)
+  chk("fcs_pb", function(z) 100 * mean(z$FCS <= 42))
+  chk("fcs_mean", function(z) mean(z$FCS))
+  chk("rcsi_mean", function(z) m_or_na(z$rCSI))
+  chk("lcs_ce", function(z) 100 * mean(z$Max_coping_behaviourFS >= 3))
+  chk("abi_mean", function(z) m_or_na(z$ABIScore))
+  chk("rcs_mean", function(z) m_or_na(z$RCS))
+  chk("hdds_mean", function(z) m_or_na(z$HDDS_hema))
+  chk("hh_size", function(z) mean(z$HHSize))
+  ok("figures: households", stopifnot(sum(nat$households) == nrow(x), all(nat$households == as.integer(table(x$rid)[d$round_ids]))))
+  ok("figures: regional households add up", stopifnot(sum(d$ind_region$households) == nrow(x)))
+  ok("figures: columns", stopifnot(d$manifest$columns == ncol(x) - 1))
+
+  section("Claims of config/issues.csv")
+  mean_r <- function(col, r) mean(x[[col]][x$rid == r], na.rm = TRUE)
+  ok("claim: FCS 2020 PDM mean 11.9, all Poor, SCA 53.2", stopifnot(round(mean_r("FCS", "R03"), 1) == 11.9, all(x$FCSCat28[x$rid == "R03"] == 1), round(mean_r("SCA", "R03"), 1) == 53.2))
+  ok("claim: rCSI merged and corrected", stopifnot(all(round(nat$rcsi_mean_m[nat$round_id %in% c("R07", "R09", "R10")], 2) == c(9.10, 5.48, 5.89)), all(round(nat$rcsi_mean_c[nat$round_id %in% c("R07", "R09", "R10")], 2) == c(7.59, 4.63, 4.89))))
+  ok("claim: emergency coping", stopifnot(max(abs(nat$lcs_em_m[nat$round_id %in% c("R01", "R03", "R10")] - c(29.6, 49.4, 56.7))) < .06, max(abs(nat$lcs_em_c[nat$round_id %in% c("R01", "R03", "R10")] - c(21.2, 8.5, 5.8))) < .06))
+  ok("claim: ABI 2022 Annual", stopifnot(sum(x$rid == "R08" & !is.na(x$ABIScore)) == 1701, all(x$ABIScore[x$rid == "R08"] == 0, na.rm = TRUE), round(nat$abi_mean_c[nat$round_id == "R08"], 1) == 5.8))
+  ok("claim: LhCSIStress1 empty in 9 rounds", stopifnot(sum(tapply(x$LhCSIStress1, x$rid, function(v) all(v == 4))) == 9, !all(x$LhCSIStress1[x$rid == "R02"] == 4)))
+  ok("claim: no weight column", stopifnot(!any(grepl("weight|pond|^wt", names(x), ignore.case = TRUE))))
+  ok("claim: household size", stopifnot(sum(x$HHSize > 30) == 89, max(x$HHSize) == 352, sum(x$HHSize == 0) == 60, round(mean_r("HHSize", "R07"), 1) == 11.9, round(mean(x$HHSize[x$rid == "R07" & x$HHSize <= 30]), 1) == 7.0, max(x$HHSize05M, na.rm = TRUE) == 333))
+  ok("claim: regions change", stopifnot(sum(x$rid == "R01" & x$ADMIN1Name == "Wadi Fira") == 629, sum(x$rid == "R09" & x$ADMIN1Name == "Wadi Fira") == 11, sum(x$rid == "R10" & x$ADMIN1Name == "Wadi Fira") == 0, all(x$rid[x$ADMIN1Name == "Ennedi Est"] == "R10")))
+  ok("claim: female-headed 39% to 59%", stopifnot(round(min(nat$female_head_m)) == 39, round(max(nat$female_head_m)) == 59))
+  ok("claim: 35 without phase or department", stopifnot(sum(is.na(x$phase_class)) == 35, sum(x$ADMIN2Name == "" | is.na(x$ADMIN2Name)) == 35, all(x$rid[is.na(x$phase_class)] == "R03")))
+  ok("claim: 14 + 1 rows removed", stopifnot(sum(d$rounds$duplicates_removed) == 14, sum(d$rounds$empty_removed) == 1, sum(d$rounds$raw_rows) == 17270, d$rounds$duplicates_removed[d$rounds$round_id == "R05"] == 14))
+  ok("claim: 14 dates outside, 10 missing, in 5 rounds", stopifnot(sum(d$rounds$dates_outside) == 14, sum(d$rounds$dates_missing) == 10, sum(d$rounds$dates_outside > 0) == 5))
+  ok("claim: cash for assets shares", { y <- d$assistance[d$assistance$variable == "ArgentContreTravail" & d$assistance$answered > 0, ]; stopifnot(all(round(y$yes_pct[y$round_id %in% c("R02", "R03")]) == c(98, 99)), round(min(y$yes_pct)) == 68, round(max(y$yes_pct[!y$round_id %in% c("R02", "R03")])) == 94) })
+  ok("claim: 91 assistance pairs same", stopifnot(nrow(d$assistance_audit) == 91, all(d$assistance_audit$pct_same == 100)))
+  ok("claim: 12 report cells differ", stopifnot(nrow(d$assistance_documented) == 12))
+  ok("claim: places", stopifnot(d$places$value[d$places$measure == "Village names before cleaning"] == 387, d$places$value[d$places$measure == "Village names in the merged file"] == 321, d$places$value[d$places$measure == "Households without a department before cleaning"] == 272))
+} else cat("  merged file not found or demo data: skipped\n")
+
+section("Data boundary")
+ok("no household columns in data/", {
+  for (f in list.files("data", pattern = "\\.csv$", full.names = TRUE)) {
+    hdr <- gsub("\"", "", strsplit(readLines(f, n = 1, warn = FALSE), ",")[[1]])
+    stopifnot(!any(c("ID", "hh_id", "uuid", "village", "Longitude", "Latitude") %in% hdr))
+  }
+})
+ok("no household rows: largest table is small", stopifnot(max(vapply(list.files("data", pattern = "\\.csv$", full.names = TRUE), function(f) length(readLines(f, warn = FALSE)), 0L)) < 5000))
+ok("regional cells under 30 households suppressed", {
+  small <- d$ind_region[d$ind_region$households < 30, ]; cols <- grep("_[mc]$", names(small), value = TRUE)
+  stopifnot(nrow(small) > 0, all(is.na(small[, cols])))
+})
+ok("department cells under 30 households hidden", stopifnot(all(is.na(d$admin2$households) | d$admin2$households >= 30)))
+ok("assistance cells under 30 answers suppressed", stopifnot(all(is.na(d$assistance_region$yes_pct[d$assistance_region$answered < 30]))))
+ok("no local paths in the manifest", stopifnot(!any(grepl("[A-Za-z]:[\\\\/]|OneDrive|AHema", readLines("data/manifest.json", warn = FALSE)))))
+ok("no village or geography labels in the crosswalk", {
+  geo <- d$crosswalk[d$crosswalk$family == "Geography", ]
+  stopifnot(all(is.na(geo$value_labels)), all(is.na(geo$range)))
+})
+ok("flags computed: every flag has a reason", stopifnot(all(nzchar(d$flags$reason))))
+
+section("Login")
+Sys.setenv(WFP_CBA_LOCAL = "", WFP_CBA_ACCOUNTS_DB = file.path(tempdir(), "none.sqlite"), WFP_CBA_ACCOUNTS_SECRET = "")
+ok("auth: required on a server", stopifnot(auth_required() || interactive()))
+if (!interactive()) {
+  r <- local({ wd <- setwd(tempdir()); on.exit(setwd(wd)); tryCatch({ check_auth(); "started" }, error = function(e) conditionMessage(e)) })
+  ok("auth: refuses to start without accounts", stopifnot(grepl("refusing", r)))
+  if (requireNamespace("shinymanager", quietly = TRUE)) {
+    db <- file.path(tempdir(), "accounts_test.sqlite")
+    shinymanager::create_db(data.frame(user = "tester", password = "correct-horse", admin = FALSE, stringsAsFactors = FALSE), sqlite_path = db, passphrase = "test-secret")
+    Sys.setenv(WFP_CBA_ACCOUNTS_DB = db, WFP_CBA_ACCOUNTS_SECRET = "test-secret")
+    ok("auth: starts with accounts", check_auth())
+    ok("auth: login page built", stopifnot(is.function(protect_ui(shiny::fluidPage()))))
+    chk_login <- shinymanager::check_credentials(db, passphrase = "test-secret")
+    ok("auth: right password", stopifnot(isTRUE(chk_login("tester", "correct-horse")$result)))
+    ok("auth: wrong password", stopifnot(isFALSE(chk_login("tester", "wrong")$result)))
+  }
+}
+Sys.setenv(WFP_CBA_LOCAL = "1", WFP_CBA_ACCOUNTS_DB = "", WFP_CBA_ACCOUNTS_SECRET = "")
+
+ok("shinyAppDir", app <- shiny::shinyAppDir("."))
+
+cat(if (failures) sprintf("\n%d of %d checks FAILED\n", failures, n_checks) else sprintf("\nAll %d checks passed\n", n_checks))
+if (failures) quit(status = 1)
