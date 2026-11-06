@@ -1,0 +1,143 @@
+---
+title: "WFP datasets wrangling - Chad : LIVELIHOODS"
+author: "Aboubacar HEMA"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    keep_md: true
+---
+
+```{r 18 setup, include=FALSE, results = 'hide'}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, results = "hide")
+```
+
+# Livelihoods
+
+In this section, we harmonize the household's income sources and main activity.
+
+* **Number of income sources:** 2019 and 2020 annual surveys, 2021 PDM, and from the 2022 PDM onwards.
+* **Income sources:** the main source in the same rounds; the second and third from the 2022 PDM onwards. The 2019 to 2021 rounds used a list of 13 sources, and later rounds a list of 15 that adds livestock raising and skilled work: the 13 are recoded to the 15-source list. The 2019 file holds the answers as text.
+* **Main activity of the household:** 2019 and 2020 annual surveys and 2021 PDM.
+
+The merged file already has `HHSourceIncome` and `HHHMainActivity` from the first harmonization, for fewer rounds. They are left unchanged.
+
+```{r 18 packages needed}
+library(haven)
+library(labelled)
+library(tidyverse)
+library(readxl)
+```
+
+```{r 18 remove environment variables}
+rm(list = ls())
+```
+
+```{r 18 environment settings}
+dir_input_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/input_data/Chad"
+dir_output_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/output_data/Chad"
+```
+
+```{r 18 read harmonization excel file}
+Chad_Harmonization_variables <- read_excel(paste0(dir_input_data, "/Chad_Harmonization_extension.xlsx"), sheet = "variables_harmonization") %>%
+  dplyr::filter(Module == "Livelihoods")
+Chad_Harmonization_description <- read_excel(paste0(dir_input_data, "/Chad_Harmonization.xlsx"), sheet = "description")
+Chad_Harmonization_ID <- read_excel(paste0(dir_input_data, "/Chad_Harmonization.xlsx"), sheet = "variables_harmonization") %>%
+  dplyr::filter(NewVariable_Name == "ID")
+```
+
+```{r 18 data importation}
+lst_data = Chad_Harmonization_description$Data
+lst_test = Chad_Harmonization_description$Name
+for (i in 1:length(lst_data)) {
+  assign(lst_test[i], read_sav(paste0(dir_input_data, "/", lst_data[i])))
+}
+```
+
+```{r 18 select and rename columns needed}
+value_labels <- list()
+for (j in 1:length(lst_test)) {
+  raw <- get(lst_test[j], envir = .GlobalEnv)
+  df <- tibble::tibble(.rows = nrow(raw))
+  id_var <- Chad_Harmonization_ID[[lst_test[j]]]
+  df$ID <- if (is.na(id_var)) NA_character_ else { z <- zap_labels(raw[[id_var]]); if (is.numeric(z)) format(z, scientific = FALSE, trim = TRUE) else as.character(z) }
+  for (i in 1:nrow(Chad_Harmonization_variables)) {
+    v <- Chad_Harmonization_variables[[lst_test[j]]][i]; new <- Chad_Harmonization_variables$NewVariable_Name[i]
+    df[[new]] <- if (is.na(v)) NA_real_ else zap_labels(raw[[v]])
+    if (!is.na(v)) value_labels[[lst_test[j]]][[new]] <- attr(raw[[v]], "labels")
+  }
+  assign(lst_test[j], df)
+}
+Chad_pdm_2022$ID = as.character(1:nrow(Chad_pdm_2022))
+```
+
+```{r 18 code lists}
+# The 15-source list used from the 2022 PDM onwards
+income_15 <- value_labels$Chad_ea_2023$LivIncomeSource1
+names(income_15) <- gsub("\\s+", " ", names(income_15))
+# The 13-source list of 2019 to 2021, and its place in the 15-source list
+income_13 <- value_labels$Chad_ea_2020$LivIncomeSource1
+income_13_to_15 <- c(`1` = 1, `2` = 3, `3` = 4, `4` = 5, `5` = 6, `6` = 7, `7` = 8, `8` = 9, `9` = 10, `10` = 11, `11` = 12, `12` = 13, `13` = 15)
+activity_11 <- value_labels$Chad_ea_2020$LivHHMainActivity
+norm <- function(x) tolower(gsub("\\s+", " ", trimws(x)))
+# Text answers of 2019, matched to the codes of 2020
+text_to_code <- function(x, labels) {
+  code <- unname(labels[match(norm(x), norm(names(labels)))])
+  unmatched <- unique(x[!is.na(x) & nzchar(trimws(x)) & is.na(code)])
+  if (length(unmatched)) stop("Text not in the code list: ", paste(unmatched, collapse = " | "))
+  code
+}
+print(income_13); print(activity_11)
+```
+
+## EA 2019
+
+```{r}
+df_2019 <- Chad_ea_2019
+table(df_2019$LivIncomeSource1, useNA = "ifany")
+df_2019$LivIncomeSource1 <- unname(income_13_to_15[as.character(text_to_code(df_2019$LivIncomeSource1, income_13))])
+df_2019$LivHHMainActivity <- text_to_code(df_2019$LivHHMainActivity, activity_11)
+```
+
+## EA 2020 and PDM 2021
+
+```{r}
+recode_13 <- function(df) {
+  stopifnot(all(df$LivIncomeSource1 %in% c(names(income_13_to_15), NA)))
+  df$LivIncomeSource1 <- unname(income_13_to_15[as.character(df$LivIncomeSource1)])
+  df
+}
+df_2020 <- recode_13(Chad_ea_2020)
+df_pdm_2021 <- recode_13(Chad_pdm_2021)
+```
+
+## 2022 PDM onwards
+
+```{r}
+for (r in c("Chad_pdm_2022", "Chad_ea_2022", "Chad_pdm_2023", "Chad_ea_2023")) {
+  d <- get(r); for (v in c("LivIncomeSource1", "LivIncomeSource2", "LivIncomeSource3")) stopifnot(all(d[[v]] %in% c(1:15, NA)))
+}
+df_2022 <- Chad_ea_2022; df_2023 <- Chad_ea_2023; df_pdm_2022 <- Chad_pdm_2022; df_pdm_2023 <- Chad_pdm_2023
+df_2018 <- Chad_baseline_2018; df_2021 <- Chad_ea_2021; df_pdm_2020 <- Chad_pdm_2020
+```
+
+## Merging all data
+
+```{r}
+df_Chad <- dplyr::bind_rows(df_2018, df_2019, df_2020, df_2021, df_2022, df_2023, df_pdm_2020, df_pdm_2021, df_pdm_2022, df_pdm_2023)
+for (v in c("LivIncomeSource1", "LivIncomeSource2", "LivIncomeSource3")) df_Chad[[v]] <- labelled(df_Chad[[v]], income_15)
+df_Chad$LivHHMainActivity <- labelled(df_Chad$LivHHMainActivity, activity_11)
+for (i in 1:nrow(Chad_Harmonization_variables)) var_label(df_Chad[[Chad_Harmonization_variables$NewVariable_Name[i]]]) <- Chad_Harmonization_variables$Label[i]
+var_label(df_Chad$ID) <- "Household ID"
+```
+
+## Export all data
+
+```{r}
+df_Chad <- df_Chad %>% dplyr::select(ID, all_of(Chad_Harmonization_variables$NewVariable_Name))
+haven::write_dta(df_Chad, paste0(dir_output_data, "/", "WFP_Chad_Livelihoods.dta"))
+```

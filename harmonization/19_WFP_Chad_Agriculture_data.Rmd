@@ -1,0 +1,155 @@
+---
+title: "WFP datasets wrangling - Chad : AGRICULTURE"
+author: "Aboubacar HEMA"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    keep_md: true
+---
+
+```{r 19 setup, include=FALSE, results = 'hide'}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, results = "hide")
+```
+
+# Agriculture
+
+In this section, we harmonize the household's farming, land and own production.
+
+* **Practised agriculture:** all rounds except the 2020 PDM and the 2021 annual survey.
+* **Areas cultivated and owned, and land tenure:** the 2018 baseline and from the 2022 PDM onwards. The 2022 and 2023 rounds have no unit: the areas are taken as hectares, which their values support (median 1 to 2). The baseline recorded a unit for each area: hectares, square metres or *cordes*. Its areas are kept in hectares only where the unit is hectares (or the area is 0). The value and unit as reported are kept in the `...Reported` and `...Unit` variables, because the square-metre answers look like hectares and the *corde* has no agreed size.
+* **Months covered by own production:** all rounds except the 2020 and 2022 PDMs. From 2021 the question refers to the last harvest; before, to a usual year. Values above 12 are kept as reported.
+* Negative areas are set to missing (one household).
+* **Stocks from own production:** 2019 and 2020 annual surveys and 2021 PDM.
+
+```{r 19 packages needed}
+library(haven)
+library(labelled)
+library(tidyverse)
+library(readxl)
+```
+
+```{r 19 remove environment variables}
+rm(list = ls())
+```
+
+```{r 19 environment settings}
+dir_input_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/input_data/Chad"
+dir_output_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/output_data/Chad"
+```
+
+```{r 19 read harmonization excel file}
+Chad_Harmonization_variables <- read_excel(paste0(dir_input_data, "/Chad_Harmonization_extension.xlsx"), sheet = "variables_harmonization") %>%
+  dplyr::filter(Module == "Agriculture")
+Chad_Harmonization_description <- read_excel(paste0(dir_input_data, "/Chad_Harmonization.xlsx"), sheet = "description")
+Chad_Harmonization_ID <- read_excel(paste0(dir_input_data, "/Chad_Harmonization.xlsx"), sheet = "variables_harmonization") %>%
+  dplyr::filter(NewVariable_Name == "ID")
+```
+
+```{r 19 data importation}
+lst_data = Chad_Harmonization_description$Data
+lst_test = Chad_Harmonization_description$Name
+for (i in 1:length(lst_data)) {
+  assign(lst_test[i], read_sav(paste0(dir_input_data, "/", lst_data[i])))
+}
+```
+
+```{r 19 select and rename columns needed}
+for (j in 1:length(lst_test)) {
+  raw <- get(lst_test[j], envir = .GlobalEnv)
+  df <- tibble::tibble(.rows = nrow(raw))
+  id_var <- Chad_Harmonization_ID[[lst_test[j]]]
+  df$ID <- if (is.na(id_var)) NA_character_ else { z <- zap_labels(raw[[id_var]]); if (is.numeric(z)) format(z, scientific = FALSE, trim = TRUE) else as.character(z) }
+  for (i in 1:nrow(Chad_Harmonization_variables)) {
+    v <- Chad_Harmonization_variables[[lst_test[j]]][i]
+    df[[Chad_Harmonization_variables$NewVariable_Name[i]]] <- if (is.na(v)) NA_real_ else zap_labels(raw[[v]])
+  }
+  assign(lst_test[j], df)
+}
+Chad_pdm_2022$ID = as.character(1:nrow(Chad_pdm_2022))
+```
+
+```{r 19 helpers}
+areas <- c("AgrAreaCultivated", "AgrAreaFoodCrops", "AgrAreaCashCrops", "AgrAreaGardening", "AgrAreaOwned")
+check01 <- function(x) { x <- as.numeric(x); stopifnot(all(x[!is.na(x)] %in% c(0, 1))); x }
+from_text <- function(x) {
+  x <- trimws(as.character(x)); stopifnot(all(x %in% c("Oui", "Non", "", NA)))
+  dplyr::case_when(x == "Oui" ~ 1, x == "Non" ~ 0)
+}
+```
+
+## Baseline 2018
+
+```{r}
+df_2018 <- Chad_baseline_2018
+df_2018$AgrPractice <- check01(df_2018$AgrPractice)
+for (a in areas) {
+  unit <- df_2018[[paste0(a, "Unit")]]; val <- df_2018[[a]]
+  print(table(unit, useNA = "ifany"))
+  df_2018[[paste0(a, "Reported")]] <- val
+  # Hectares only where the unit is hectares, or nothing was cultivated
+  df_2018[[a]] <- ifelse(!is.na(val) & (unit %in% 1 | val == 0), val, NA)
+}
+```
+
+## EA 2019
+
+```{r}
+df_2019 <- Chad_ea_2019
+df_2019$AgrPractice <- from_text(df_2019$AgrPractice)
+df_2019$AgrOwnStocks <- from_text(df_2019$AgrOwnStocks)
+```
+
+## EA 2020 and PDM 2021
+
+```{r}
+df_2020 <- Chad_ea_2020; df_pdm_2021 <- Chad_pdm_2021
+for (v in c("AgrPractice", "AgrOwnStocks")) { df_2020[[v]] <- check01(df_2020[[v]]); df_pdm_2021[[v]] <- check01(df_pdm_2021[[v]]) }
+```
+
+## 2022
+
+```{r}
+# 1 = No, 2 = Yes in 2022
+recode_2022 <- function(df) { stopifnot(all(df$AgrPractice %in% c(1, 2, NA))); df$AgrPractice <- dplyr::case_when(df$AgrPractice == 2 ~ 1, df$AgrPractice == 1 ~ 0); df }
+df_2022 <- recode_2022(Chad_ea_2022); df_pdm_2022 <- recode_2022(Chad_pdm_2022)
+```
+
+## 2023
+
+```{r}
+df_2023 <- Chad_ea_2023; df_pdm_2023 <- Chad_pdm_2023
+df_2023$AgrPractice <- check01(df_2023$AgrPractice); df_pdm_2023$AgrPractice <- check01(df_pdm_2023$AgrPractice)
+df_2021 <- Chad_ea_2021; df_pdm_2020 <- Chad_pdm_2020
+```
+
+## Merging all data
+
+```{r}
+df_Chad <- dplyr::bind_rows(df_2018, df_2019, df_2020, df_2021, df_2022, df_2023, df_pdm_2020, df_pdm_2021, df_pdm_2022, df_pdm_2023)
+stopifnot(all(df_Chad$AgrLandTenure %in% c(1:5, NA)))
+# Negative areas are impossible (one household in 2023 reports -93 ha owned): set to missing
+for (a in areas) { neg <- !is.na(df_Chad[[a]]) & df_Chad[[a]] < 0; print(c(a, sum(neg))); df_Chad[[a]][neg] <- NA }
+stopifnot(sum(df_Chad$AgrAreaOwned < 0, na.rm = TRUE) == 0)
+```
+
+```{r}
+for (v in c("AgrPractice", "AgrOwnStocks")) df_Chad[[v]] <- labelled(df_Chad[[v]], c("No" = 0, "Yes" = 1))
+df_Chad$AgrLandTenure <- labelled(df_Chad$AgrLandTenure, c("Owner" = 1, "Free loan" = 2, "Rent/lease" = 3, "Sharecropping" = 4, "Pledge" = 5))
+for (a in areas) df_Chad[[paste0(a, "Unit")]] <- labelled(df_Chad[[paste0(a, "Unit")]], c("Hectare" = 1, "Square metres" = 2, "Corde" = 3))
+for (i in 1:nrow(Chad_Harmonization_variables)) var_label(df_Chad[[Chad_Harmonization_variables$NewVariable_Name[i]]]) <- Chad_Harmonization_variables$Label[i]
+for (a in areas) var_label(df_Chad[[paste0(a, "Reported")]]) <- paste0(sub(" \\(hectares\\)", "", var_label(df_Chad[[a]])), ", as reported in its unit (2018 baseline only)")
+var_label(df_Chad$ID) <- "Household ID"
+```
+
+## Export all data
+
+```{r}
+df_Chad <- df_Chad %>% dplyr::select(ID, AgrPractice, all_of(areas), all_of(paste0(areas, "Reported")), all_of(paste0(areas, "Unit")),
+                                     AgrLandTenure, AgrMonthsOwnProduction, AgrOwnStocks)
+haven::write_dta(df_Chad, paste0(dir_output_data, "/", "WFP_Chad_Agriculture.dta"))
+```

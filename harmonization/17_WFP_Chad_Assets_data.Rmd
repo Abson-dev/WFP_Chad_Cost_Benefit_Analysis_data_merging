@@ -1,0 +1,160 @@
+---
+title: "WFP datasets wrangling - Chad : ASSETS AND LIVESTOCK"
+author: "Aboubacar HEMA"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    keep_md: true
+---
+
+```{r 17 setup, include=FALSE, results = 'hide'}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, results = "hide")
+```
+
+# Assets and livestock
+
+In this section, we harmonize the household's durable goods and livestock.
+
+* **Durable goods** were asked in the 2018 baseline, the 2019 and 2020 annual surveys and the 2021 PDM. The baseline asked the number of carts, ploughs, bicycles, pushcarts and motorbikes: a household owns one when the number is above 0. Its bed question combines beds and mattresses.
+* **Livestock** was asked in the 2018 baseline, the 2019 and 2020 annual surveys, the 2021 PDM and from the 2022 PDM onwards. The baseline and the 2022 and 2023 rounds count adult animals only (cattle, horses and camels over 3 years, sheep, goats and donkeys over 2 years, poultry over 3 months); the 2019 to 2021 rounds count all animals. In 2020 and 2021 the numbers were asked only of households that raise livestock: they are set to 0 for the others.
+* Tropical livestock units (TLU) use the usual weights for sub-Saharan Africa: camel 1, cattle 0.7, horse 0.8, donkey 0.5, pig 0.2, sheep and goat 0.1, poultry 0.01.
+
+The mapping is in the `variables_harmonization` sheet of `Chad_Harmonization_extension.xlsx`.
+
+```{r 17 packages needed}
+library(haven)
+library(labelled)
+library(tidyverse)
+library(readxl)
+```
+
+```{r 17 remove environment variables}
+rm(list = ls())
+```
+
+```{r 17 environment settings}
+dir_input_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/input_data/Chad"
+dir_output_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/output_data/Chad"
+```
+
+```{r 17 read harmonization excel file}
+Chad_Harmonization_variables <- read_excel(paste0(dir_input_data, "/Chad_Harmonization_extension.xlsx"), sheet = "variables_harmonization") %>%
+  dplyr::filter(Module == "Assets")
+Chad_Harmonization_description <- read_excel(paste0(dir_input_data, "/Chad_Harmonization.xlsx"), sheet = "description")
+Chad_Harmonization_ID <- read_excel(paste0(dir_input_data, "/Chad_Harmonization.xlsx"), sheet = "variables_harmonization") %>%
+  dplyr::filter(NewVariable_Name == "ID")
+```
+
+```{r 17 data importation}
+lst_data = Chad_Harmonization_description$Data
+lst_test = Chad_Harmonization_description$Name
+for (i in 1:length(lst_data)) {
+  assign(lst_test[i], read_sav(paste0(dir_input_data, "/", lst_data[i])))
+}
+```
+
+```{r 17 select and rename columns needed}
+for (j in 1:length(lst_test)) {
+  raw <- get(lst_test[j], envir = .GlobalEnv)
+  df <- tibble::tibble(.rows = nrow(raw))
+  id_var <- Chad_Harmonization_ID[[lst_test[j]]]
+  df$ID <- if (is.na(id_var)) NA_character_ else { z <- zap_labels(raw[[id_var]]); if (is.numeric(z)) format(z, scientific = FALSE, trim = TRUE) else as.character(z) }
+  for (i in 1:nrow(Chad_Harmonization_variables)) {
+    v <- Chad_Harmonization_variables[[lst_test[j]]][i]
+    df[[Chad_Harmonization_variables$NewVariable_Name[i]]] <- if (is.na(v)) NA_real_ else zap_labels(raw[[v]])
+  }
+  assign(lst_test[j], df)
+}
+Chad_pdm_2022$ID = as.character(1:nrow(Chad_pdm_2022))
+```
+
+```{r 17 helpers}
+durables <- grep("^Ast", Chad_Harmonization_variables$NewVariable_Name, value = TRUE)
+livestock <- setdiff(grep("^Lvs", Chad_Harmonization_variables$NewVariable_Name, value = TRUE), "LvsPractice")
+check01 <- function(x) { x <- as.numeric(x); stopifnot(all(x[!is.na(x)] %in% c(0, 1))); x }
+# The 2019 file holds the answers as text
+from_text <- function(x) {
+  x <- trimws(as.character(x)); stopifnot(all(x %in% c("Oui", "Non", "", NA)))
+  dplyr::case_when(x == "Oui" ~ 1, x == "Non" ~ 0)
+}
+```
+
+## Baseline 2018
+
+```{r}
+df_2018 <- Chad_baseline_2018
+table(df_2018$AstBed, useNA = "ifany")
+counts <- c("AstCart", "AstPlough", "AstBicycle", "AstPushcart", "AstMotorbike")
+for (v in counts) df_2018[[v]] <- ifelse(is.na(df_2018[[v]]), NA, as.numeric(df_2018[[v]] > 0))
+for (v in c("AstRadio", "AstPhone", "AstVehicle", "AstMill")) df_2018[[v]] <- check01(df_2018[[v]])
+# 1 = none, 2 to 4 = banco or metal stove
+df_2018$AstImprovedStove <- ifelse(is.na(df_2018$AstImprovedStove), NA, as.numeric(df_2018$AstImprovedStove > 1))
+# 1 = none; 2 to 4 = bed with a mattress; 5 to 7 = bed without a mattress
+bed <- df_2018$AstBed
+df_2018$AstBed <- ifelse(is.na(bed), NA, as.numeric(bed > 1))
+df_2018$AstMattress <- ifelse(is.na(bed), NA, as.numeric(bed %in% 2:4))
+```
+
+## EA 2019
+
+```{r}
+df_2019 <- Chad_ea_2019
+for (v in c(durables, "LvsPractice")) if (!all(is.na(df_2019[[v]]))) df_2019[[v]] <- from_text(df_2019[[v]])
+table(df_2019$AstRadio, useNA = "ifany")
+```
+
+## EA 2020 and PDM 2021
+
+```{r}
+fix_2020_2021 <- function(df) {
+  for (v in c(durables, "LvsPractice")) if (!all(is.na(df[[v]]))) df[[v]] <- check01(df[[v]])
+  # Animals were counted only for households that raise livestock
+  for (v in livestock) df[[v]][is.na(df[[v]]) & df$LvsPractice %in% 0] <- 0
+  df
+}
+df_2020 <- fix_2020_2021(Chad_ea_2020)
+df_pdm_2021 <- fix_2020_2021(Chad_pdm_2021)
+table(df_2020$LvsPractice, is.na(df_2020$LvsCattle))
+```
+
+## Rounds with livestock only, or neither
+
+```{r}
+df_2021 <- Chad_ea_2021; df_2022 <- Chad_ea_2022; df_2023 <- Chad_ea_2023
+df_pdm_2020 <- Chad_pdm_2020; df_pdm_2022 <- Chad_pdm_2022; df_pdm_2023 <- Chad_pdm_2023
+```
+
+## Merging all data
+
+```{r}
+df_Chad <- dplyr::bind_rows(df_2018, df_2019, df_2020, df_2021, df_2022, df_2023, df_pdm_2020, df_pdm_2021, df_pdm_2022, df_pdm_2023)
+for (v in livestock) stopifnot(all(df_Chad[[v]] >= 0, na.rm = TRUE))
+```
+
+```{r}
+tlu <- c(LvsCamels = 1, LvsCattle = 0.7, LvsHorses = 0.8, LvsDonkeys = 0.5, LvsPigs = 0.2, LvsSheep = 0.1, LvsGoats = 0.1, LvsPoultry = 0.01)
+counted <- rowSums(!is.na(df_Chad[, names(tlu)])) > 0
+df_Chad$LvsTLU <- ifelse(counted, rowSums(sweep(as.matrix(df_Chad[, names(tlu)]), 2, tlu, `*`), na.rm = TRUE), NA)
+answered <- rowSums(!is.na(df_Chad[, durables])) > 0
+df_Chad$AstCount <- ifelse(answered, rowSums(df_Chad[, durables] == 1, na.rm = TRUE), NA)
+```
+
+```{r}
+for (v in c(durables, "LvsPractice")) df_Chad[[v]] <- labelled(df_Chad[[v]], c("No" = 0, "Yes" = 1))
+for (i in 1:nrow(Chad_Harmonization_variables)) var_label(df_Chad[[Chad_Harmonization_variables$NewVariable_Name[i]]]) <- Chad_Harmonization_variables$Label[i]
+var_label(df_Chad$ID) <- "Household ID"
+var_label(df_Chad$LvsTLU) <- "Livestock owned in tropical livestock units (TLU)"
+var_label(df_Chad$AstCount) <- "Number of the listed durable goods owned (lists differ between rounds)"
+```
+
+## Export all data
+
+```{r}
+df_Chad <- df_Chad %>% dplyr::select(ID, all_of(durables), AstCount, LvsPractice, all_of(livestock), LvsTLU)
+haven::write_dta(df_Chad, paste0(dir_output_data, "/", "WFP_Chad_Assets.dta"))
+```
