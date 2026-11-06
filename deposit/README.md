@@ -28,6 +28,17 @@ The values are those of the merged file, including its known defects: see `902_k
 
 **The package is not cleared as anonymous.** Many households remain unique on combinations such as round, department, sex, age band and household size: see `910_disclosure_review.csv`. IFPRI's review may require coarser data.
 
+## Scope of the release
+
+The project brief (`Project brief.docx`, kept with the data) sets out two products. This script builds only the start of the second one:
+
+| Product | Content | Status |
+|---|---|---|
+| Layer 1: round-level datasets | 10 cleaned, labelled, anonymized files with every variable collected in each round | Not started |
+| Layer 2: extended harmonized dataset | The harmonized file, plus shocks, assets, livelihoods, agriculture and nutrition modules matched across rounds | Harmonized file only |
+
+The submission notes take the title, description and scope from the brief, and flag where the brief and the data differ: the brief lists 8 regions while the data hold 10, and it calls the data representative by region although the files hold no weights.
+
 ## Steps to publication
 
 1. Get WFP's written permission to publish.
