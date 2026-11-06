@@ -13,16 +13,16 @@ It writes outside this repository, next to the merged file:
 | `dataverse_deposit/` | Data files by module, README, codebook, treatment of each variable, known issues, disclosure review | With IFPRI's Knowledge Management team, once ready |
 | `dataverse_deposit_private/` | Link between household keys and original IDs, and submission notes | **Keep the key file private.** The notes are for the submission |
 
-## What happens to the 305 columns
+## What happens to the 432 columns
 
-All columns are accounted for in `900_variable_treatment.csv`.
+The script reads `WFP_Chad_2018-2023_20261106_v2.dta`: the merged file with the modules added in November 2026. Shocks, assets and livestock, livelihoods and agriculture (`merge/16_WFP_Chad_add_new_modules.do`) are published as files 012 to 015; expenditure, disability, education and migration (`merge/17_WFP_Chad_add_more_modules.do`) as files 016 to 019. Nutrition (MAD, MDD-W) is not included: its link to households is broken in four rounds. All columns are accounted for in `900_variable_treatment.csv`.
 
 | Treatment | Columns | Why |
 |---|---|---|
-| Removed | `Longitude`, `Latitude`, their precision, `village`, `DateDerniereAssist_other` | Coordinates point to households; villages make most households unique; free text can hold names |
-| Replaced | `ID`, by the random `hh_key` | Direct identifier |
-| Coarsened | `SvyDate` to year and month; `HHHAge` to 10-year bands; `HHSize` at 15; composition counts at 10 | The guide's rules, and rare values |
-| Kept as merged | All others | |
+| Removed (11) | `Longitude`, `Latitude`, their precision, `village`, `DateDerniereAssist_other`; the five 2018 baseline areas as reported (`AgrArea...Reported`) | Coordinates point to households; villages make most households unique; free text can hold names; the baseline areas mix units and reach millions (their hectare values are kept) |
+| Replaced (1) | `ID`, by the random `hh_key` | Direct identifier |
+| Coarsened (58) | `SvyDate` to year and month; `HHHAge` to 10-year bands; `HHSize` at 15; composition counts at 10; livestock counts, TLU, areas and expenditure at their 99.5th percentile; months of own production at 12; shocks in 5 years at 10; migrants at 10; girls at school at 5 | The guide's rules, rare values that identify households, and impossible values |
+| Kept as merged (362) | All others | |
 
 The values are those of the merged file, including its known defects: see `902_known_issues.csv`. The script stops if an identifier reaches the package, or if a kept value differs from the merged file.
 

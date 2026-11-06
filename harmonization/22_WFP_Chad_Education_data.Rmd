@@ -1,0 +1,131 @@
+---
+title: "WFP datasets wrangling - Chad : EDUCATION"
+author: "Aboubacar HEMA"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    keep_md: true
+---
+
+```{r 22 setup, include=FALSE, results = 'hide'}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, results = "hide")
+```
+
+# Education
+
+In this section, we harmonize the education questions. They changed in 2021:
+
+* **2019 and 2020 annual surveys and 2021 PDM:** whether the household has children attending primary school, and whether that school has a canteen (asked only of households with children at school). The 2019 file holds the answers as text.
+* **2021 annual survey onwards:** the number of girls attending primary school (aged 9 to 15) and secondary school (aged 12 or more), the number supported by the girls' education programme, and whether the household intends to let its girls and boys complete primary and secondary school.
+* Intentions are coded 1 = Yes, 0 = No, 888 = Don't know. Codes outside the questionnaire's list are set to missing: 0 in the 2022 annual survey, given to households without girls at school, and 4 and 5 for boys in the 2021 annual survey.
+
+```{r 22 packages needed}
+library(haven)
+library(labelled)
+library(tidyverse)
+library(readxl)
+```
+
+```{r 22 remove environment variables}
+rm(list = ls())
+```
+
+```{r 22 environment settings}
+dir_input_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/input_data/Chad"
+dir_output_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/output_data/Chad"
+```
+
+```{r 22 read harmonization excel file}
+Chad_Harmonization_variables <- read_excel(paste0(dir_input_data, "/Chad_Harmonization_extension.xlsx"), sheet = "variables_harmonization") %>%
+  dplyr::filter(Module == "Education")
+Chad_Harmonization_description <- read_excel(paste0(dir_input_data, "/Chad_Harmonization.xlsx"), sheet = "description")
+Chad_Harmonization_ID <- read_excel(paste0(dir_input_data, "/Chad_Harmonization.xlsx"), sheet = "variables_harmonization") %>%
+  dplyr::filter(NewVariable_Name == "ID")
+```
+
+```{r 22 data importation}
+lst_data = Chad_Harmonization_description$Data
+lst_test = Chad_Harmonization_description$Name
+for (i in 1:length(lst_data)) {
+  assign(lst_test[i], read_sav(paste0(dir_input_data, "/", lst_data[i])))
+}
+```
+
+```{r 22 select and rename columns needed}
+for (j in 1:length(lst_test)) {
+  raw <- get(lst_test[j], envir = .GlobalEnv)
+  df <- tibble::tibble(.rows = nrow(raw))
+  id_var <- Chad_Harmonization_ID[[lst_test[j]]]
+  df$ID <- if (is.na(id_var)) NA_character_ else { z <- zap_labels(raw[[id_var]]); if (is.numeric(z)) format(z, scientific = FALSE, trim = TRUE) else as.character(z) }
+  for (i in 1:nrow(Chad_Harmonization_variables)) {
+    v <- Chad_Harmonization_variables[[lst_test[j]]][i]
+    df[[Chad_Harmonization_variables$NewVariable_Name[i]]] <- if (is.na(v)) NA else zap_labels(raw[[v]])
+  }
+  assign(lst_test[j], df)
+}
+Chad_pdm_2022$ID = as.character(1:nrow(Chad_pdm_2022))
+```
+
+```{r 22 helpers}
+school <- c("EduChildrenPrimary", "EduSchoolCanteen")
+counts <- c("EduGirlsPrimary", "EduGirlsSecondary", "EduGirlsPrimarySupported", "EduGirlsSecondarySupported")
+intent <- c("EduGirlsPrimaryComplete", "EduBoysPrimaryComplete", "EduGirlsSecondaryComplete", "EduBoysSecondaryComplete")
+from_text <- function(x) {
+  x <- trimws(as.character(x)); stopifnot(all(x %in% c("Oui", "Non", "", NA)))
+  dplyr::case_when(x == "Oui" ~ 1, x == "Non" ~ 0)
+}
+check01 <- function(x) { x <- as.numeric(x); stopifnot(all(x[!is.na(x)] %in% c(0, 1))); x }
+# 1 = Yes, 2 = No, 3 = Don't know; other codes are not in the questionnaire
+recode_intent <- function(x) { x <- as.numeric(x); dplyr::case_when(x == 1 ~ 1, x == 2 ~ 0, x == 3 ~ 888) }
+```
+
+## EA 2019
+
+```{r}
+df_2019 <- Chad_ea_2019
+for (v in school) df_2019[[v]] <- from_text(df_2019[[v]])
+```
+
+## EA 2020 and PDM 2021
+
+```{r}
+df_2020 <- Chad_ea_2020; df_pdm_2021 <- Chad_pdm_2021
+for (v in school) { df_2020[[v]] <- check01(df_2020[[v]]); df_pdm_2021[[v]] <- check01(df_pdm_2021[[v]]) }
+```
+
+## 2021 annual survey onwards
+
+```{r}
+later <- c("Chad_ea_2021", "Chad_pdm_2022", "Chad_ea_2022", "Chad_pdm_2023", "Chad_ea_2023")
+for (r in later) {
+  d <- get(r)
+  for (v in intent) { print(c(r, v)); print(table(d[[v]], useNA = "ifany")); d[[v]] <- recode_intent(d[[v]]) }
+  for (v in counts) { d[[v]] <- as.numeric(d[[v]]); stopifnot(all(d[[v]] >= 0, na.rm = TRUE)) }
+  assign(r, d)
+}
+df_2021 <- Chad_ea_2021; df_2022 <- Chad_ea_2022; df_2023 <- Chad_ea_2023; df_pdm_2022 <- Chad_pdm_2022; df_pdm_2023 <- Chad_pdm_2023
+df_2018 <- Chad_baseline_2018; df_pdm_2020 <- Chad_pdm_2020
+```
+
+## Merging all data
+
+```{r}
+num <- function(d) { for (v in c(school, counts, intent)) d[[v]] <- as.numeric(d[[v]]); d }
+df_Chad <- dplyr::bind_rows(lapply(list(df_2018, df_2019, df_2020, df_2021, df_2022, df_2023, df_pdm_2020, df_pdm_2021, df_pdm_2022, df_pdm_2023), num))
+for (v in school) df_Chad[[v]] <- labelled(df_Chad[[v]], c("No" = 0, "Yes" = 1))
+for (v in intent) df_Chad[[v]] <- labelled(df_Chad[[v]], c("No" = 0, "Yes" = 1, "Don't know" = 888))
+for (i in 1:nrow(Chad_Harmonization_variables)) var_label(df_Chad[[Chad_Harmonization_variables$NewVariable_Name[i]]]) <- Chad_Harmonization_variables$Label[i]
+var_label(df_Chad$ID) <- "Household ID"
+```
+
+## Export all data
+
+```{r}
+df_Chad <- df_Chad %>% dplyr::select(ID, all_of(c(school, counts, intent)))
+haven::write_dta(df_Chad, paste0(dir_output_data, "/", "WFP_Chad_Education.dta"))
+```

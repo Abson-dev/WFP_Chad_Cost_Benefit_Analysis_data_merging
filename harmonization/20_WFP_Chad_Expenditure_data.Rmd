@@ -1,0 +1,108 @@
+---
+title: "WFP datasets wrangling - Chad : EXPENDITURE"
+author: "Aboubacar HEMA"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    keep_md: true
+---
+
+```{r 20 setup, include=FALSE, results = 'hide'}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, results = "hide")
+```
+
+# Expenditure
+
+In this section, we harmonize household expenditure from the 2021 annual survey onwards.
+
+* The raw files of these five rounds hold the analysts' monthly totals: food, short-term non-food (last 30 days) and long-term non-food (last 6 months, per month), in XAF. They are kept as computed.
+* The total, the food expenditure share and its four WFP categories are recomputed from these totals, the same way in every round. The analysts' share is a fraction in 2021 and a percentage from 2022: it is used only to check the recomputed share.
+* The 2018 baseline and the 2019 to 2021 rounds asked expenditure by item, with lists and recall periods that differ, and hold no totals. They are not harmonized here.
+
+```{r 20 packages needed}
+library(haven)
+library(labelled)
+library(tidyverse)
+library(readxl)
+```
+
+```{r 20 remove environment variables}
+rm(list = ls())
+```
+
+```{r 20 environment settings}
+dir_input_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/input_data/Chad"
+dir_output_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/output_data/Chad"
+```
+
+```{r 20 read harmonization excel file}
+Chad_Harmonization_variables <- read_excel(paste0(dir_input_data, "/Chad_Harmonization_extension.xlsx"), sheet = "variables_harmonization") %>%
+  dplyr::filter(Module == "Expenditure")
+Chad_Harmonization_description <- read_excel(paste0(dir_input_data, "/Chad_Harmonization.xlsx"), sheet = "description")
+Chad_Harmonization_ID <- read_excel(paste0(dir_input_data, "/Chad_Harmonization.xlsx"), sheet = "variables_harmonization") %>%
+  dplyr::filter(NewVariable_Name == "ID")
+```
+
+```{r 20 data importation}
+lst_data = Chad_Harmonization_description$Data
+lst_test = Chad_Harmonization_description$Name
+for (i in 1:length(lst_data)) {
+  assign(lst_test[i], read_sav(paste0(dir_input_data, "/", lst_data[i])))
+}
+```
+
+```{r 20 select and rename columns needed}
+for (j in 1:length(lst_test)) {
+  raw <- get(lst_test[j], envir = .GlobalEnv)
+  df <- tibble::tibble(.rows = nrow(raw))
+  id_var <- Chad_Harmonization_ID[[lst_test[j]]]
+  df$ID <- if (is.na(id_var)) NA_character_ else { z <- zap_labels(raw[[id_var]]); if (is.numeric(z)) format(z, scientific = FALSE, trim = TRUE) else as.character(z) }
+  for (i in 1:nrow(Chad_Harmonization_variables)) {
+    v <- Chad_Harmonization_variables[[lst_test[j]]][i]
+    df[[Chad_Harmonization_variables$NewVariable_Name[i]]] <- if (is.na(v)) NA_real_ else as.numeric(zap_labels(raw[[v]]))
+  }
+  df$ROUND_NAME <- lst_test[j]
+  assign(lst_test[j], df)
+}
+Chad_pdm_2022$ID = as.character(1:nrow(Chad_pdm_2022))
+```
+
+## Merging all data
+
+```{r}
+df_Chad <- dplyr::bind_rows(mget(lst_test))
+parts <- c("ExpFoodMonthly", "ExpNonFoodShortMonthly", "ExpNonFoodLongMonthly")
+for (v in parts) stopifnot(all(df_Chad[[v]] >= 0, na.rm = TRUE))
+df_Chad$ExpTotalMonthly <- rowSums(df_Chad[, parts])
+df_Chad$ExpFoodShare <- ifelse(df_Chad$ExpTotalMonthly > 0, df_Chad$ExpFoodMonthly / df_Chad$ExpTotalMonthly, NA)
+df_Chad$ExpFoodShareCat <- cut(df_Chad$ExpFoodShare, c(-Inf, 0.5, 0.65, 0.75, Inf), right = FALSE, labels = FALSE)
+```
+
+```{r}
+# Check against the analysts' share: a fraction in 2021, a percentage from 2022
+analysts <- ifelse(df_Chad$ROUND_NAME == "Chad_ea_2021", df_Chad$ExpFoodShareAnalysts, df_Chad$ExpFoodShareAnalysts / 100)
+agree <- tapply(abs(analysts - df_Chad$ExpFoodShare) < 0.001, df_Chad$ROUND_NAME, mean, na.rm = TRUE)
+print(agree)
+stopifnot(all(agree[!is.na(agree)] > 0.99))
+```
+
+```{r}
+df_Chad$ExpFoodShareCat <- labelled(df_Chad$ExpFoodShareCat, c("Below 50%" = 1, "50% to 65%" = 2, "65% to 75%" = 3, "75% or more" = 4))
+for (i in 1:nrow(Chad_Harmonization_variables)) var_label(df_Chad[[Chad_Harmonization_variables$NewVariable_Name[i]]]) <- Chad_Harmonization_variables$Label[i]
+var_label(df_Chad$ID) <- "Household ID"
+var_label(df_Chad$ExpTotalMonthly) <- "Household total expenditure in a month (XAF): food and non-food"
+var_label(df_Chad$ExpFoodShare) <- "Food expenditure share: food / total monthly expenditure"
+var_label(df_Chad$ExpFoodShareCat) <- "Food expenditure share, WFP categories"
+```
+
+## Export all data
+
+```{r}
+df_Chad <- df_Chad %>% dplyr::select(ID, all_of(parts), ExpTotalMonthly, ExpFoodShare, ExpFoodShareCat)
+haven::write_dta(df_Chad, paste0(dir_output_data, "/", "WFP_Chad_Expenditure.dta"))
+```

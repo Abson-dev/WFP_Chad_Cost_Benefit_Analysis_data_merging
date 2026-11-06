@@ -15,7 +15,9 @@ suppressPackageStartupMessages({ library(haven); library(dplyr); library(readr) 
 if (!file.exists("app/config/issues.csv")) stop("Run this script from the repository's root.", call. = FALSE)
 
 DIR_MERGED <- Sys.getenv("WFP_MERGED_DIR", "C:/Users/AHema/OneDrive - CGIAR/Desktop/2024/WFP/CBA - Chad/data")
-FINAL_FILE <- "WFP_Chad_2018-2023_20261105_v2.dta"
+# The merged file with the modules added in November 2026: shocks, assets, livelihoods and agriculture
+# (merge/16), then expenditure, disability, education and migration (merge/17)
+FINAL_FILE <- "WFP_Chad_2018-2023_20261106_v2.dta"
 OUT <- file.path(DIR_MERGED, "dataverse_deposit")
 PRIVATE <- file.path(DIR_MERGED, "dataverse_deposit_private")
 dir.create(OUT, showWarnings = FALSE); dir.create(PRIVATE, showWarnings = FALSE)
@@ -68,6 +70,9 @@ REMOVED <- c(
   village = "Village with age, sex and household size makes most households unique (see 910_disclosure_review.csv).",
   DateDerniereAssist_other = "Free text, which can hold names: 393 distinct entries, not reviewed one by one."
 )
+# 2018 baseline areas as reported: units mixed (hectares, square metres, cordes) and values up to millions.
+# The hectare values are published in the AgrArea variables, and the units in the AgrArea...Unit variables.
+for (v in grep("^AgrArea.+Reported$", ALL, value = TRUE)) REMOVED[v] <- "2018 baseline value in mixed units, with extreme values that identify households. The hectare values are in the variable without 'Reported'."
 REPLACED <- c(ID = "Replaced by hh_key, a random key. The link to the original ID stays private.")
 COARSENED <- c(
   SvyDate = "Interview date limited to year and month (SvyYearMonth), as IFPRI's guide requires.",
@@ -76,6 +81,27 @@ COARSENED <- c(
 )
 COMPOSITION <- grep("^HHSize.+[MF]$", ALL, value = TRUE)
 COARSENED[COMPOSITION] <- "Top-coded at 10 members: rare counts identify households, and some values are impossible."
+# New modules (November 2026): large herds and farms identify households, and the largest values are errors.
+# Livestock, TLU and areas are top-coded at their 99.5th percentile, rounded up.
+CAPS <- c()
+for (v in c(grep("^Lvs(Cattle|Sheep|Goats|Poultry|Camels|Horses|Donkeys|Pigs|TLU)$", ALL, value = TRUE), grep("^AgrArea[A-Za-z]+$", setdiff(ALL, names(REMOVED)), value = TRUE))) {
+  if (grepl("Unit$", v)) next
+  CAPS[v] <- ceiling(quantile(as.numeric(zap_labels(x[[v]])), 0.995, na.rm = TRUE))
+  COARSENED[v] <- sprintf("Top-coded at %s, the 99.5th percentile: very large %s identify households, and the largest values are errors.", CAPS[[v]], if (startsWith(v, "Lvs")) "herds" else "areas")
+}
+CAPS["AgrMonthsOwnProduction"] <- 12
+COARSENED["AgrMonthsOwnProduction"] <- "Top-coded at 12 months: values reach 300,000 and are errors."
+for (v in grep("^Shk5yN_", ALL, value = TRUE)) { CAPS[v] <- 10; COARSENED[v] <- "Top-coded at 10 times: values reach 211 in 5 years and are errors." }
+for (v in grep("^Exp(Food|NonFoodShort|NonFoodLong|Total)Monthly$", ALL, value = TRUE)) {
+  CAPS[v] <- ceiling(quantile(as.numeric(zap_labels(x[[v]])), 0.995, na.rm = TRUE) / 1000) * 1000
+  COARSENED[v] <- sprintf("Top-coded at %s XAF, the 99.5th percentile rounded up: very high spending identifies households. The food share is computed before top-coding.", format(CAPS[[v]], big.mark = ","))
+}
+CAPS["MigNumber"] <- 10
+COARSENED["MigNumber"] <- "Top-coded at 10 migrants: larger numbers are rare and identify households."
+for (v in grep("^EduGirls(Primary|Secondary)(Supported)?$", ALL, value = TRUE)) {
+  CAPS[v] <- 5
+  COARSENED[v] <- "Top-coded at 5 girls: larger numbers are rare, and values up to 30,000 are amounts entered by mistake."
+}
 
 x$SvyYearMonth <- format(as.Date(x$SvyDate), "%Y-%m")
 attr(x$SvyYearMonth, "label") <- "Interview year and month"
@@ -87,10 +113,19 @@ hhsize_raw <- as.numeric(zap_labels(x$HHSize))
 top <- function(v, cap) { lab <- get_label(v); o <- pmin(as.numeric(zap_labels(v)), cap); attr(o, "label") <- paste0(lab, " (top-coded at ", cap, ")"); o }
 x$HHSize <- top(x$HHSize, 15)
 for (v in COMPOSITION) x[[v]] <- top(x[[v]], 10)
+for (v in names(CAPS)) x[[v]] <- top(x[[v]], CAPS[[v]])
 
 # ---- Files by module, as the guide asks. All join on hh_key ---------------------------------------
 module_of <- function(v) {
   dplyr::case_when(
+    grepl("^Shk", v) ~ "012_shocks",
+    grepl("^Ast|^Lvs", v) ~ "013_assets_livestock",
+    grepl("^Liv[A-Z]", v) ~ "014_livelihoods",
+    grepl("^Agr[A-Z]", v) ~ "015_agriculture",
+    grepl("^Exp[A-Z]", v) ~ "016_expenditure",
+    grepl("^Dis[A-Z]", v) ~ "017_disability",
+    grepl("^Edu[A-Z]", v) ~ "018_education",
+    grepl("^Mig[A-Z]", v) ~ "019_migration",
     v %in% c("YEAR", "SvyMonth", "SURVEY", "SvyYearMonth", "ADMIN0Name", "adm0_ocha", "ADMIN1Name", "adm1_ocha", "ADMIN2Name", "adm2_ocha") ~ "001_survey_geography",
     grepl("^(exercise|reference|adm[012]_name|adm[012]_pcod|chtype|population|phase|p_phase|IP_var)", v) ~ "002_cadre_harmonise",
     grepl("^HHRCS|^RCS|^SERS", v) ~ "008_resilience_sers_rcs",
@@ -142,8 +177,29 @@ DERIVED <- c(
   ABIScore = "Count of Yes among the 7 asset benefit questions. Don't know counts as 0.", HDDS_hema = "Count of the 12 food groups eaten in the last 24 hours, computed in Rmd 11.",
   SvyMonth = "Interview month, imputed to link with Cadre Harmonisé.", IP_var = "Year, cycle and department code: the key of the Cadre Harmonisé link.",
   hh_key = "Random household key. Joins the files of this deposit. Not linked to any published ID.", ROUND = "Survey round, 1 to 10.",
-  SvyYearMonth = "Year and month of the interview date.", HHHAge_group = "HHHAge in bands."
+  SvyYearMonth = "Year and month of the interview date.", HHHAge_group = "HHHAge in bands.",
+  ShkCount12m = "Count of the 17 shocks answered Yes for the last 12 months (Rmd 16).",
+  ShkAny12m = "1 if any of the 17 shocks is answered Yes for the last 12 months (Rmd 16).",
+  AstCount = "Count of the durable goods owned. The lists differ between rounds, so counts compare only within a round (Rmd 17).",
+  LvsTLU = "Camels x1 + cattle x0.7 + horses x0.8 + donkeys x0.5 + pigs x0.2 + sheep and goats x0.1 + poultry x0.01, from the counts before top-coding (Rmd 17).",
+  LivIncomeSource1 = "2019 to 2021 PDM: 13-source list recoded to the 15-source list of later rounds; 2019 text answers matched to codes (Rmd 18).",
+  AgrAreaCultivated = "2022 and 2023: no unit recorded, taken as hectares. 2018 baseline: kept only where the unit is hectares or the area is 0 (Rmd 19). Same rule for the other AgrArea variables.",
+  AgrMonthsOwnProduction = "From 2021 the question refers to the last harvest; before, to a usual year (Rmd 19).",
+  ExpFoodMonthly = "The analysts' monthly total in the raw file (Rmd 20). Same for the two non-food totals.",
+  ExpTotalMonthly = "Food + short-term non-food + long-term non-food, before top-coding (Rmd 20).",
+  ExpFoodShare = "Food / total monthly expenditure, before top-coding. Agrees with the analysts' share in more than 99% of households (Rmd 20).",
+  ExpFoodShareCat = "From ExpFoodShare: below 50%, 50-65%, 65-75%, 75% or more (Rmd 20).",
+  DisCognition = "Stored as difficultes_entendre in the raw files except the 2023 PDM (difficultes_cognitive); the 2023 label confirms it asks about remembering or concentrating (Rmd 21).",
+  DisAny = "1 if any of the six domains is 'a lot of difficulty' or 'cannot do at all', the Washington Group cut-off (Rmd 21).",
+  MigMainReason = "2021 and 2022 codes shifted by an empty first code: matched to the 2023 list by label (Rmd 23). Same for MigDuration.",
+  MigWork12m = "2021 and 2022: 1 No, 2 Yes, 3 Don't know; recoded to 0, 1, 888 as in 2023 (Rmd 23)."
 )
+for (v in grep("^Dis(Seeing|Hearing|Walking|SelfCare|Communication)$", ALL, value = TRUE)) DERIVED[v] <- "Refused (5) and don't know (6) set to missing (Rmd 21)."
+for (v in grep("^Edu(Girls|Boys).+Complete$", ALL, value = TRUE)) DERIVED[v] <- "1 Yes, 2 No, 3 Don't know recoded to 1, 0, 888; codes outside the list (0 in 2022 annual, 4-5 in 2021 annual) set to missing (Rmd 22)."
+for (v in grep("^Shk12m_", ALL, value = TRUE)) DERIVED[v] <- "Asked only when the shock happened in the last 5 years: set to No when the 5-year count is 0 (Rmd 16)."
+for (v in grep("^Lvs(Cattle|Sheep|Goats|Poultry|Camels|Horses|Donkeys)$", ALL, value = TRUE)) DERIVED[v] <- "2018 baseline and 2022-2023: adult animals only. 2019 to 2021: all animals; set to 0 when the household does not raise livestock (Rmd 17)."
+for (v in c("AstCart", "AstPlough", "AstBicycle", "AstPushcart", "AstMotorbike")) DERIVED[v] <- "2018 baseline asked the number: owned when above 0 (Rmd 17)."
+DERIVED[c("AstBed", "AstMattress")] <- "2018 baseline: from one question on beds with or without a mattress (Rmd 17)."
 flags <- read_csv("app/data/flags.csv", show_col_types = FALSE)
 rnd <- zap_labels(x$ROUND)
 codebook <- bind_rows(lapply(c(KEYS, published), function(v) {
@@ -170,7 +226,8 @@ disclosure <- bind_rows(
   review("Round, department, sex, exact age", c("ROUND", "ADMIN2Name", "HHHSex", "HHHAge"), "No"),
   review("Round, department, sex, age band, top-coded size", c("ROUND", "ADMIN2Name", "HHHSex", "HHHAge_group", "HHSize"), "Yes"),
   review("Round, region, sex, age band, top-coded size", c("ROUND", "ADMIN1Name", "HHHSex", "HHHAge_group", "HHSize"), "Yes"),
-  review("Round, department, sex, age band, size, education, marital status", c("ROUND", "ADMIN2Name", "HHHSex", "HHHAge_group", "HHSize", "HHHEdu", "HHHMatrimonial"), "Yes")
+  review("Round, department, sex, age band, size, education, marital status", c("ROUND", "ADMIN2Name", "HHHSex", "HHHAge_group", "HHSize", "HHHEdu", "HHHMatrimonial"), "Yes"),
+  review("Round, department, sex, age band, top-coded size, top-coded cattle and camels", c("ROUND", "ADMIN2Name", "HHHSex", "HHHAge_group", "HHSize", "LvsCattle", "LvsCamels"), "Yes")
 )
 small <- as.data.frame(table(round = xz$ROUND, department = xz$adm2_ocha), stringsAsFactors = FALSE) |> filter(Freq > 0, Freq < 30)
 write_csv(disclosure, file.path(OUT, "910_disclosure_review.csv"))
@@ -193,7 +250,9 @@ writeLines(enc2utf8(c(
   "  The rounds used changing questionnaires and variable names. They were mapped to a common structure,",
   "  administrative codes were matched to OCHA subnational boundaries, and comparable WFP food-security and",
   "  resilience indicators were computed: FCS, rCSI, LCS, ABI, SERS and HDDS. The files also hold household",
-  "  demographics, assistance received and the Cadre Harmonise phase of each household's area.",
+  "  demographics, assistance received and the Cadre Harmonise phase of each household's area, and modules on",
+  "  shocks, durable goods and livestock, livelihoods (income sources), agriculture (land, areas, own production),",
+  "  expenditure (monthly totals and food share), disability (Washington Group questions), education and migration.",
   "  The harmonized data were first built for IFPRI's 2026 cost-benefit analysis of the programme.",
   "",
   "IMPORTANT",
@@ -202,6 +261,12 @@ writeLines(enc2utf8(c(
   "- There are no sampling weights. Figures describe the households surveyed in WFP programme areas, not a population.",
   "- Lean-season (PDM) and post-harvest (baseline, annual) rounds differ systematically: compare within a series.",
   "- Regions covered change between rounds.",
+  "- Expenditure, disability and migration were asked from the 2021 annual survey only; education changed in 2021.",
+  "- The shocks, assets, livelihoods and agriculture modules were not asked in every round, and some questions changed:",
+  "  see rounds_with_data and derivation in 901_codebook.csv. Shocks have two designs (17 shocks over 12 months and",
+  "  5 years in 2021-2023; the main shock of the last 6 months from the 2022 PDM). Livestock counts are of adult animals",
+  "  in 2018 and 2022-2023, and of all animals in 2019-2021. Areas of 2022-2023 have no recorded unit: taken as hectares.",
+  "- Child (MAD) and women's (MDD-W) diet data are not included: their link to households is broken in four rounds.",
   "",
   "ROUNDS",
   sprintf("  %2d  %-14s %-14s %6s households", rounds$round, rounds$label, rounds$series, format(rounds$final_rows, big.mark = ",")),
@@ -216,7 +281,10 @@ writeLines(enc2utf8(c(
   "TO PROTECT RESPONDENTS",
   sprintf("  Removed: %s.", paste(names(REMOVED), collapse = ", ")),
   "  Replaced: ID, by a random key (hh_key).",
-  "  Coarsened: interview date to year and month; head's age to 10-year bands; household size at 15; composition counts at 10.",
+  "  Coarsened: interview date to year and month; head's age to 10-year bands; household size at 15; composition counts at 10;",
+  "  livestock counts, TLU, areas and expenditure at their 99.5th percentile; months of own production at 12;",
+  "  shocks in 5 years at 10; migrants at 10; girls at school at 5.",
+  "  Removed too: the 2018 baseline areas in mixed units (the hectare values are kept).",
   "",
   "SOURCE CODE",
   "  https://github.com/Abson-dev/WFP_Chad_Cost_Benefit_Analysis_data_merging",
@@ -240,7 +308,7 @@ meta <- c(
   "| Title | WFP Chad Integrated Resilience Programme household survey data, 2018-2023 | From the brief; to confirm |",
   "| Authors | International Food Policy Research Institute (IFPRI), as the guide requires; outside co-authors with affiliations | **Author to confirm co-authors** |",
   "| Contributors | Aboubacar Hema (data merging) | **To complete** |",
-  sprintf("| Description | Household survey data from the World Food Programme's Integrated Resilience Programme in Chad: the 2018 baseline, annual outcome surveys from 2019 to 2023 and post-distribution monitoring rounds from 2020 to 2023, with %s households across 10 rounds. The rounds were mapped to a common structure, administrative codes matched to OCHA subnational boundaries, and comparable WFP indicators computed: Food Consumption Score, reduced Coping Strategy Index, Livelihood Coping Strategies, Asset Benefit Indicator, Self-Evaluated Resilience Score and Household Dietary Diversity Score, with household demographics, assistance received and the Cadre Harmonise phase of each household's area. The data were first harmonized for IFPRI's 2026 cost-benefit analysis of the programme. | From the brief; to confirm |", format(N, big.mark = ",")),
+  sprintf("| Description | Household survey data from the World Food Programme's Integrated Resilience Programme in Chad: the 2018 baseline, annual outcome surveys from 2019 to 2023 and post-distribution monitoring rounds from 2020 to 2023, with %s households across 10 rounds. The rounds were mapped to a common structure, administrative codes matched to OCHA subnational boundaries, and comparable WFP indicators computed: Food Consumption Score, reduced Coping Strategy Index, Livelihood Coping Strategies, Asset Benefit Indicator, Self-Evaluated Resilience Score and Household Dietary Diversity Score, with household demographics, assistance received and the Cadre Harmonise phase of each household's area. Modules on shocks, durable goods and livestock, income sources, agriculture, expenditure, disability, education and migration are matched across the rounds that asked them. The data were first harmonized for IFPRI's 2026 cost-benefit analysis of the programme. | From the brief; to confirm |", format(N, big.mark = ",")),
   "| Keywords | Chad; food security; resilience; World Food Programme; household survey; Food Consumption Score; coping strategies; dietary diversity; Cadre Harmonise; humanitarian assistance | To confirm |",
   "| Related publication | IFPRI (2026). Cost-benefit analysis of WFP's integrated resilience programme in Chad (2018-2023) | **Author to add the citation** |",
   "| Funder (grant number) | Release: IFPRI, Open and FAIR Data under Digital Transformation (USD 16,000; cost center to come). Data collection: raw file names mention BMZ | **Author to provide grant numbers** |",
@@ -261,7 +329,7 @@ meta <- c(
   "| Product | Brief | This package |",
   "|---|---|---|",
   "| Layer 1: round-level datasets | 10 cleaned, labelled and anonymized files with all variables collected in each round (about 6,288 variables) | **Not started** |",
-  sprintf("| Layer 2: extended harmonized dataset | The existing harmonized file plus priority modules matched across rounds: shocks, assets, livelihoods, agriculture, nutrition | **Existing harmonized file only:** %d variables in %d modules. Priority modules not yet added |", length(published) + 2, nrow(files)),
+  sprintf("| Layer 2: extended harmonized dataset | The existing harmonized file plus priority modules matched across rounds: shocks, assets, livelihoods, agriculture, nutrition | **Built except nutrition:** %d variables in %d modules, with shocks, assets and livestock, livelihoods, agriculture, expenditure, disability, education and migration added. Nutrition (MAD, MDD-W) left out: its link to households is broken in four rounds |", length(published) + 2, nrow(files)),
   "| Codebook and variable metadata | Complete | Layer 2 only: `901_codebook.csv`, `900_variable_treatment.csv` |",
   "| Harmonization and indicator methods | Documented | In the source code and its report; the codebook gives each derived variable's formula |",
   "| Sampling and weights | Documented | **Missing** |",
@@ -301,7 +369,7 @@ for (f in dta) {
   if (nrow(d) != N || anyDuplicated(d$hh_key)) stop("Rows wrong in ", f, call. = FALSE)
   if (is.unsorted(d$hh_key)) stop("Row order not randomised in ", f, call. = FALSE)
   j <- match(dz$hh_key, src_key)
-  for (v in setdiff(names(d), c(KEYS, "SvyYearMonth", "HHHAge_group", "HHSize", COMPOSITION))) {
+  for (v in setdiff(names(d), c(KEYS, "SvyYearMonth", "HHHAge_group", names(COARSENED)))) {
     a <- dz[[v]]; b <- src[[v]][j]
     if (is.character(a)) { a[is.na(a)] <- ""; b[is.na(b)] <- ""; same <- all(a == b) } else same <- isTRUE(all.equal(as.numeric(a), as.numeric(b), tolerance = 1e-6))
     if (!same) stop("Value differs from the merged file: ", v, call. = FALSE)

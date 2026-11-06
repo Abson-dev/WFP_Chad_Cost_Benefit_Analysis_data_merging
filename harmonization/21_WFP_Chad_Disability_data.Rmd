@@ -1,0 +1,102 @@
+---
+title: "WFP datasets wrangling - Chad : DISABILITY"
+author: "Aboubacar HEMA"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    keep_md: true
+---
+
+```{r 21 setup, include=FALSE, results = 'hide'}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, results = "hide")
+```
+
+# Disability
+
+In this section, we harmonize the Washington Group short set of questions on functioning, asked from the 2021 annual survey onwards. Each question asks whether the respondent or any other household member has difficulty in one domain: seeing, hearing, walking, remembering or concentrating, self-care, and communicating.
+
+* Answers: 1 = no difficulty, 2 = some difficulty, 3 = a lot of difficulty, 4 = cannot do at all. Refusals (5) and don't know (6) are set to missing.
+* The cognition question is stored as `difficultes_entendre` in all rounds but the 2023 PDM (`difficultes_cognitive`). Its 2023 label confirms it asks about remembering or concentrating; hearing is asked separately in `difficultes_audition`.
+* `DisAny` follows the Washington Group cut-off: a lot of difficulty, or cannot do at all, in at least one domain.
+* The 2018 baseline asked about disability member by member, and the 2019 to 2021 rounds asked only whether a disabled person lives in the household. They are not harmonized here.
+
+```{r 21 packages needed}
+library(haven)
+library(labelled)
+library(tidyverse)
+library(readxl)
+```
+
+```{r 21 remove environment variables}
+rm(list = ls())
+```
+
+```{r 21 environment settings}
+dir_input_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/input_data/Chad"
+dir_output_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/output_data/Chad"
+```
+
+```{r 21 read harmonization excel file}
+Chad_Harmonization_variables <- read_excel(paste0(dir_input_data, "/Chad_Harmonization_extension.xlsx"), sheet = "variables_harmonization") %>%
+  dplyr::filter(Module == "Disability")
+Chad_Harmonization_description <- read_excel(paste0(dir_input_data, "/Chad_Harmonization.xlsx"), sheet = "description")
+Chad_Harmonization_ID <- read_excel(paste0(dir_input_data, "/Chad_Harmonization.xlsx"), sheet = "variables_harmonization") %>%
+  dplyr::filter(NewVariable_Name == "ID")
+```
+
+```{r 21 data importation}
+lst_data = Chad_Harmonization_description$Data
+lst_test = Chad_Harmonization_description$Name
+for (i in 1:length(lst_data)) {
+  assign(lst_test[i], read_sav(paste0(dir_input_data, "/", lst_data[i])))
+}
+```
+
+```{r 21 select and rename columns needed}
+for (j in 1:length(lst_test)) {
+  raw <- get(lst_test[j], envir = .GlobalEnv)
+  df <- tibble::tibble(.rows = nrow(raw))
+  id_var <- Chad_Harmonization_ID[[lst_test[j]]]
+  df$ID <- if (is.na(id_var)) NA_character_ else { z <- zap_labels(raw[[id_var]]); if (is.numeric(z)) format(z, scientific = FALSE, trim = TRUE) else as.character(z) }
+  for (i in 1:nrow(Chad_Harmonization_variables)) {
+    v <- Chad_Harmonization_variables[[lst_test[j]]][i]
+    df[[Chad_Harmonization_variables$NewVariable_Name[i]]] <- if (is.na(v)) NA_real_ else as.numeric(zap_labels(raw[[v]]))
+  }
+  assign(lst_test[j], df)
+}
+Chad_pdm_2022$ID = as.character(1:nrow(Chad_pdm_2022))
+```
+
+## Merging all data
+
+```{r}
+domains <- Chad_Harmonization_variables$NewVariable_Name
+df_Chad <- dplyr::bind_rows(mget(lst_test))
+for (v in domains) {
+  print(table(df_Chad[[v]], useNA = "ifany"))
+  stopifnot(all(df_Chad[[v]] %in% c(1:6, NA)))
+  df_Chad[[v]][df_Chad[[v]] %in% c(5, 6)] <- NA
+}
+answered <- rowSums(!is.na(df_Chad[, domains])) > 0
+df_Chad$DisAny <- ifelse(answered, as.numeric(rowSums(df_Chad[, domains] >= 3, na.rm = TRUE) > 0), NA)
+```
+
+```{r}
+for (v in domains) df_Chad[[v]] <- labelled(df_Chad[[v]], c("No difficulty" = 1, "Some difficulty" = 2, "A lot of difficulty" = 3, "Cannot do at all" = 4))
+df_Chad$DisAny <- labelled(df_Chad$DisAny, c("No" = 0, "Yes" = 1))
+for (i in 1:nrow(Chad_Harmonization_variables)) var_label(df_Chad[[Chad_Harmonization_variables$NewVariable_Name[i]]]) <- Chad_Harmonization_variables$Label[i]
+var_label(df_Chad$ID) <- "Household ID"
+var_label(df_Chad$DisAny) <- "A household member has a lot of difficulty, or cannot do at all, in at least one domain"
+```
+
+## Export all data
+
+```{r}
+df_Chad <- df_Chad %>% dplyr::select(ID, all_of(domains), DisAny)
+haven::write_dta(df_Chad, paste0(dir_output_data, "/", "WFP_Chad_Disability.dta"))
+```

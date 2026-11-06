@@ -1,0 +1,133 @@
+---
+title: "WFP datasets wrangling - Chad : MIGRATION"
+author: "Aboubacar HEMA"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    keep_md: true
+---
+
+```{r 23 setup, include=FALSE, results = 'hide'}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, results = "hide")
+```
+
+# Migration
+
+In this section, we harmonize the migration questions, asked from the 2021 annual survey onwards: whether household members migrated in search of work in the last 12 months, how many, why, where to, for how long, and the trend. The destination, duration and trend were not asked in the 2022 PDM.
+
+* Migration for work is coded 1 = No, 2 = Yes, 3 = Don't know in 2021 and 2022, and 0, 1, 888 in 2023: it is recoded to 0 = No, 1 = Yes, 888 = Don't know.
+* The reason and duration lists start with an empty code 1 in 2021 and 2022, which shifts every answer by one, and are stored as text in 2023. They are matched to the 2023 list by their label, not by their code.
+
+```{r 23 packages needed}
+library(haven)
+library(labelled)
+library(tidyverse)
+library(readxl)
+```
+
+```{r 23 remove environment variables}
+rm(list = ls())
+```
+
+```{r 23 environment settings}
+dir_input_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/input_data/Chad"
+dir_output_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/output_data/Chad"
+```
+
+```{r 23 read harmonization excel file}
+Chad_Harmonization_variables <- read_excel(paste0(dir_input_data, "/Chad_Harmonization_extension.xlsx"), sheet = "variables_harmonization") %>%
+  dplyr::filter(Module == "Migration")
+Chad_Harmonization_description <- read_excel(paste0(dir_input_data, "/Chad_Harmonization.xlsx"), sheet = "description")
+Chad_Harmonization_ID <- read_excel(paste0(dir_input_data, "/Chad_Harmonization.xlsx"), sheet = "variables_harmonization") %>%
+  dplyr::filter(NewVariable_Name == "ID")
+```
+
+```{r 23 data importation}
+lst_data = Chad_Harmonization_description$Data
+lst_test = Chad_Harmonization_description$Name
+for (i in 1:length(lst_data)) {
+  assign(lst_test[i], read_sav(paste0(dir_input_data, "/", lst_data[i])))
+}
+```
+
+```{r 23 select and rename columns needed}
+# Answers of the reason and duration questions are turned into their label text, to match the lists across rounds
+as_text <- function(x) { l <- attr(x, "labels"); z <- zap_labels(x); out <- names(l)[match(as.character(z), as.character(l))]; out[is.na(z) | trimws(as.character(z)) == ""] <- NA
+  # Code 1 of the 2021 and 2022 lists has an empty label: households without migrants
+  out[!is.na(out) & trimws(out) == ""] <- NA
+  if (any(!is.na(z) & trimws(as.character(z)) != "" & is.na(names(l)[match(as.character(z), as.character(l))]))) stop("Code without a label")
+  out }
+for (j in 1:length(lst_test)) {
+  raw <- get(lst_test[j], envir = .GlobalEnv)
+  df <- tibble::tibble(.rows = nrow(raw))
+  id_var <- Chad_Harmonization_ID[[lst_test[j]]]
+  df$ID <- if (is.na(id_var)) NA_character_ else { z <- zap_labels(raw[[id_var]]); if (is.numeric(z)) format(z, scientific = FALSE, trim = TRUE) else as.character(z) }
+  for (i in 1:nrow(Chad_Harmonization_variables)) {
+    v <- Chad_Harmonization_variables[[lst_test[j]]][i]; new <- Chad_Harmonization_variables$NewVariable_Name[i]
+    df[[new]] <- if (is.na(v)) NA else if (new %in% c("MigMainReason", "MigDuration")) as_text(raw[[v]]) else as.numeric(zap_labels(raw[[v]]))
+  }
+  assign(lst_test[j], df)
+}
+Chad_pdm_2022$ID = as.character(1:nrow(Chad_pdm_2022))
+```
+
+```{r 23 code lists}
+# The 2023 lists, with Other last
+norm <- function(x) tolower(gsub("[^[:alnum:]]+", " ", iconv(trimws(x), to = "ASCII//TRANSLIT")))
+target <- function(v) {
+  l <- attr(get("Chad_ea_2023_raw")[[v]], "labels"); l <- l[nzchar(names(l))]
+  codes <- suppressWarnings(as.numeric(l)); codes[is.na(codes)] <- 99
+  setNames(codes, names(l))
+}
+Chad_ea_2023_raw <- read_sav(paste0(dir_input_data, "/", lst_data[lst_test == "Chad_ea_2023"]))
+reason_list <- target("RaisonMigration"); duration_list <- target("DureeMigration")
+print(reason_list); print(duration_list)
+to_code <- function(text, lst) {
+  code <- unname(lst[match(norm(text), norm(names(lst)))])
+  unmatched <- unique(text[!is.na(text) & is.na(code)])
+  if (length(unmatched)) stop("Answer not in the 2023 list: ", paste(unmatched, collapse = " | "))
+  code
+}
+```
+
+## Recoding
+
+```{r}
+later <- c("Chad_ea_2021", "Chad_pdm_2022", "Chad_ea_2022", "Chad_pdm_2023", "Chad_ea_2023")
+for (r in later) {
+  d <- get(r)
+  w <- d$MigWork12m; print(c(r, names(table(w))))
+  d$MigWork12m <- if (r %in% c("Chad_pdm_2023", "Chad_ea_2023")) { stopifnot(all(w %in% c(0, 1, 888, NA))); w } else { stopifnot(all(w %in% c(1, 2, 3, NA))); dplyr::case_when(w == 1 ~ 0, w == 2 ~ 1, w == 3 ~ 888) }
+  d$MigMainReason <- to_code(d$MigMainReason, reason_list)
+  d$MigDuration <- to_code(d$MigDuration, duration_list)
+  for (v in c("MigDestCity", "MigDestAfrica", "MigDestOutsideAfrica")) stopifnot(all(d[[v]] %in% c(0, 1, NA)))
+  stopifnot(all(d$MigTrend %in% c(1:6, NA)), all(d$MigNumber >= 0, na.rm = TRUE))
+  assign(r, d)
+}
+```
+
+## Merging all data
+
+```{r}
+num <- function(d) { for (v in Chad_Harmonization_variables$NewVariable_Name) d[[v]] <- as.numeric(d[[v]]); d }
+df_Chad <- dplyr::bind_rows(lapply(mget(lst_test), num))
+df_Chad$MigWork12m <- labelled(df_Chad$MigWork12m, c("No" = 0, "Yes" = 1, "Don't know" = 888))
+df_Chad$MigMainReason <- labelled(df_Chad$MigMainReason, reason_list)
+df_Chad$MigDuration <- labelled(df_Chad$MigDuration, duration_list)
+for (v in c("MigDestCity", "MigDestAfrica", "MigDestOutsideAfrica")) df_Chad[[v]] <- labelled(df_Chad[[v]], c("No" = 0, "Yes" = 1))
+df_Chad$MigTrend <- labelled(df_Chad$MigTrend, c("Increased a lot" = 1, "Increased slightly" = 2, "Stable" = 3, "Decreased a lot" = 4, "Decreased slightly" = 5, "Don't know" = 6))
+for (i in 1:nrow(Chad_Harmonization_variables)) var_label(df_Chad[[Chad_Harmonization_variables$NewVariable_Name[i]]]) <- Chad_Harmonization_variables$Label[i]
+var_label(df_Chad$ID) <- "Household ID"
+```
+
+## Export all data
+
+```{r}
+df_Chad <- df_Chad %>% dplyr::select(ID, all_of(Chad_Harmonization_variables$NewVariable_Name))
+haven::write_dta(df_Chad, paste0(dir_output_data, "/", "WFP_Chad_Migration.dta"))
+```
