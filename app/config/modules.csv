@@ -1,10 +1,18 @@
-module,file,label,rmd,merge_order,description
-admin,WFP_Chad_admin,Administrative,01_WFP_Chad_Admin.Rmd,0,"Interview date, survey, region, department, village and GPS. Village and department spellings corrected in the do-file, then OCHA codes attached."
-assistance,WFP_Chad_assistance,Assistance,03_WFP_Chad_Assistance_data.Rmd,1,"The 20 WFP intervention variables, last assistance date and cash amount."
-FCS,WFP_Chad_FCS,Food consumption (FCS),04_WFP_Chad_FCS_data.Rmd,2,"Days eaten per food group over 7 days and food sources. The FCS and its 21/35 and 28/42 groups are recomputed after the merge."
-HH,WFP_Chad_HH,Household,02_WFP_Chad_HH_data.Rmd,3,"Head of household (sex, age, education, activity, marital status), income source and household composition."
-LhCSI,WFP_Chad_LhCSI,Livelihood coping (LCS),05_WFP_Chad_LhCSI_data.Rmd,4,"10 livelihood coping strategies recoded to one scale. The maximum coping category is computed after the merge."
-rCSI,WFP_Chad_rCSI,Reduced coping (rCSI),06_Chad_WFP_rCSI_data.Rmd,5,"5 consumption coping strategies. The rCSI is recomputed after the merge."
-SERS,WFP_Chad_SERS,Resilience (SERS / RCS),08_WFP_Chad_SERS_data.Rmd,6,"10 self-evaluated resilience statements. The Resilience Capacity Score and its 33/66 groups are computed after the merge."
-ABI,WFP_Chad_ABI,Asset benefit (ABI),07_WFP_Chad_ABI_data.Rmd,7,"Asset benefit questions and the ABI score (0 to 7), for rounds after the baseline."
-HDDS,WFP_Chad_HDDS,Dietary diversity (HDDS),11_WFP_Chad_HDDS_data.Rmd,8,"12 food groups eaten in the last 24 hours, from PDM 2022. Built directly from the raw HDDS columns, outside the harmonisation workbook."
+module,file,label,rmd,merge_order,description,stage
+admin,WFP_Chad_admin,Administrative,01_WFP_Chad_Admin.Rmd,0,"Interview date, survey, region, department, village and GPS. Village and department spellings corrected in the do-file, then OCHA codes attached.",2025
+assistance,WFP_Chad_assistance,Assistance,03_WFP_Chad_Assistance_data.Rmd,1,"The 20 WFP intervention variables, last assistance date and cash amount.",2025
+FCS,WFP_Chad_FCS,Food consumption (FCS),04_WFP_Chad_FCS_data.Rmd,2,"Days eaten per food group over 7 days and food sources. The FCS and its 21/35 and 28/42 groups are recomputed after the merge.",2025
+HH,WFP_Chad_HH,Household,02_WFP_Chad_HH_data.Rmd,3,"Head of household (sex, age, education, activity, marital status), income source and household composition.",2025
+LhCSI,WFP_Chad_LhCSI,Livelihood coping (LCS),05_WFP_Chad_LhCSI_data.Rmd,4,"10 livelihood coping strategies recoded to one scale. The maximum coping category is computed after the merge.",2025
+rCSI,WFP_Chad_rCSI,Reduced coping (rCSI),06_Chad_WFP_rCSI_data.Rmd,5,"5 consumption coping strategies. The rCSI is recomputed after the merge.",2025
+SERS,WFP_Chad_SERS,Resilience (SERS / RCS),08_WFP_Chad_SERS_data.Rmd,6,"10 self-evaluated resilience statements. The Resilience Capacity Score and its 33/66 groups are computed after the merge.",2025
+ABI,WFP_Chad_ABI,Asset benefit (ABI),07_WFP_Chad_ABI_data.Rmd,7,"Asset benefit questions and the ABI score (0 to 7), for rounds after the baseline.",2025
+HDDS,WFP_Chad_HDDS,Dietary diversity (HDDS),11_WFP_Chad_HDDS_data.Rmd,8,"12 food groups eaten in the last 24 hours, from PDM 2022. Built directly from the raw HDDS columns, outside the harmonisation workbook.",2025
+Shocks,WFP_Chad_Shocks,Shocks,16_WFP_Chad_Shocks_data.Rmd,9,"17 shocks over 12 months and 5 years (2021 annual to 2023 annual), and the main shock of the last 6 months (from 2022 PDM). Added by do-file 16.",2026
+Assets,WFP_Chad_Assets,Assets and livestock,17_WFP_Chad_Assets_data.Rmd,10,"18 durable goods (2018 to 2021 PDM), livestock counts and tropical livestock units (8 rounds). Added by do-file 16.",2026
+Livelihoods,WFP_Chad_Livelihoods,Livelihoods,18_WFP_Chad_Livelihoods_data.Rmd,11,"Number of income sources, up to three sources on one 15-source list, and the household's main activity. Added by do-file 16.",2026
+Agriculture,WFP_Chad_Agriculture,Agriculture,19_WFP_Chad_Agriculture_data.Rmd,12,"Farming, areas cultivated and owned, land tenure, months covered by own production and stocks. Added by do-file 16.",2026
+Expenditure,WFP_Chad_Expenditure,Expenditure,20_WFP_Chad_Expenditure_data.Rmd,13,"The analysts' monthly food and non-food totals, with the total and food share recomputed the same way in every round (2021 annual onwards). Added by do-file 17.",2026
+Disability,WFP_Chad_Disability,Disability,21_WFP_Chad_Disability_data.Rmd,14,"Washington Group questions on six domains for any household member (2021 annual onwards). Added by do-file 17.",2026
+Education,WFP_Chad_Education,Education,22_WFP_Chad_Education_data.Rmd,15,"Children at primary school and school canteens (2019 to 2021 PDM); girls at school, programme support and intentions to complete school (2021 annual onwards). Added by do-file 17.",2026
+Migration,WFP_Chad_Migration,Migration,23_WFP_Chad_Migration_data.Rmd,16,"Members who migrated for work, how many, why, where to, for how long, and the trend (2021 annual onwards). Added by do-file 17.",2026

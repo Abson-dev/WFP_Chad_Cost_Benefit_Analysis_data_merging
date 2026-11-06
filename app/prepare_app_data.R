@@ -19,7 +19,9 @@ env_dir <- function(name, default) { v <- Sys.getenv(name); if (nzchar(v)) v els
 DIR_INPUT <- env_dir("WFP_INPUT_DIR", file.path(base, "WFP Resilience dataset/data/input_data/Chad"))
 DIR_MODULES <- env_dir("WFP_MODULES_DIR", file.path(base, "WFP Resilience dataset/data/output_data/Chad"))
 DIR_MERGED <- env_dir("WFP_MERGED_DIR", file.path(base, "2024/WFP/CBA - Chad/data"))
-FINAL_FILE <- "WFP_Chad_2018-2023_20261105_v2.dta"
+# The merged file with the 8 modules added in November 2026 (do-files 16 and 17), and the file before them.
+FINAL_FILE <- "WFP_Chad_2018-2023_20261106_v2.dta"
+PREV_FILE <- "WFP_Chad_2018-2023_20261105_v2.dta"
 REPO <- ".."
 MIN_CELL <- 30
 OUT <- "data"
@@ -50,6 +52,10 @@ wb_path <- file.path(DIR_INPUT, "Chad_Harmonization.xlsx")
 hv <- as.data.frame(readxl::read_excel(wb_path, "variables_harmonization"))
 de <- as.data.frame(readxl::read_excel(wb_path, "description"))
 repo_hv <- as.data.frame(readxl::read_excel(file.path(REPO, "harmonization", "Chad_Harmonization.xlsx"), "variables_harmonization"))
+# Mapping of the modules added in November 2026 (Rmds 16 to 23)
+ext_path <- file.path(DIR_INPUT, "Chad_Harmonization_extension.xlsx")
+ext <- as.data.frame(readxl::read_excel(ext_path, "variables_harmonization"))
+repo_ext <- as.data.frame(readxl::read_excel(file.path(REPO, "harmonization", "Chad_Harmonization_extension.xlsx"), "variables_harmonization"))
 
 say("Reading the 10 raw SPSS files...")
 raw <- list()
@@ -87,7 +93,11 @@ flow <- bind_rows(lapply(seq_len(nrow(cfg_rounds)), function(i) {
 })) |> mutate(empty_removed = raw_rows - duplicates_removed - final_rows)
 
 mod_files <- setNames(cfg_modules$file, cfg_modules$module)
+mod_new <- setNames(cfg_modules$stage == 2026, cfg_modules$module)
 read_mod <- function(dir, m) { y <- haven::zap_labels(haven::read_dta(file.path(dir, paste0(mod_files[[m]], ".dta")))); y$ID <- as.character(y$ID); y }
+# Module files as the merge used them: do-file 12 saved cleaned copies of the first 9; do-files 16 and 17
+# read the others from the module folder and clean them in memory.
+mod_path <- function(m) file.path(if (mod_new[[m]]) DIR_MODULES else DIR_MERGED, paste0(mod_files[[m]], ".dta"))
 adm_pre <- read_mod(DIR_MODULES, "admin")
 
 # Duplicated IDs before the do-file's "duplicates drop ID, force": true duplicates or different interviews?
@@ -111,7 +121,14 @@ add_check("Rows", "Removed duplicates are true repeats of one interview", pass_i
 
 # ---- Merge replay -------------------------------------------------------------------------------
 say("Replaying the 1:1 merge...")
-clean_mods <- lapply(setNames(cfg_modules$module, cfg_modules$module), function(m) read_mod(DIR_MERGED, m))
+clean_mods <- lapply(setNames(cfg_modules$module, cfg_modules$module), function(m) read_mod(if (mod_new[[m]]) DIR_MODULES else DIR_MERGED, m))
+# Do-files 16 and 17: first occurrence of each ID, and drop what the master does not have.
+new_left_out <- c()
+for (m in names(which(mod_new))) {
+  y <- clean_mods[[m]]; y <- y[!duplicated(y$ID), ]
+  new_left_out[m] <- sum(!y$ID %in% clean_mods$admin$ID)
+  clean_mods[[m]] <- y[y$ID %in% clean_mods$admin$ID, ]
+}
 mod_ids <- lapply(clean_mods, `[[`, "ID")
 cur <- mod_ids$admin
 merge_steps <- bind_rows(lapply(cfg_modules$module, function(m) {
@@ -133,6 +150,15 @@ add_check("Merge", "All module files are unique on ID", pass_if(all(merge_steps$
 add_check("Merge", "No household exists only in a later module", pass_if(all(merge_steps$using_only == 0)), sum(merge_steps$using_only), "0 households",
           "The administrative file is the master: every other module's households are found in it.")
 add_check("Merge", "The replayed merge gives the merged file's households", pass_if(setequal(cur, x$ID)), length(cur), format(N_FINAL, big.mark = ","))
+add_check("Merge", "New modules leave out only the refused interview", pass_if(all(new_left_out == 1)),
+          sprintf("%s household left out per module", paste(unique(new_left_out), collapse = "/")), "1 per module",
+          sprintf("Do-files 16 and 17 keep the first of each duplicated ID, as do-file 12 does, and drop the one interview do-file 12 removed. %d modules checked.", length(new_left_out)))
+# The modules added in 2026 must not change anything that was already in the merged file.
+prev <- haven::zap_labels(haven::read_dta(file.path(DIR_MERGED, PREV_FILE))); prev$ID <- as.character(prev$ID)
+prev_same <- identical(prev$ID, x$ID) && isTRUE(all.equal(as.data.frame(prev), as.data.frame(x[names(prev)]), check.attributes = FALSE))
+add_check("Merge", "The 2026 modules leave the earlier columns unchanged", pass_if(prev_same), if (prev_same) sprintf("%d columns identical", ncol(prev)) else "Changed", "Identical",
+          sprintf("Against %s, the merged file before do-files 16 and 17. %d columns added.", PREV_FILE, ncol(final_lab) - ncol(prev)))
+rm(prev)
 miss_ch <- sum(is.na(x$phase_class))
 add_check("Merge", "Every household links to a Cadre Harmonisé phase", pass_if(miss_ch == 0, "warn"), sprintf("%d without a phase", miss_ch), "0",
           sprintf("In %s, where %d of them also have no department, the link's key. The comment in the do-file records 41 unmatched when it was written.",
@@ -157,6 +183,11 @@ add_check("Workbook", "The repository's workbook is the one the pipeline reads",
 missing_map <- unlist(lapply(names(raw), function(n) setdiff(stats::na.omit(hv[[n]]), names(raw[[n]]))))
 add_check("Workbook", "Every mapped source variable exists in its raw file", pass_if(!length(missing_map)), length(missing_map), "0 missing",
           sprintf("%s mappings tested across the 10 rounds.", format(sum(!is.na(hv[, names(raw)])), big.mark = ",")))
+same_ext <- identical(ext, repo_ext)
+add_check("Workbook", "The repository's extension workbook is the one the 2026 modules read", pass_if(same_ext), if (same_ext) "Identical" else "Different", "Identical")
+missing_ext <- unlist(lapply(names(raw), function(n) setdiff(stats::na.omit(ext[[n]]), names(raw[[n]]))))
+add_check("Workbook", "Every source variable of the extension workbook exists in its raw file", pass_if(!length(missing_ext)), length(missing_ext), "0 missing",
+          sprintf("%d mappings of %d variables tested.", sum(!is.na(ext[, names(raw)])), nrow(ext)))
 map_dups <- bind_rows(lapply(names(raw), function(n) {
   m <- hv[!is.na(hv[[n]]), c("NewVariable_Name", n)]; names(m) <- c("target", "source")
   m |> group_by(source) |> filter(n() > 1) |> summarise(targets = paste(target, collapse = ", ")) |> ungroup() |>
@@ -164,8 +195,12 @@ map_dups <- bind_rows(lapply(names(raw), function(n) {
 }))
 # ---- Crosswalk ----------------------------------------------------------------------------------
 say("Crosswalk...")
+NEW_FAMILY <- c(Shocks = "Shocks", Assets = "Assets and livestock", Livelihoods = "Livelihoods", Agriculture = "Agriculture",
+                Expenditure = "Expenditure", Disability = "Disability", Education = "Education", Migration = "Migration")
 family_of <- function(v) {
+  fam_ext <- unname(NEW_FAMILY[ext$Module[match(v, ext$NewVariable_Name)]])
   dplyr::case_when(
+    !is.na(fam_ext) ~ fam_ext,
     v %in% c("ID", "Key_with_subset_data", "SvyDatePDM", "RESPConsent") ~ "Identification",
     v %in% c("ADMIN1Name", "ADMIN2Name", "ADMIN3Name", "sous_bureau", "site", "site_autre", "village", "village_autre", "Longitude", "Latitude", "Longitude_precision", "Latitude_precision") ~ "Geography",
     v %in% c("RESPAge", "RESPSex", "RelationWith_HHH") ~ "Respondent",
@@ -186,14 +221,18 @@ family_of <- function(v) {
 }
 FAMILY_ORDER <- c("Identification", "Geography", "Respondent", "Household", "Food consumption (FCS)", "Reduced coping (rCSI)",
                   "Livelihood coping (LCS)", "Assistance", "Resilience (SERS)", "Asset benefit (ABI)", "Savings and shocks",
-                  "Migration", "Social capital", "Women's diet (MDDW)", "Child diet (MAD)", "Other")
+                  "Migration", "Social capital", "Women's diet (MDDW)", "Child diet (MAD)",
+                  "Shocks", "Assets and livestock", "Livelihoods", "Agriculture", "Expenditure", "Disability", "Education", "Other")
 SENSITIVE_META <- c("ID", "Key_with_subset_data", "ADMIN1Name", "ADMIN2Name", "ADMIN3Name", "sous_bureau", "site", "site_autre", "village", "village_autre", "Longitude", "Latitude", "Longitude_precision", "Latitude_precision")
 final_names <- c(names(x), "SvyDatePDM")
 
+# Both workbooks: the 217 variables of 2025 and the variables of the 2026 modules.
+ALL_MAPPED <- c(hv$NewVariable_Name, ext$NewVariable_Name)
+source_any <- function(ds, v) { if (v %in% ext$NewVariable_Name) { s <- ext[ext$NewVariable_Name == v, ds]; if (length(s) && !is.na(s)) s else NA_character_ } else source_of(ds, v) }
 crosswalk <- bind_rows(lapply(seq_len(nrow(cfg_rounds)), function(i) {
   cr <- cfg_rounds[i, ]; r <- raw[[cr$dataset]]
-  bind_rows(lapply(hv$NewVariable_Name, function(v) {
-    s <- source_of(cr$dataset, v)
+  bind_rows(lapply(ALL_MAPPED, function(v) {
+    s <- source_any(cr$dataset, v)
     if (is.na(s) || !s %in% names(r)) return(data.frame(variable = v, round_id = cr$round_id, source = NA_character_, type = NA_character_,
                                                         coverage = NA_real_, range = NA_character_, label = NA_character_, value_labels = NA_character_))
     z <- r[[s]]; zz <- haven::zap_labels(z)
@@ -210,7 +249,7 @@ crosswalk <- bind_rows(lapply(seq_len(nrow(cfg_rounds)), function(i) {
 
 crosswalk_summary <- crosswalk |> group_by(variable, family, in_final) |>
   summarise(rounds_mapped = sum(!is.na(source)), .groups = "drop") |>
-  mutate(order = match(variable, hv$NewVariable_Name)) |> arrange(match(family, FAMILY_ORDER), order)
+  mutate(order = match(variable, ALL_MAPPED)) |> arrange(match(family, FAMILY_ORDER), order)
 n_duplicate_map <- nrow(map_dups)
 
 # ---- Source to merged agreement -----------------------------------------------------------------
@@ -426,6 +465,42 @@ mont_wrong <- grepl("income", final_var_labels[["Montant"]], ignore.case = TRUE)
 add_check("Documentation", "Montant keeps its meaning", pass_if(!mont_wrong, "warn"), if (mont_wrong) "Label changed" else "Kept", "Cash received",
           sprintf("The source question is about cash received at the last distribution (%s...); the merged file labels it \"%s\".", substr(clean_text(mont_lab), 1, 45), final_var_labels[["Montant"]]))
 
+# ---- The 2026 modules ---------------------------------------------------------------------------
+say("2026 modules...")
+# Food share: recomputed from the analysts' totals, compared with their own share (a fraction in 2021, a percentage after).
+share_agree <- bind_rows(lapply(cfg_rounds$round_id[cfg_rounds$round >= 6], function(rid) {
+  ds <- cfg_rounds$dataset[cfg_rounds$round_id == rid]; a <- as.numeric(raw_for_round(ds, "FoodExp_share")); if (rid != "R06") a <- a / 100
+  b <- x$ExpFoodShare[x$round_id == rid]; k <- !is.na(a) & !is.na(b)
+  data.frame(round_id = rid, compared = sum(k), same = sum(abs(a[k] - b[k]) < 0.001))
+}))
+add_check("New modules", "Food share recomputed from the totals equals the analysts' share", pass_if(all(share_agree$same / share_agree$compared > 0.99)),
+          sprintf("%.1f%% of %s households", 100 * sum(share_agree$same) / sum(share_agree$compared), format(sum(share_agree$compared), big.mark = ",")), "Over 99% in each round",
+          "The analysts' share is a fraction in 2021 annual and a percentage from 2022: the recomputed share uses one rule for all rounds.")
+shk_types <- sub("^Shk12m_", "", grep("^Shk12m_", names(x), value = TRUE))
+shk_gap <- sum(vapply(shk_types, function(s) sum(is.na(x[[paste0("Shk12m_", s)]]) & !is.na(x[[paste0("Shk5yN_", s)]])), 0))
+add_check("New modules", "Every shock counted over 5 years has a 12-month answer", pass_if(shk_gap == 0), shk_gap, "0 gaps",
+          "The 12-month question was asked only when the 5-year count was above 0; Rmd 16 sets it to No otherwise.")
+mig_top <- x |> filter(!is.na(MigMainReason)) |> count(round_id, MigMainReason) |> group_by(round_id) |> slice_max(n, n = 1, with_ties = FALSE) |> ungroup()
+add_check("New modules", "Migration reasons line up across rounds", pass_if(n_distinct(mig_top$MigMainReason) == 1),
+          sprintf("Most frequent reason: code %s in %d rounds", paste(unique(mig_top$MigMainReason), collapse = "/"), nrow(mig_top)), "The same reason in every round",
+          "In 2021 and 2022 the lists start with an empty code, which shifts every answer by one. Rmd 23 matches the answers by label; economic opportunities should lead everywhere.")
+cog <- vapply(cfg_rounds$dataset[cfg_rounds$round >= 6], function(ds) { l <- attr(raw[[ds]][[source_any(ds, "DisCognition")]], "label", exact = TRUE); if (is.null(l)) "" else l }, "")
+add_check("New modules", "The cognition question is the one mapped to DisCognition", pass_if(any(grepl("cognitiv", cog, ignore.case = TRUE)), "warn"),
+          sprintf("%d of 5 rounds label it cognitive", sum(grepl("cognitiv", cog, ignore.case = TRUE))), "Labelled in every round",
+          "Its raw name, difficultes_entendre, suggests hearing, but hearing is asked separately (difficultes_audition), and the 2023 labels describe memory or concentration. The 2021 and 2022 files have no question labels to confirm it.")
+girls_bad <- sum(x$EduGirlsPrimarySupported > x$EduGirlsPrimary, na.rm = TRUE) + sum(x$EduGirlsSecondarySupported > x$EduGirlsSecondary, na.rm = TRUE)
+girls_amount <- sum(x$EduGirlsPrimarySupported >= 100 | x$EduGirlsSecondarySupported >= 100 | x$EduGirlsSecondary >= 100, na.rm = TRUE)
+add_check("New modules", "Girls supported do not outnumber girls at school", pass_if(girls_bad == 0, "warn"), sprintf("%d households", girls_bad), "0",
+          sprintf("%d households have 100 or more girls, up to %s: money amounts entered in a count. The Dataverse package top-codes these counts at 5.", girls_amount,
+                  format(max(c(x$EduGirlsPrimarySupported, x$EduGirlsSecondarySupported, x$EduGirlsSecondary), na.rm = TRUE), big.mark = ",")))
+area_big <- sum(x$AgrAreaCultivated > 100 | x$AgrAreaOwned > 100, na.rm = TRUE)
+add_check("New modules", "Farm areas are plausible in hectares", pass_if(area_big == 0, "warn"), sprintf("%d households above 100 ha", area_big), "0",
+          sprintf("The 2022 and 2023 questionnaires record no unit; the areas are taken as hectares (median %.1f). The largest, up to %s, are probably square metres.",
+                  stats::median(x$AgrAreaCultivated[x$round_id %in% c("R07", "R08", "R09", "R10")], na.rm = TRUE), format(max(x$AgrAreaOwned, na.rm = TRUE), big.mark = ",")))
+months_big <- sum(x$AgrMonthsOwnProduction > 24, na.rm = TRUE)
+add_check("New modules", "Months covered by own production stay within two years", pass_if(months_big == 0, "warn"), sprintf("%d households", months_big), "0",
+          sprintf("Values reach %s. Kept as reported in the merged file; the Dataverse package top-codes them at 12.", format(max(x$AgrMonthsOwnProduction, na.rm = TRUE), big.mark = ",")))
+
 # Assistance: are harmonised answers the original answers?
 say("Assistance...")
 assist_vars <- cfg_interv$variable
@@ -478,10 +553,17 @@ nut_mod <- lapply(c(MAD = "WFP_Chad_MAD", MDDW = "WFP_Chad_MDDW"), function(f) a
 nut_counts <- bind_rows(lapply(names(nut_mod), function(m) as.data.frame(table(round_id = x$round_id[match(nut_mod[[m]], x$ID)]), responseName = "module_rows", stringsAsFactors = FALSE) |> mutate(module = m)))
 nutrition <- nut_files |> select(module, round_id, raw_rows = rows) |> left_join(nut_counts, by = c("module", "round_id"))
 nut_more <- nutrition |> filter(module_rows != raw_rows)
+# Why the module files hold too many rows: the household index the repeat files point to is not unique.
+nut_index <- vapply(c("Chad_ea_2021", "Chad_pdm_2022", "Chad_ea_2022", "Chad_pdm_2023", "Chad_ea_2023"), function(ds) {
+  h <- raw[[ds]]; i <- haven::zap_labels(h$`@_index`); f <- haven::zap_labels(h$`@_xform_id`)
+  c(unique_index = !anyDuplicated(i), forms = length(unique(f)))
+}, c(unique_index = TRUE, forms = 0))
+bad_link <- colnames(nut_index)[!as.logical(nut_index["unique_index", ])]
 add_check("Merge", "MAD and MDDW module files have the rows of their raw repeat files", pass_if(!nrow(nut_more), "warn"), sprintf("%d of %d differ", nrow(nut_more), nrow(nutrition)), "0",
-          "The module files hold more rows than the raw repeat files read by Rmds 09 and 10. These modules are not merged, so the merged file is not affected.")
+          sprintf("In %s the household file combines %s survey forms, each numbering its households from 1, and the repeat files lost the form identifier. Children and women then match several households, which inflates the module files. Only 2023 Annual links cleanly.",
+                  rounds_txt(cfg_rounds$round_id[match(bad_link, cfg_rounds$dataset)]), paste(range(nut_index["forms", bad_link]), collapse = " to ")))
 add_check("Merge", "MAD and MDDW are in the merged file", pass_if(nut_in_final, "warn"), if (nut_in_final) "Yes" else "No", "Yes",
-          sprintf("Rmds 09 and 10 build them (%s child and %s woman rows), but the do-file merges 9 modules, not these two. They hold one row per person, so they need a choice of level before merging.",
+          sprintf("Rmds 09 and 10 build them (%s child and %s woman rows), but they are left out of the merge and of the release until their link to households is rebuilt.",
                   format(length(nut_mod$MAD), big.mark = ","), format(length(nut_mod$MDDW), big.mark = ",")))
 
 # ---- Indicators ---------------------------------------------------------------------------------
@@ -509,8 +591,23 @@ indicators <- function(d) {
     rcs_mean_m = avg(d$RCS), rcs_mean_c = avg(d$RCS), rcs_low_m = pct(d$RCSCat33 == 1), rcs_low_c = pct(d$RCSCat33 == 1), rcs_high_m = pct(d$RCSCat33 == 3), rcs_high_c = pct(d$RCSCat33 == 3),
     ch_p3_m = pct(d$phase_class >= 3), ch_p3_c = pct(d$phase_class >= 3),
     female_head_m = pct(d$HHHSex == 1), female_head_c = pct(d$HHHSex == 1), hh_size_m = avg(d$HHSize), hh_size_c = avg(d$hhsize_c)
+  ) |> bind_cols(both(new_indicators(d)))
+}
+# The 2026 modules: no indicative correction, so as merged and corrected are the same.
+new_indicators <- function(d) {
+  mig <- ifelse(d$MigWork12m == 888, NA, d$MigWork12m)
+  tibble(
+    shk_any12m = pct(d$ShkAny12m == 1), shk_any6m = pct(d$ShkAny6m == 1), shk_drought = pct(d$Shk12m_Drought == 1), shk_price = pct(d$Shk12m_FoodPriceRise == 1),
+    lvs_any = pct(d$LvsTLU > 0), lvs_tlu = avg(d$LvsTLU), ast_radio = pct(d$AstRadio == 1), ast_phone = pct(d$AstPhone == 1),
+    liv_nsrc = avg(d$LivNbIncomeSources), liv_farm = pct(d$LivIncomeSource1 == 1),
+    agr_practice = pct(d$AgrPractice == 1), agr_owner = pct(d$AgrLandTenure == 1), agr_6m = pct(d$AgrMonthsOwnProduction >= 6),
+    exp_share = avg(100 * d$ExpFoodShare), exp_share75 = pct(d$ExpFoodShare >= 0.75),
+    dis_any = pct(d$DisAny == 1),
+    edu_primary = pct(d$EduChildrenPrimary == 1), edu_girls = pct(d$EduGirlsPrimary > 0),
+    mig_work = pct(mig == 1)
   )
 }
+both <- function(t) { m <- setNames(t, paste0(names(t), "_m")); c <- setNames(t, paste0(names(t), "_c")); bind_cols(m, c) }
 ind_round <- x |> group_by(round_id) |> group_modify(~ indicators(.x)) |> ungroup()
 ind_region <- x |> group_by(round_id, region = ADMIN1Name) |> group_modify(~ indicators(.x)) |> ungroup()
 # Small cells: below MIN_CELL households, no estimate leaves this script.
@@ -551,7 +648,13 @@ rounds <- cfg_rounds |> left_join(flow, by = "round_id") |> left_join(fw, by = "
 
 # ---- Final dataset's columns --------------------------------------------------------------------
 col_family <- function(v) {
+  fam_ext <- unname(NEW_FAMILY[ext$Module[match(v, ext$NewVariable_Name)]])
+  derived_ext <- dplyr::case_when(grepl("^Shk", v) ~ "Shocks", grepl("^Ast|^Lvs", v) ~ "Assets and livestock", grepl("^Liv[A-Z]", v) ~ "Livelihoods",
+                                  grepl("^Agr[A-Z]", v) ~ "Agriculture", grepl("^Exp[A-Z]", v) ~ "Expenditure", grepl("^Dis[A-Z]", v) ~ "Disability",
+                                  grepl("^Edu[A-Z]", v) ~ "Education", grepl("^Mig[A-Z]", v) ~ "Migration")
   dplyr::case_when(
+    !is.na(fam_ext) ~ fam_ext,
+    !is.na(derived_ext) ~ derived_ext,
     grepl("^(exercise|reference|adm[012]_name|adm[012]_pcod|chtype|population|phase|p_phase|IP_var)", v) ~ "Cadre Harmonisé",
     v %in% c("ID", "SvyDate", "YEAR", "SvyMonth", "SURVEY", "ROUND", "round_id") ~ "Identification",
     v %in% c("ADMIN0Name", "adm0_ocha", "ADMIN1Name", "adm1_ocha", "ADMIN2Name", "adm2_ocha", "village", "Longitude", "Latitude", "Longitude_precision", "Latitude_precision") ~ "Geography",
@@ -638,10 +741,12 @@ hash_row <- function(path, role, round_id = NA) data.frame(role = role, round_id
 inputs <- bind_rows(
   bind_rows(lapply(seq_len(nrow(rounds)), function(i) hash_row(file.path(DIR_INPUT, rounds$raw_file[i]), "Raw survey file", rounds$round_id[i]))),
   hash_row(wb_path, "Harmonisation workbook"),
-  bind_rows(lapply(cfg_modules$file, function(f) hash_row(file.path(DIR_MERGED, paste0(f, ".dta")), "Cleaned module file"))),
+  hash_row(ext_path, "Harmonisation workbook, 2026 modules"),
+  bind_rows(lapply(cfg_modules$module, function(m) hash_row(mod_path(m), if (mod_new[[m]]) "Module file (2026)" else "Cleaned module file"))),
   hash_row(file.path(DIR_MERGED, FINAL_FILE), "Merged dataset"),
-  hash_row(file.path(REPO, "merge", "12_WFP_Chad_CBA_data_preparation.do"), "Merge code"),
-  hash_row(file.path(REPO, "merge", "13_WFP_Chad_OriginalAssistenciesVariables.do"), "Merge code"))
+  bind_rows(lapply(c("12_WFP_Chad_CBA_data_preparation.do", "13_WFP_Chad_OriginalAssistenciesVariables.do", "14_WFP_Chad_fix_rCSIBorrow.do",
+                     "15_WFP_Chad_fix_FCS_2020PDM.do", "16_WFP_Chad_add_new_modules.do", "17_WFP_Chad_add_more_modules.do"),
+                   function(f) hash_row(file.path(REPO, "merge", f), "Merge code"))))
 
 # ---- Crosswalk workbook for download ------------------------------------------------------------
 wide <- crosswalk |> select(variable, round_id, source) |> mutate(round = cfg_rounds$label[match(round_id, cfg_rounds$round_id)]) |>
@@ -698,7 +803,8 @@ write_out(flags, "flags.csv")
 jsonlite::write_json(list(
   run_utc = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"), merged_file = FINAL_FILE,
   households = N_FINAL, columns = ncol(final_lab), min_cell = MIN_CELL,
-  mapped_variables = nrow(hv), mapped_in_final = sum(crosswalk_summary$in_final),
+  mapped_variables = nrow(hv), mapped_variables_extension = nrow(ext), mapped_in_final = sum(crosswalk_summary$in_final),
+  modules_2025 = sum(!mod_new), modules_2026 = sum(mod_new),
   software = list(r = paste(R.version$major, R.version$minor, sep = "."), haven = as.character(packageVersion("haven"))),
   inputs = inputs
 ), file.path(OUT, "manifest.json"), pretty = TRUE, auto_unbox = TRUE, dataframe = "rows")

@@ -110,7 +110,7 @@ ok("costs: no activity text or village in the app's tables", {
 })
 
 section("Variables page: every column of the merged file")
-ok("variables: all 305 columns listed once", stopifnot(nrow(d$merged_columns) == d$manifest$columns, !anyDuplicated(d$merged_columns$variable)))
+ok("variables: all columns listed once", stopifnot(nrow(d$merged_columns) == d$manifest$columns, !anyDuplicated(d$merged_columns$variable)))
 ok("variables: completeness for every column and round", stopifnot(nrow(d$column_coverage) == d$manifest$columns * nrow(d$rounds)))
 ok("variables: every column has a kind", stopifnot(all(d$merged_columns$kind %in% c("categorical", "numeric", "hidden"))))
 testServer(variables_server, args = list(d = d), {
@@ -174,7 +174,7 @@ ok("flags: unresolved stay flagged in the corrected view", stopifnot("R02" %in% 
 ok("attention: serious point on a flagged round", stopifnot(any(vapply(attention_points(d, "R10", "m"), function(p) p$level == "serious", TRUE))))
 
 section("Figures against an independent recomputation from the merged file")
-merged_path <- file.path(Sys.getenv("WFP_MERGED_DIR", "C:/Users/AHema/OneDrive - CGIAR/Desktop/2024/WFP/CBA - Chad/data"), "WFP_Chad_2018-2023_20261105_v2.dta")
+merged_path <- file.path(Sys.getenv("WFP_MERGED_DIR", "C:/Users/AHema/OneDrive - CGIAR/Desktop/2024/WFP/CBA - Chad/data"), "WFP_Chad_2018-2023_20261106_v2.dta")
 if (file.exists(merged_path) && !demo_mode()) {
   x <- haven::zap_labels(haven::read_dta(merged_path))
   x$rid <- sprintf("R%02d", x$ROUND)

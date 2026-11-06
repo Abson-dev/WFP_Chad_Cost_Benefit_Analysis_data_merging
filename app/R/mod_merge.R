@@ -13,7 +13,7 @@ merge_ui <- function(id, d) {
           sprintf("%d duplicates, %d refused interview", sum(r$duplicates_removed), sum(r$empty_removed)), "dash-circle", "orange"),
       kpi("Households merged", fmt_int(m$households), "Unique on ID, across 10 rounds", "people", "navy"),
       kpi("Modules merged", nrow(d$merge_steps), "1:1 on ID, none left unmatched", "sign-merge-right", "blue"),
-      kpi("Columns", fmt_int(m$columns), sprintf("%d of %d workbook variables kept", m$mapped_in_final, m$mapped_variables), "layout-three-columns", "brown")
+      kpi("Columns", fmt_int(m$columns), sprintf("%d of %d workbook variables kept", m$mapped_in_final, m$mapped_variables + m$mapped_variables_extension), "layout-three-columns", "brown")
     ),
     bslib::layout_columns(
       col_widths = c(4, 8),
@@ -29,16 +29,17 @@ merge_ui <- function(id, d) {
                   bslib::card_footer(class = "table-note", "Master only: households with no record in that module, because it was not asked in their round. Using only is the warning sign, and it is 0 everywhere.")),
       bslib::card(bslib::card_header("Place names"), bslib::card_body(padding = 0, reactable::reactableOutput(ns("places"))))
     ),
-    bslib::card(full_screen = TRUE, bslib::card_header("Which module reaches which round: households"), plotly::plotlyOutput(ns("modules"), height = "340px")),
+    bslib::card(full_screen = TRUE, bslib::card_header("Which module reaches which round: households"), plotly::plotlyOutput(ns("modules"), height = "520px"),
+                bslib::card_footer(class = "table-note", "Steps 9 to 16 are the modules added in November 2026 by do-files 16 and 17. A module counts a household when its file has a row for it, even if the round did not ask its questions: see the completeness by group below.")),
     bslib::card(full_screen = TRUE, bslib::card_header("Columns of the merged file: average completeness by group and round"),
-                plotly::plotlyOutput(ns("families"), height = "430px"),
+                plotly::plotlyOutput(ns("families"), height = "600px"),
                 bslib::card_footer(class = "table-note", "Assistance columns are low by design: each original-answer column belongs to one round only. Geography is lowered by the GPS columns, available mainly in 2018.")),
     bslib::layout_columns(
       col_widths = c(6, 6),
       bslib::card(bslib::card_header("Cadre Harmonisé link: households by phase of their department"), plotly::plotlyOutput(ns("ch"), height = "320px"),
                   bslib::card_footer(class = "table-note", "Current-period phase of the department, joined on year, cycle and department code. 2018 uses the 2017 analysis.")),
       bslib::card(bslib::card_header("Built but not merged"),
-                  htmltools::p(class = "small", "MAD (children) and MDDW (women) hold one row per person, so they cannot join the 1:1 merge on household ID. Rows in the raw repeat files and in the module files:"),
+                  htmltools::p(class = "small", "MAD (children) and MDDW (women) hold one row per person. In four rounds the household file combines several survey forms that each number households from 1, and the repeat files lost the form, so a child or woman can match several households. They are left out of the merge and the release. Rows in the raw repeat files and in the module files:"),
                   reactable::reactableOutput(ns("nutrition")))
     ),
     bslib::card(full_screen = TRUE, bslib::card_header("All columns of the merged file"), reactable::reactableOutput(ns("columns")))
@@ -100,7 +101,8 @@ merge_server <- function(id, d) {
       f <- d$family_coverage
       fam <- d$merged_columns$family; counts <- table(fam)
       rows <- c("Identification", "Geography", "Cadre Harmonisé", "Household", "Food consumption (FCS)", "Reduced coping (rCSI)", "Livelihood coping (LCS)",
-                "Dietary diversity (HDDS)", "Asset benefit (ABI)", "Resilience (SERS / RCS)", "Assistance: harmonised", "Assistance: original answers")
+                "Dietary diversity (HDDS)", "Asset benefit (ABI)", "Resilience (SERS / RCS)", "Assistance: harmonised", "Assistance: original answers",
+                "Shocks", "Assets and livestock", "Livelihoods", "Agriculture", "Expenditure", "Disability", "Education", "Migration")
       rows <- intersect(rows, names(counts))
       lv <- r$label[match(d$round_ids, r$round_id)]
       z <- tapply(f$pct, list(factor(f$family, levels = rows), factor(r$label[match(f$round_id, r$round_id)], levels = lv)), function(v) v[1])

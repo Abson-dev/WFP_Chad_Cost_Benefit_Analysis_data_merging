@@ -120,6 +120,24 @@ IND <- data.frame(
   group = c("fcs", "fcs", "fcs", "rcsi", "rcsi", "lcs", "lcs", "lcs", NA, NA, "abi", NA, NA, NA, NA, NA, "hhsize"),
   stringsAsFactors = FALSE
 )
+# Modules added in November 2026 (Rmds 16 to 23). Asked in fewer rounds: empty rounds show as gaps.
+IND <- rbind(IND, data.frame(
+  id = c("shk_any12m", "shk_any6m", "shk_drought", "shk_price", "lvs_any", "lvs_tlu", "ast_radio", "ast_phone", "liv_nsrc", "liv_farm",
+         "agr_practice", "agr_owner", "agr_6m", "exp_share", "exp_share75", "dis_any", "edu_primary", "edu_girls", "mig_work"),
+  label = c("At least one of 17 shocks in the last 12 months", "A shock in the last 6 months", "Drought or irregular rain in the last 12 months",
+            "Food price rise in the last 12 months", "Households owning livestock", "Mean livestock holding (TLU)", "Households owning a radio",
+            "Households owning a mobile phone", "Mean number of income sources", "Main income from food or cash crops",
+            "Households farming in the last season", "Farming mostly their own land", "Own production covers 6 months or more",
+            "Mean food expenditure share", "Food expenditure share of 75% or more", "A member with a lot of difficulty in a functional domain",
+            "Children attending primary school", "Girls attending primary school", "Members migrated for work in the last 12 months"),
+  short = c("Any shock (12 m)", "Shock (6 m)", "Drought (12 m)", "Food price rise (12 m)", "Own livestock", "Mean TLU", "Own a radio", "Own a phone",
+            "Income sources", "Income from crops", "Farming", "Own land farmed", "Own food 6+ months", "Food share", "Food share 75%+",
+            "Disability", "Children at primary", "Girls at primary", "Work migration"),
+  domain = c("Shocks", "Shocks", "Shocks", "Shocks", "Assets and livestock", "Assets and livestock", "Assets and livestock", "Assets and livestock",
+             "Livelihoods", "Livelihoods", "Agriculture", "Agriculture", "Agriculture", "Expenditure", "Expenditure", "Disability", "Education", "Education", "Migration"),
+  unit = c("%", "%", "%", "%", "%", "TLU", "%", "%", "sources", "%", "%", "%", "%", "%", "%", "%", "%", "%", "%"),
+  worse = c("high", "high", "high", "high", "low", "low", "low", "low", "low", "none", "none", "none", "low", "high", "high", "none", "low", "low", "none"),
+  group = NA_character_, stringsAsFactors = FALSE))
 IND_CHOICES <- lapply(split(IND, factor(IND$domain, levels = unique(IND$domain))), function(g) stats::setNames(g$id, g$label))
 # In the tables of the Overview and Regions pages.
 IND_MAIN <- c("fcs_pb", "fcs_poor", "fcs_mean", "rcsi_mean", "rcsi_p3", "lcs_ce", "hdds_mean", "abi_mean", "rcs_mean", "female_head", "hh_size")
