@@ -1,0 +1,105 @@
+---
+title: "WFP datasets wrangling - Chad : MORE ACCOUNTABILITY QUESTIONS"
+author: "Aboubacar HEMA"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    keep_md: true
+---
+
+```{r 31 setup, include=FALSE, results = 'hide'}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, results = "hide")
+```
+
+# More accountability questions
+
+In this section, we harmonize the accountability and protection questions added to the questionnaire after the standard WFP sections of Rmd 24. They complete the protection and accountability variables.
+
+* **From the 2022 PDM:** assistance received in the last three months, satisfaction with the distribution, knowing how beneficiaries were chosen, being told the entitlement and the end of the programme, how long the ration lasts (days), and the safety of travel to the sites (1 = very safe, 2 = safe, 3 = dangerous).
+* **From the 2022 annual survey:** knowing how to contact WFP, being treated with respect, dignified sites, and who decides how the assistance is used (1 = man, 2 = woman, 3 = both together). The last one continues `AapDecideAssistance` of 2019 to 2021, with a different wording.
+* **2021 annual survey and from the 2022 annual survey:** how easily the household can raise issues with leaders (1 = very easy to 4 = very difficult) and whether its issues are taken seriously (1 = a lot, 2 = sometimes, 3 = little).
+* Yes/No answers are coded 1 = No, 2 = Yes in 2022 and 0/1 in 2023: recoded to 0 = No, 1 = Yes. In the 2022 annual survey, 19 safety answers carry code 4, which has no label: set to missing. From 2022 most questions were asked only of households that received assistance.
+
+```{r 31 packages needed}
+library(haven)
+library(labelled)
+library(tidyverse)
+library(readxl)
+```
+
+```{r 31 remove environment variables}
+rm(list = ls())
+```
+
+```{r 31 environment settings}
+dir_input_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/input_data/Chad"
+dir_output_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/output_data/Chad"
+```
+
+```{r 31 read harmonization excel file}
+Chad_Harmonization_variables <- read_excel(paste0(dir_input_data, "/Chad_Harmonization_extension.xlsx"), sheet = "variables_harmonization") %>%
+  dplyr::filter(Module == "Accountability")
+Chad_Harmonization_description <- read_excel(paste0(dir_input_data, "/Chad_Harmonization.xlsx"), sheet = "description")
+Chad_Harmonization_ID <- read_excel(paste0(dir_input_data, "/Chad_Harmonization.xlsx"), sheet = "variables_harmonization") %>%
+  dplyr::filter(NewVariable_Name == "ID")
+```
+
+```{r 31 data importation}
+lst_data = Chad_Harmonization_description$Data
+lst_test = Chad_Harmonization_description$Name
+for (i in 1:length(lst_data)) {
+  assign(lst_test[i], read_sav(paste0(dir_input_data, "/", lst_data[i])))
+}
+```
+
+```{r 31 select and rename columns needed}
+for (j in 1:length(lst_test)) {
+  raw <- get(lst_test[j], envir = .GlobalEnv)
+  df <- tibble::tibble(.rows = nrow(raw))
+  id_var <- Chad_Harmonization_ID[[lst_test[j]]]
+  df$ID <- if (is.na(id_var)) NA_character_ else { z <- zap_labels(raw[[id_var]]); if (is.numeric(z)) format(z, scientific = FALSE, trim = TRUE) else as.character(z) }
+  for (i in 1:nrow(Chad_Harmonization_variables)) {
+    v <- Chad_Harmonization_variables[[lst_test[j]]][i]
+    df[[Chad_Harmonization_variables$NewVariable_Name[i]]] <- if (is.na(v)) NA_real_ else as.numeric(zap_labels(raw[[v]]))
+  }
+  assign(lst_test[j], df)
+}
+Chad_pdm_2022$ID = as.character(1:nrow(Chad_pdm_2022))
+```
+
+## Recoding
+
+```{r}
+vars <- Chad_Harmonization_variables$NewVariable_Name
+yn <- c("AapAssistanceReceived3m", "AapSatisfied", "AapKnowHowSelected", "AapToldEntitlement", "AapToldProgrammeEnd", "AapKnowHowToContact", "AapTreatedWithRespect", "AapDignifiedSites")
+table(Chad_ea_2022$PrtSafetyLevel, useNA = "ifany")
+Chad_ea_2022$PrtSafetyLevel[Chad_ea_2022$PrtSafetyLevel %in% 4] <- NA
+for (r in c("Chad_pdm_2022", "Chad_ea_2022")) { d <- get(r); for (v in yn) { stopifnot(all(d[[v]] %in% c(1, 2, NA))); d[[v]] <- d[[v]] - 1 }; assign(r, d) }
+df_Chad <- dplyr::bind_rows(mget(lst_test))
+for (v in yn) stopifnot(all(df_Chad[[v]] %in% c(0, 1, NA)))
+stopifnot(all(df_Chad$PrtSafetyLevel %in% c(1:3, NA)), all(df_Chad$AapDecideAssistanceUse %in% c(1:3, NA)),
+          all(df_Chad$AapEaseRaiseIssues %in% c(1:4, NA)), all(df_Chad$AapIssuesTakenSeriously %in% c(1:3, NA)),
+          all(df_Chad$AapRationDays >= 0 & df_Chad$AapRationDays <= 366, na.rm = TRUE))
+```
+
+```{r}
+for (v in yn) df_Chad[[v]] <- labelled(df_Chad[[v]], c("No" = 0, "Yes" = 1))
+df_Chad$PrtSafetyLevel <- labelled(df_Chad$PrtSafetyLevel, c("Very safe" = 1, "Safe" = 2, "Dangerous" = 3))
+df_Chad$AapDecideAssistanceUse <- labelled(df_Chad$AapDecideAssistanceUse, c("Man" = 1, "Woman" = 2, "Man and woman together" = 3))
+df_Chad$AapEaseRaiseIssues <- labelled(df_Chad$AapEaseRaiseIssues, c("Very easy" = 1, "Easy" = 2, "Difficult" = 3, "Very difficult" = 4))
+df_Chad$AapIssuesTakenSeriously <- labelled(df_Chad$AapIssuesTakenSeriously, c("A lot" = 1, "Sometimes" = 2, "Little" = 3))
+for (i in 1:nrow(Chad_Harmonization_variables)) var_label(df_Chad[[Chad_Harmonization_variables$NewVariable_Name[i]]]) <- Chad_Harmonization_variables$Label[i]
+var_label(df_Chad$ID) <- "Household ID"
+```
+
+## Export all data
+
+```{r}
+df_Chad <- df_Chad %>% dplyr::select(ID, all_of(vars))
+haven::write_dta(df_Chad, paste0(dir_output_data, "/", "WFP_Chad_Accountability.dta"))
+```

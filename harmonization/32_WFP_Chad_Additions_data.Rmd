@@ -1,0 +1,120 @@
+---
+title: "WFP datasets wrangling - Chad : ADDITIONS TO EARLIER MODULES"
+author: "Aboubacar HEMA"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    keep_md: true
+---
+
+```{r 32 setup, include=FALSE, results = 'hide'}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, results = "hide")
+```
+
+# Additions to earlier modules
+
+In this section, we harmonize single questions that complete earlier modules. Their names start with the prefix of the module they belong to.
+
+* **Food security** (`Fsn`): periods without enough food or money in the last 30 days (2018 baseline to 2021 PDM), and a malnourished child in the household (2019 annual to 2021 PDM).
+* **Disability** (`Dis`): a person with a disability in the household, one question asked in 2019 to 2021, before the Washington Group questions of Rmd 21.
+* **Livelihoods** (`Liv`): another income-generating activity before joining the programme (2022 PDM onwards).
+* **Migration** (`Mig`): main reason why migration increased or decreased (2021 annual, 2022 annual, 2023). In 2021 and 2022 the lists start with an empty code 1, as in Rmd 23: the answers are matched to the 2023 list by label.
+* **Debt** (`Dbt`): a household member takes part in a savings group (2021 annual, 2022 annual, 2023 PDM). This is the analysts' variable, kept as computed.
+* **Education** (`Edu`): number of girls who benefited from the girls' education programme in the past (2021 annual onwards).
+* Yes/No answers are text in 2019, coded 1/2 in 2022 and 0/1 elsewhere: recoded to 0 = No, 1 = Yes.
+* Not included: whom the household could help outside its community (code 0, given by 15% to 20% of households, has no label), and consuming seeds for lack of food (one of the coping strategies already merged).
+
+```{r 32 packages needed}
+library(haven)
+library(labelled)
+library(tidyverse)
+library(readxl)
+```
+
+```{r 32 remove environment variables}
+rm(list = ls())
+```
+
+```{r 32 environment settings}
+dir_input_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/input_data/Chad"
+dir_output_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/output_data/Chad"
+```
+
+```{r 32 read harmonization excel file}
+Chad_Harmonization_variables <- read_excel(paste0(dir_input_data, "/Chad_Harmonization_extension.xlsx"), sheet = "variables_harmonization") %>%
+  dplyr::filter(Module == "Additions")
+Chad_Harmonization_description <- read_excel(paste0(dir_input_data, "/Chad_Harmonization.xlsx"), sheet = "description")
+Chad_Harmonization_ID <- read_excel(paste0(dir_input_data, "/Chad_Harmonization.xlsx"), sheet = "variables_harmonization") %>%
+  dplyr::filter(NewVariable_Name == "ID")
+```
+
+```{r 32 data importation}
+lst_data = Chad_Harmonization_description$Data
+lst_test = Chad_Harmonization_description$Name
+for (i in 1:length(lst_data)) {
+  assign(lst_test[i], read_sav(paste0(dir_input_data, "/", lst_data[i])))
+}
+```
+
+```{r 32 select and rename columns needed}
+as_text <- function(x) { l <- attr(x, "labels"); z <- zap_labels(x); out <- names(l)[match(as.character(z), as.character(l))]
+  out[is.na(z) | trimws(as.character(z)) == ""] <- NA; out[!is.na(out) & trimws(out) == ""] <- NA
+  if (any(!is.na(z) & trimws(as.character(z)) != "" & is.na(names(l)[match(as.character(z), as.character(l))]))) stop("Code without a label"); out }
+for (j in 1:length(lst_test)) {
+  raw <- get(lst_test[j], envir = .GlobalEnv)
+  df <- tibble::tibble(.rows = nrow(raw))
+  id_var <- Chad_Harmonization_ID[[lst_test[j]]]
+  df$ID <- if (is.na(id_var)) NA_character_ else { z <- zap_labels(raw[[id_var]]); if (is.numeric(z)) format(z, scientific = FALSE, trim = TRUE) else as.character(z) }
+  for (i in 1:nrow(Chad_Harmonization_variables)) {
+    v <- Chad_Harmonization_variables[[lst_test[j]]][i]; new <- Chad_Harmonization_variables$NewVariable_Name[i]
+    df[[new]] <- if (is.na(v)) NA else if (new %in% c("MigReasonIncrease", "MigReasonDecrease")) as_text(raw[[v]]) else zap_labels(raw[[v]])
+  }
+  assign(lst_test[j], df)
+}
+Chad_pdm_2022$ID = as.character(1:nrow(Chad_pdm_2022))
+```
+
+```{r 32 helpers}
+vars <- Chad_Harmonization_variables$NewVariable_Name
+yn <- c("FsnNotEnoughFood30d", "FsnMalnourishedChild", "DisMemberDisabled", "LivOtherActivityBefore", "DbtSavingsGroup")
+from_text <- function(x) { x <- trimws(as.character(x)); stopifnot(all(x %in% c("Oui", "Non", "", NA))); dplyr::case_when(x == "Oui" ~ 1, x == "Non" ~ 0) }
+check01 <- function(x) { x <- as.numeric(x); stopifnot(all(x[!is.na(x)] %in% c(0, 1))); x }
+norm <- function(x) tolower(gsub("[^[:alnum:]]+", " ", iconv(trimws(x), to = "ASCII//TRANSLIT")))
+target <- function(v) { l <- attr(read_sav(paste0(dir_input_data, "/", lst_data[lst_test == "Chad_pdm_2023"]), col_select = all_of(v))[[1]], "labels"); l <- l[nzchar(names(l))]
+  codes <- suppressWarnings(as.numeric(l)); codes[is.na(codes)] <- 99; setNames(codes, names(l)) }
+lists <- list(MigReasonIncrease = target("RaisonHausseMigration"), MigReasonDecrease = target("RaisonBaisseMigration"))
+to_code <- function(text, lst) { code <- unname(lst[match(norm(text), norm(names(lst)))]); bad <- unique(text[!is.na(text) & is.na(code)])
+  if (length(bad)) stop("Answer not in the 2023 list: ", paste(bad, collapse = " | ")); code }
+print(lists)
+```
+
+## Recoding
+
+```{r}
+Chad_ea_2019 <- Chad_ea_2019 %>% mutate(across(c(FsnNotEnoughFood30d, FsnMalnourishedChild, DisMemberDisabled), from_text))
+for (r in c("Chad_pdm_2022", "Chad_ea_2022")) { d <- get(r); stopifnot(all(d$LivOtherActivityBefore %in% c(1, 2, NA))); d$LivOtherActivityBefore <- as.numeric(d$LivOtherActivityBefore) - 1; assign(r, d) }
+for (r in lst_test) { d <- get(r); for (v in c("MigReasonIncrease", "MigReasonDecrease")) d[[v]] <- to_code(d[[v]], lists[[v]]); assign(r, d) }
+num <- function(d) { for (v in vars) d[[v]] <- as.numeric(d[[v]]); d }
+df_Chad <- dplyr::bind_rows(lapply(mget(lst_test), num))
+for (v in yn) df_Chad[[v]] <- check01(df_Chad[[v]])
+stopifnot(all(df_Chad$EduGirlsSupportedPast >= 0, na.rm = TRUE))
+```
+
+```{r}
+for (v in yn) df_Chad[[v]] <- labelled(df_Chad[[v]], c("No" = 0, "Yes" = 1))
+for (v in names(lists)) df_Chad[[v]] <- labelled(df_Chad[[v]], lists[[v]])
+for (i in 1:nrow(Chad_Harmonization_variables)) var_label(df_Chad[[Chad_Harmonization_variables$NewVariable_Name[i]]]) <- Chad_Harmonization_variables$Label[i]
+var_label(df_Chad$ID) <- "Household ID"
+```
+
+## Export all data
+
+```{r}
+df_Chad <- df_Chad %>% dplyr::select(ID, all_of(vars))
+haven::write_dta(df_Chad, paste0(dir_output_data, "/", "WFP_Chad_Additions.dta"))
+```

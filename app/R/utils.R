@@ -154,6 +154,14 @@ IND <- rbind(IND, data.frame(
   short = c("Good relations with hosts", "Tensions reduced", "Could help nobody", "Applies adaptation", "Trained in agriculture", "Compost pits"),
   domain = c("Social cohesion", "Social cohesion", "Social cohesion", "Climate adaptation", "Climate adaptation", "Climate adaptation"),
   unit = "%", worse = c("low", "low", "high", "low", "low", "low"), group = NA_character_, stringsAsFactors = FALSE))
+IND <- rbind(IND, data.frame(
+  id = c("shk_rec_drought", "eff_income_up", "mkt_difficult", "mkt_sold", "aap_satisfied", "aap_contact", "fsn_not_enough"),
+  label = c("Recovered from drought: food needs met as well as before or better", "Income increased thanks to the activities",
+            "Difficulties reaching markets", "Sold produce on the market in the last 7 days", "Satisfied with the distribution",
+            "Knows how to contact WFP", "Periods without enough food in the last 30 days"),
+  short = c("Recovered from drought", "Income up (programme)", "Market access difficult", "Sold produce", "Satisfied", "Knows WFP contact", "Not enough food (30 d)"),
+  domain = c("Shock impact and recovery", "Programme effects", "Markets", "Markets", "Protection and accountability", "Protection and accountability", "Food shortage (2018-2021)"),
+  unit = "%", worse = c("low", "low", "high", "none", "low", "low", "high"), group = NA_character_, stringsAsFactors = FALSE))
 IND_CHOICES <- lapply(split(IND, factor(IND$domain, levels = unique(IND$domain))), function(g) stats::setNames(g$id, g$label))
 # In the tables of the Overview and Regions pages.
 IND_MAIN <- c("fcs_pb", "fcs_poor", "fcs_mean", "rcsi_mean", "rcsi_p3", "lcs_ce", "hdds_mean", "abi_mean", "rcs_mean", "female_head", "hh_size")

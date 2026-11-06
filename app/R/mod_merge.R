@@ -30,7 +30,7 @@ merge_ui <- function(id, d) {
       bslib::card(bslib::card_header("Place names"), bslib::card_body(padding = 0, reactable::reactableOutput(ns("places"))))
     ),
     bslib::card(full_screen = TRUE, bslib::card_header("Which module reaches which round: households"), plotly::plotlyOutput(ns("modules"), height = "520px"),
-                bslib::card_footer(class = "table-note", "Steps 9 to 20 are the modules added in November 2026 by do-files 16 to 19. A module counts a household when its file has a row for it, even if the round did not ask its questions: see the completeness by group below.")),
+                bslib::card_footer(class = "table-note", "Steps 9 to 25 are the modules added in November 2026 by do-files 16 to 20. A module counts a household when its file has a row for it, even if the round did not ask its questions: see the completeness by group below.")),
     bslib::card(full_screen = TRUE, bslib::card_header("Columns of the merged file: average completeness by group and round"),
                 plotly::plotlyOutput(ns("families"), height = "600px"),
                 bslib::card_footer(class = "table-note", "Assistance columns are low by design: each original-answer column belongs to one round only. Geography is lowered by the GPS columns, available mainly in 2018.")),
@@ -103,7 +103,7 @@ merge_server <- function(id, d) {
       rows <- c("Identification", "Geography", "Cadre Harmonisé", "Household", "Food consumption (FCS)", "Reduced coping (rCSI)", "Livelihood coping (LCS)",
                 "Dietary diversity (HDDS)", "Asset benefit (ABI)", "Resilience (SERS / RCS)", "Assistance: harmonised", "Assistance: original answers",
                 "Shocks", "Assets and livestock", "Livelihoods", "Agriculture", "Expenditure", "Disability", "Education", "Migration",
-                "Protection and accountability", "Debt", "Social cohesion", "Climate adaptation")
+                "Protection and accountability", "Debt", "Social cohesion", "Climate adaptation", "Shock impact and recovery", "Programme effects", "Markets", "Food shortage (2018-2021)")
       rows <- intersect(rows, names(counts))
       lv <- r$label[match(d$round_ids, r$round_id)]
       z <- tapply(f$pct, list(factor(f$family, levels = rows), factor(r$label[match(f$round_id, r$round_id)], levels = lv)), function(v) v[1])

@@ -19,8 +19,8 @@ env_dir <- function(name, default) { v <- Sys.getenv(name); if (nzchar(v)) v els
 DIR_INPUT <- env_dir("WFP_INPUT_DIR", file.path(base, "WFP Resilience dataset/data/input_data/Chad"))
 DIR_MODULES <- env_dir("WFP_MODULES_DIR", file.path(base, "WFP Resilience dataset/data/output_data/Chad"))
 DIR_MERGED <- env_dir("WFP_MERGED_DIR", file.path(base, "2024/WFP/CBA - Chad/data"))
-# The merged file with the 12 modules added in November 2026 (do-files 16 to 19), and the file before them.
-FINAL_FILE <- "WFP_Chad_2018-2023_20261106_v4.dta"
+# The merged file with the 17 modules added in November 2026 (do-files 16 to 20), and the file before them.
+FINAL_FILE <- "WFP_Chad_2018-2023_20261106_v5.dta"
 PREV_FILE <- "WFP_Chad_2018-2023_20261105_v2.dta"
 REPO <- ".."
 MIN_CELL <- 30
@@ -197,9 +197,18 @@ map_dups <- bind_rows(lapply(names(raw), function(n) {
 say("Crosswalk...")
 NEW_FAMILY <- c(Shocks = "Shocks", Assets = "Assets and livestock", Livelihoods = "Livelihoods", Agriculture = "Agriculture",
                 Expenditure = "Expenditure", Disability = "Disability", Education = "Education", Migration = "Migration",
-                Protection = "Protection and accountability", Debt = "Debt", Cohesion = "Social cohesion", Adaptation = "Climate adaptation")
+                Protection = "Protection and accountability", Debt = "Debt", Cohesion = "Social cohesion", Adaptation = "Climate adaptation",
+                ShockImpact = "Shock impact and recovery", Effects = "Programme effects", Markets = "Markets", Accountability = "Protection and accountability")
+# Variables of the 2026 modules by name prefix; the "Additions" module's variables join the family of their prefix.
+prefix_family <- function(v) dplyr::case_when(
+  grepl("^ShkImp|^ShkRec", v) ~ "Shock impact and recovery", grepl("^Shk", v) ~ "Shocks", grepl("^Ast|^Lvs", v) ~ "Assets and livestock",
+  grepl("^Liv[A-Z]", v) ~ "Livelihoods", grepl("^Agr[A-Z]", v) ~ "Agriculture", grepl("^Exp[A-Z]", v) ~ "Expenditure", grepl("^Dis[A-Z]", v) ~ "Disability",
+  grepl("^Edu[A-Z]", v) ~ "Education", grepl("^Mig[A-Z]", v) ~ "Migration", grepl("^Prt[A-Z]|^Aap[A-Z]", v) ~ "Protection and accountability",
+  grepl("^Dbt[A-Z]", v) ~ "Debt", grepl("^Coh[A-Z]", v) ~ "Social cohesion", grepl("^Adp[A-Z]", v) ~ "Climate adaptation",
+  grepl("^Eff[A-Z]", v) ~ "Programme effects", grepl("^Mkt[A-Z]", v) ~ "Markets", grepl("^Fsn[A-Z]", v) ~ "Food shortage (2018-2021)")
 family_of <- function(v) {
-  fam_ext <- unname(NEW_FAMILY[ext$Module[match(v, ext$NewVariable_Name)]])
+  in_ext <- v %in% ext$NewVariable_Name
+  fam_ext <- ifelse(in_ext, prefix_family(v), NA_character_)
   dplyr::case_when(
     !is.na(fam_ext) ~ fam_ext,
     v %in% c("ID", "Key_with_subset_data", "SvyDatePDM", "RESPConsent") ~ "Identification",
@@ -224,7 +233,8 @@ FAMILY_ORDER <- c("Identification", "Geography", "Respondent", "Household", "Foo
                   "Livelihood coping (LCS)", "Assistance", "Resilience (SERS)", "Asset benefit (ABI)", "Savings and shocks",
                   "Migration", "Social capital", "Women's diet (MDDW)", "Child diet (MAD)",
                   "Shocks", "Assets and livestock", "Livelihoods", "Agriculture", "Expenditure", "Disability", "Education",
-                  "Protection and accountability", "Debt", "Social cohesion", "Climate adaptation", "Other")
+                  "Protection and accountability", "Debt", "Social cohesion", "Climate adaptation", "Shock impact and recovery",
+                  "Programme effects", "Markets", "Food shortage (2018-2021)", "Other")
 SENSITIVE_META <- c("ID", "Key_with_subset_data", "ADMIN1Name", "ADMIN2Name", "ADMIN3Name", "sous_bureau", "site", "site_autre", "village", "village_autre", "Longitude", "Latitude", "Longitude_precision", "Latitude_precision")
 final_names <- c(names(x), "SvyDatePDM")
 
@@ -612,7 +622,12 @@ new_indicators <- function(d) {
     dbt_contracted = pct(d$DbtContracted == 1), dbt_current = pct(ifelse(d$DbtCurrent == 888, NA, d$DbtCurrent) == 1),
     coh_hosts_good = pct(d$CohRelationHosts >= 4), coh_tension = pct(d$CohTensionsReduced == 1), coh_nobody = pct(d$CohCouldHelpNobody == 1),
     adp_apply_any = pct(d$AdpApplyAny == 1), adp_trained = pct(ifelse(d$AdpTrainedAgriculture == 888, NA, d$AdpTrainedAgriculture) == 1),
-    adp_compost = pct(d$AdpPracticeCompostPits == 1)
+    adp_compost = pct(d$AdpPracticeCompostPits == 1),
+    shk_rec_drought = pct(ifelse(is.na(d$ShkRecNow_Drought), NA, d$ShkRecNow_Drought >= 2)),
+    eff_income_up = pct(ifelse(is.na(d$EffChanged_Income), NA, d$EffDirection_Income %in% 3)),
+    mkt_difficult = pct(d$MktAccessDifficult == 1), mkt_sold = pct(d$MktSoldProduce == 1),
+    aap_satisfied = pct(d$AapSatisfied == 1), aap_contact = pct(d$AapKnowHowToContact == 1),
+    fsn_not_enough = pct(d$FsnNotEnoughFood30d == 1)
   )
 }
 both <- function(t) { m <- setNames(t, paste0(names(t), "_m")); c <- setNames(t, paste0(names(t), "_c")); bind_cols(m, c) }
@@ -656,14 +671,10 @@ rounds <- cfg_rounds |> left_join(flow, by = "round_id") |> left_join(fw, by = "
 
 # ---- Final dataset's columns --------------------------------------------------------------------
 col_family <- function(v) {
-  fam_ext <- unname(NEW_FAMILY[ext$Module[match(v, ext$NewVariable_Name)]])
-  derived_ext <- dplyr::case_when(grepl("^Shk", v) ~ "Shocks", grepl("^Ast|^Lvs", v) ~ "Assets and livestock", grepl("^Liv[A-Z]", v) ~ "Livelihoods",
-                                  grepl("^Agr[A-Z]", v) ~ "Agriculture", grepl("^Exp[A-Z]", v) ~ "Expenditure", grepl("^Dis[A-Z]", v) ~ "Disability",
-                                  grepl("^Edu[A-Z]", v) ~ "Education", grepl("^Mig[A-Z]", v) ~ "Migration",
-                                  grepl("^Prt[A-Z]|^Aap[A-Z]", v) ~ "Protection and accountability", grepl("^Dbt[A-Z]", v) ~ "Debt",
-                                  grepl("^Coh[A-Z]", v) ~ "Social cohesion", grepl("^Adp[A-Z]", v) ~ "Climate adaptation")
+  # Columns of the 2026 modules: those in the extension workbook and those derived from them (ShkAny12m, LvsTLU...)
+  new_mod <- v %in% ext$NewVariable_Name | grepl("^(Shk|Ast|Lvs|Liv|Agr|Exp|Dis|Edu|Mig|Prt|Aap|Dbt|Coh|Adp|Eff|Mkt|Fsn)[A-Z0-9_]", v)
+  derived_ext <- ifelse(new_mod, prefix_family(v), NA_character_)
   dplyr::case_when(
-    !is.na(fam_ext) ~ fam_ext,
     !is.na(derived_ext) ~ derived_ext,
     grepl("^(exercise|reference|adm[012]_name|adm[012]_pcod|chtype|population|phase|p_phase|IP_var)", v) ~ "Cadre Harmonisé",
     v %in% c("ID", "SvyDate", "YEAR", "SvyMonth", "SURVEY", "ROUND", "round_id") ~ "Identification",
@@ -756,7 +767,7 @@ inputs <- bind_rows(
   hash_row(file.path(DIR_MERGED, FINAL_FILE), "Merged dataset"),
   bind_rows(lapply(c("12_WFP_Chad_CBA_data_preparation.do", "13_WFP_Chad_OriginalAssistenciesVariables.do", "14_WFP_Chad_fix_rCSIBorrow.do",
                      "15_WFP_Chad_fix_FCS_2020PDM.do", "16_WFP_Chad_add_new_modules.do", "17_WFP_Chad_add_more_modules.do",
-                     "18_WFP_Chad_add_protection_debt.do", "19_WFP_Chad_add_cohesion_adaptation.do"),
+                     "18_WFP_Chad_add_protection_debt.do", "19_WFP_Chad_add_cohesion_adaptation.do", "20_WFP_Chad_add_recovery_effects_markets.do"),
                    function(f) hash_row(file.path(REPO, "merge", f), "Merge code"))))
 
 # ---- Crosswalk workbook for download ------------------------------------------------------------

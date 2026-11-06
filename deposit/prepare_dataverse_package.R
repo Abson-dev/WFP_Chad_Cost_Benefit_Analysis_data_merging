@@ -17,8 +17,9 @@ if (!file.exists("app/config/issues.csv")) stop("Run this script from the reposi
 DIR_MERGED <- Sys.getenv("WFP_MERGED_DIR", "C:/Users/AHema/OneDrive - CGIAR/Desktop/2024/WFP/CBA - Chad/data")
 # The merged file with the modules added in November 2026: shocks, assets, livelihoods and agriculture
 # (merge/16), expenditure, disability, education and migration (merge/17), protection and debt (merge/18),
-# social cohesion and climate adaptation (merge/19)
-FINAL_FILE <- "WFP_Chad_2018-2023_20261106_v4.dta"
+# social cohesion and climate adaptation (merge/19), shock impact, programme effects, markets, accountability and
+# additions to earlier modules (merge/20)
+FINAL_FILE <- "WFP_Chad_2018-2023_20261106_v5.dta"
 OUT <- file.path(DIR_MERGED, "dataverse_deposit")
 PRIVATE <- file.path(DIR_MERGED, "dataverse_deposit_private")
 dir.create(OUT, showWarnings = FALSE); dir.create(PRIVATE, showWarnings = FALSE)
@@ -99,7 +100,7 @@ for (v in grep("^Exp(Food|NonFoodShort|NonFoodLong|Total)Monthly$", ALL, value =
 }
 CAPS["MigNumber"] <- 10
 COARSENED["MigNumber"] <- "Top-coded at 10 migrants: larger numbers are rare and identify households."
-for (v in grep("^EduGirls(Primary|Secondary)(Supported)?$", ALL, value = TRUE)) {
+for (v in grep("^EduGirls(Primary|Secondary)(Supported)?$|^EduGirlsSupportedPast$", ALL, value = TRUE)) {
   CAPS[v] <- 5
   COARSENED[v] <- "Top-coded at 5 girls: larger numbers are rare, and values up to 30,000 are amounts entered by mistake."
 }
@@ -119,6 +120,10 @@ for (v in names(CAPS)) x[[v]] <- top(x[[v]], CAPS[[v]])
 # ---- Files by module, as the guide asks. All join on hh_key ---------------------------------------
 module_of <- function(v) {
   dplyr::case_when(
+    grepl("^ShkImp|^ShkRec", v) ~ "024_shock_impact_recovery",
+    grepl("^Eff[A-Z]", v) ~ "025_programme_effects",
+    grepl("^Mkt[A-Z]", v) ~ "026_markets",
+    grepl("^Fsn[A-Z]", v) ~ "027_food_shortage_2018_2021",
     grepl("^Shk", v) ~ "012_shocks",
     grepl("^Ast|^Lvs", v) ~ "013_assets_livestock",
     grepl("^Liv[A-Z]", v) ~ "014_livelihoods",
@@ -206,8 +211,17 @@ DERIVED <- c(
   DbtReasonHealth = "Matched by label: item 2 in 2021 annual, item 3 from 2022 (Rmd 25).",
   CohTensionsReduced = "Same question as ABITensions, asked again in the cohesion section; the two answers agree for about three households in four (Rmd 26).",
   AdpKnowCount = "Number of the four techniques (soil conservation, crop rotation, destocking, pasture) the household knows (Rmd 27).",
-  AdpApplyAny = "1 if the household applies at least one of the four techniques; 0 also when it knows none, as it was not asked (Rmd 27)."
+  AdpApplyAny = "1 if the household applies at least one of the four techniques; 0 also when it knows none, as it was not asked (Rmd 27).",
+  MktDaysPerWeek = "Values above 7 (62 households, up to 100,000) set to missing (Rmd 30).",
+  AapDecideAssistanceUse = "Continues AapDecideAssistance (2019-2021) with the 2022-2023 wording (Rmd 31).",
+  PrtSafetyLevel = "2022 annual: 19 answers coded 4, which has no label, set to missing (Rmd 31).",
+  FsnNotEnoughFood30d = "Text in 2019, 0/1 elsewhere (Rmd 32). Same for FsnMalnourishedChild and DisMemberDisabled.",
+  DbtSavingsGroup = "The analysts' variable in the raw files, kept as computed (Rmd 32).",
+  MigReasonIncrease = "2021 and 2022 codes shifted by an empty first code: matched to the 2023 list by label (Rmd 32). Same for MigReasonDecrease."
 )
+for (v in grep("^ShkImp|^ShkRec", ALL, value = TRUE)) DERIVED[v] <- "Located by position after each shock's 12-month question, as 2021 annual names some after another shock. Answers kept only where the shock happened in the last 12 months (removes 1,133 to 1,351 answers per question for theft and death in 2021 annual). Impact: don't know 888, refusals missing (Rmd 28)."
+for (v in grep("^EffDirection_", ALL, value = TRUE)) DERIVED[v] <- "Asked only for the areas the household selected in the matching EffChanged variable (Rmd 29)."
+for (v in grep("^Mkt(AccessDifficult|SoldProduce)$|^Aap(AssistanceReceived3m|Satisfied|KnowHowSelected|ToldEntitlement|ToldProgrammeEnd|KnowHowToContact|TreatedWithRespect|DignifiedSites)$", ALL, value = TRUE)) DERIVED[v] <- "1 No, 2 Yes in 2022 and 0/1 in 2023: recoded to 0 = No, 1 = Yes (Rmds 30 and 31)."
 for (v in grep("^CohInteract", ALL, value = TRUE)) DERIVED[v] <- "2021 and 2022: 1 No, 2 Yes, 3 Don't know; recoded to 0, 1, 888 as in 2023 (Rmd 26)."
 for (v in grep("^Adp(Know|Apply|Trained|Processing)", ALL, value = TRUE)) if (!v %in% names(DERIVED)) DERIVED[v] <- "1 Yes, 2 No, 3 Don't know recoded to 1, 0, 888; unlabelled codes 4 and 5 of 2021 annual set to missing (Rmd 27)."
 for (v in grep("^(Prt|Aap)", ALL, value = TRUE)) if (!v %in% names(DERIVED)) DERIVED[v] <- "Text in 2019, 0/1 in 2020, 2021 and 2023, 1/2 in 2022: recoded to one scale. From 2022 asked mostly of households that received assistance (Rmd 24)."
@@ -270,8 +284,9 @@ writeLines(enc2utf8(c(
   "  demographics, assistance received and the Cadre Harmonise phase of each household's area, and modules on",
   "  shocks, durable goods and livestock, livelihoods (income sources), agriculture (land, areas, own production),",
   "  expenditure (monthly totals and food share), disability (Washington Group questions), education, migration,",
-  "  protection and accountability to affected populations, decisions within the household, debt, social cohesion",
-  "  and climate adaptation practices.",
+  "  protection and accountability to affected populations, decisions within the household, debt, social cohesion,",
+  "  climate adaptation practices, the impact of shocks and recovery from them, changes credited to the programme,",
+  "  and markets.",
   "  The harmonized data were first built for IFPRI's 2026 cost-benefit analysis of the programme.",
   "",
   "IMPORTANT",
@@ -327,7 +342,7 @@ meta <- c(
   "| Title | WFP Chad Integrated Resilience Programme household survey data, 2018-2023 | From the brief; to confirm |",
   "| Authors | International Food Policy Research Institute (IFPRI), as the guide requires; outside co-authors with affiliations | **Author to confirm co-authors** |",
   "| Contributors | Aboubacar Hema (data merging) | **To complete** |",
-  sprintf("| Description | Household survey data from the World Food Programme's Integrated Resilience Programme in Chad: the 2018 baseline, annual outcome surveys from 2019 to 2023 and post-distribution monitoring rounds from 2020 to 2023, with %s households across 10 rounds. The rounds were mapped to a common structure, administrative codes matched to OCHA subnational boundaries, and comparable WFP indicators computed: Food Consumption Score, reduced Coping Strategy Index, Livelihood Coping Strategies, Asset Benefit Indicator, Self-Evaluated Resilience Score and Household Dietary Diversity Score, with household demographics, assistance received and the Cadre Harmonise phase of each household's area. Modules on shocks, durable goods and livestock, income sources, agriculture, expenditure, disability, education, migration, protection and accountability, debt, social cohesion and climate adaptation are matched across the rounds that asked them. The data were first harmonized for IFPRI's 2026 cost-benefit analysis of the programme. | From the brief; to confirm |", format(N, big.mark = ",")),
+  sprintf("| Description | Household survey data from the World Food Programme's Integrated Resilience Programme in Chad: the 2018 baseline, annual outcome surveys from 2019 to 2023 and post-distribution monitoring rounds from 2020 to 2023, with %s households across 10 rounds. The rounds were mapped to a common structure, administrative codes matched to OCHA subnational boundaries, and comparable WFP indicators computed: Food Consumption Score, reduced Coping Strategy Index, Livelihood Coping Strategies, Asset Benefit Indicator, Self-Evaluated Resilience Score and Household Dietary Diversity Score, with household demographics, assistance received and the Cadre Harmonise phase of each household's area. Modules on shocks, durable goods and livestock, income sources, agriculture, expenditure, disability, education, migration, protection and accountability, debt, social cohesion, climate adaptation, shock impact and recovery, programme effects and markets are matched across the rounds that asked them. The data were first harmonized for IFPRI's 2026 cost-benefit analysis of the programme. | From the brief; to confirm |", format(N, big.mark = ",")),
   "| Keywords | Chad; food security; resilience; World Food Programme; household survey; Food Consumption Score; coping strategies; dietary diversity; Cadre Harmonise; humanitarian assistance | To confirm |",
   "| Related publication | IFPRI (2026). Cost-benefit analysis of WFP's integrated resilience programme in Chad (2018-2023) | **Author to add the citation** |",
   "| Funder (grant number) | Release: IFPRI, Open and FAIR Data under Digital Transformation (USD 16,000; cost center to come). Data collection: raw file names mention BMZ | **Author to provide grant numbers** |",
@@ -348,7 +363,7 @@ meta <- c(
   "| Product | Brief | This package |",
   "|---|---|---|",
   "| Layer 1: round-level datasets | 10 cleaned, labelled and anonymized files with all variables collected in each round (about 6,288 variables) | **Not started** |",
-  sprintf("| Layer 2: extended harmonized dataset | The existing harmonized file plus priority modules matched across rounds: shocks, assets, livelihoods, agriculture, nutrition | **Built except nutrition:** %d variables in %d modules, with shocks, assets and livestock, livelihoods, agriculture, expenditure, disability, education, migration, protection and accountability, debt, social cohesion and climate adaptation added. Nutrition (MAD, MDD-W) left out: its link to households is broken in four rounds |", length(published) + 2, nrow(files)),
+  sprintf("| Layer 2: extended harmonized dataset | The existing harmonized file plus priority modules matched across rounds: shocks, assets, livelihoods, agriculture, nutrition | **Built except nutrition:** %d variables in %d modules, with shocks, assets and livestock, livelihoods, agriculture, expenditure, disability, education, migration, protection and accountability, debt, social cohesion, climate adaptation, shock impact and recovery, programme effects and markets added. Nutrition (MAD, MDD-W) left out: its link to households is broken in four rounds |", length(published) + 2, nrow(files)),
   "| Codebook and variable metadata | Complete | Layer 2 only: `901_codebook.csv`, `900_variable_treatment.csv` |",
   "| Harmonization and indicator methods | Documented | In the source code and its report; the codebook gives each derived variable's formula |",
   "| Sampling and weights | Documented | **Missing** |",

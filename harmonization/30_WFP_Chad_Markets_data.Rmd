@@ -1,0 +1,102 @@
+---
+title: "WFP datasets wrangling - Chad : MARKETS"
+author: "Aboubacar HEMA"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    keep_md: true
+---
+
+```{r 30 setup, include=FALSE, results = 'hide'}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, results = "hide")
+```
+
+# Markets
+
+In this section, we harmonize the market questions asked from the 2022 PDM onwards: difficulties reaching markets and their causes, distance to the nearest market, how many days a week the household goes there to buy food, and whether and what it sold in the last 7 days.
+
+* Yes/No answers are coded 1 = No, 2 = Yes in 2022 and 0/1 in 2023: recoded to 0 = No, 1 = Yes. The challenges and the products sold come from multiple-choice questions, one 0/1 column per answer; the 2023 PDM stores them as text.
+* Distance: 1 = under 1 km, 2 = 1 to 5 km, 3 = 5 to 10 km, 4 = 10 to 30 km, 5 = over 30 km.
+* Days per week cannot exceed 7: larger values (up to 100,000) are set to missing.
+
+```{r 30 packages needed}
+library(haven)
+library(labelled)
+library(tidyverse)
+library(readxl)
+```
+
+```{r 30 remove environment variables}
+rm(list = ls())
+```
+
+```{r 30 environment settings}
+dir_input_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/input_data/Chad"
+dir_output_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/output_data/Chad"
+```
+
+```{r 30 read harmonization excel file}
+Chad_Harmonization_variables <- read_excel(paste0(dir_input_data, "/Chad_Harmonization_extension.xlsx"), sheet = "variables_harmonization") %>%
+  dplyr::filter(Module == "Markets")
+Chad_Harmonization_description <- read_excel(paste0(dir_input_data, "/Chad_Harmonization.xlsx"), sheet = "description")
+Chad_Harmonization_ID <- read_excel(paste0(dir_input_data, "/Chad_Harmonization.xlsx"), sheet = "variables_harmonization") %>%
+  dplyr::filter(NewVariable_Name == "ID")
+```
+
+```{r 30 data importation}
+lst_data = Chad_Harmonization_description$Data
+lst_test = Chad_Harmonization_description$Name
+for (i in 1:length(lst_data)) {
+  assign(lst_test[i], read_sav(paste0(dir_input_data, "/", lst_data[i])))
+}
+```
+
+```{r 30 select and rename columns needed}
+to_num <- function(z) { z <- zap_labels(z); if (is.character(z)) { z <- trimws(z); z[z == ""] <- NA; stopifnot(all(grepl("^[0-9.]+$", z[!is.na(z)]))) }; as.numeric(z) }
+for (j in 1:length(lst_test)) {
+  raw <- get(lst_test[j], envir = .GlobalEnv)
+  df <- tibble::tibble(.rows = nrow(raw))
+  id_var <- Chad_Harmonization_ID[[lst_test[j]]]
+  df$ID <- if (is.na(id_var)) NA_character_ else { z <- zap_labels(raw[[id_var]]); if (is.numeric(z)) format(z, scientific = FALSE, trim = TRUE) else as.character(z) }
+  for (i in 1:nrow(Chad_Harmonization_variables)) {
+    v <- Chad_Harmonization_variables[[lst_test[j]]][i]
+    df[[Chad_Harmonization_variables$NewVariable_Name[i]]] <- if (is.na(v)) NA_real_ else to_num(raw[[v]])
+  }
+  assign(lst_test[j], df)
+}
+Chad_pdm_2022$ID = as.character(1:nrow(Chad_pdm_2022))
+```
+
+## Recoding
+
+```{r}
+vars <- Chad_Harmonization_variables$NewVariable_Name
+yn <- c("MktAccessDifficult", "MktSoldProduce")
+multi <- grep("^MktChallenge|^MktSold(?!Produce)", vars, value = TRUE, perl = TRUE)
+for (r in c("Chad_pdm_2022", "Chad_ea_2022")) { d <- get(r); for (v in yn) { stopifnot(all(d[[v]] %in% c(1, 2, NA))); d[[v]] <- d[[v]] - 1 }; assign(r, d) }
+df_Chad <- dplyr::bind_rows(mget(lst_test))
+for (v in c(yn, multi)) stopifnot(all(df_Chad[[v]] %in% c(0, 1, NA)))
+stopifnot(all(df_Chad$MktDistance %in% c(1:5, NA)))
+too_many <- !is.na(df_Chad$MktDaysPerWeek) & df_Chad$MktDaysPerWeek > 7
+print(c("days per week above 7", sum(too_many)))
+df_Chad$MktDaysPerWeek[too_many] <- NA
+```
+
+```{r}
+for (v in c(yn, multi)) df_Chad[[v]] <- labelled(df_Chad[[v]], c("No" = 0, "Yes" = 1))
+df_Chad$MktDistance <- labelled(df_Chad$MktDistance, c("Under 1 km" = 1, "1 to 5 km" = 2, "5 to 10 km" = 3, "10 to 30 km" = 4, "Over 30 km" = 5))
+for (i in 1:nrow(Chad_Harmonization_variables)) var_label(df_Chad[[Chad_Harmonization_variables$NewVariable_Name[i]]]) <- Chad_Harmonization_variables$Label[i]
+var_label(df_Chad$ID) <- "Household ID"
+```
+
+## Export all data
+
+```{r}
+df_Chad <- df_Chad %>% dplyr::select(ID, all_of(vars))
+haven::write_dta(df_Chad, paste0(dir_output_data, "/", "WFP_Chad_Markets.dta"))
+```
