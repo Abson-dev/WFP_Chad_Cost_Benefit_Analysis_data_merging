@@ -174,7 +174,7 @@ ok("flags: unresolved stay flagged in the corrected view", stopifnot("R02" %in% 
 ok("attention: serious point on a flagged round", stopifnot(any(vapply(attention_points(d, "R10", "m"), function(p) p$level == "serious", TRUE))))
 
 section("Figures against an independent recomputation from the merged file")
-merged_path <- file.path(Sys.getenv("WFP_MERGED_DIR", "C:/Users/AHema/OneDrive - CGIAR/Desktop/2024/WFP/CBA - Chad/data"), "WFP_Chad_2018-2023_20261106_v2.dta")
+merged_path <- file.path(Sys.getenv("WFP_MERGED_DIR", "C:/Users/AHema/OneDrive - CGIAR/Desktop/2024/WFP/CBA - Chad/data"), "WFP_Chad_2018-2023_20261106_v4.dta")
 if (file.exists(merged_path) && !demo_mode()) {
   x <- haven::zap_labels(haven::read_dta(merged_path))
   x$rid <- sprintf("R%02d", x$ROUND)

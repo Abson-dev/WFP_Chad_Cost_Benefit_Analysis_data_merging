@@ -1,0 +1,152 @@
+---
+title: "WFP datasets wrangling - Chad : PROTECTION, ACCOUNTABILITY AND DECISIONS"
+author: "Aboubacar HEMA"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    keep_md: true
+---
+
+```{r 24 setup, include=FALSE, results = 'hide'}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, results = "hide")
+```
+
+# Protection, accountability and decisions
+
+In this section, we harmonize WFP's questions on protection (section 8 of the questionnaire), accountability to affected populations (section 7.7) and decisions within the household (7.3 and 7.4). They were asked in the 2019 and 2020 annual surveys, the 2021 PDM and from the 2022 PDM onwards, with the same numbering. The 2020 PDM uses these numbers for other questions, and the 2021 annual survey did not ask them.
+
+* Yes/No answers are text in 2019, coded 0/1 in 2020, 2021 and 2023, and 1/2 in 2022: all are recoded to 0 = No, 1 = Yes. In the 2022 annual survey, 168 answers on access to the site carry codes 3 and 4, which have no label: they are set to missing.
+* Times are coded 1 = under 30 minutes, 2 = 30 to 60 minutes, 3 = 1 to 2 hours, 4 = over 2 hours; 2019 holds them as text.
+* Complaints: the 2020 annual survey and the 2022 and 2023 rounds first ask whether the household filed a complaint, then whether it was documented and answered. The 2019 annual survey and the 2021 PDM ask everyone whether "the complaint" was documented, without that filter: they are left out of the complaint questions.
+* From 2022, most of these questions were asked only of households that had received assistance.
+* `PrtAnyProblem` is 1 when any of the four problem questions is Yes. `AapInformed` is 1 when the household knows why it was selected, what it is entitled to and the distribution cycle, as in WFP's accountability indicator.
+
+```{r 24 packages needed}
+library(haven)
+library(labelled)
+library(tidyverse)
+library(readxl)
+```
+
+```{r 24 remove environment variables}
+rm(list = ls())
+```
+
+```{r 24 environment settings}
+dir_input_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/input_data/Chad"
+dir_output_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/output_data/Chad"
+```
+
+```{r 24 read harmonization excel file}
+Chad_Harmonization_variables <- read_excel(paste0(dir_input_data, "/Chad_Harmonization_extension.xlsx"), sheet = "variables_harmonization") %>%
+  dplyr::filter(Module == "Protection")
+Chad_Harmonization_description <- read_excel(paste0(dir_input_data, "/Chad_Harmonization.xlsx"), sheet = "description")
+Chad_Harmonization_ID <- read_excel(paste0(dir_input_data, "/Chad_Harmonization.xlsx"), sheet = "variables_harmonization") %>%
+  dplyr::filter(NewVariable_Name == "ID")
+```
+
+```{r 24 data importation}
+lst_data = Chad_Harmonization_description$Data
+lst_test = Chad_Harmonization_description$Name
+for (i in 1:length(lst_data)) {
+  assign(lst_test[i], read_sav(paste0(dir_input_data, "/", lst_data[i])))
+}
+```
+
+```{r 24 select and rename columns needed}
+for (j in 1:length(lst_test)) {
+  raw <- get(lst_test[j], envir = .GlobalEnv)
+  df <- tibble::tibble(.rows = nrow(raw))
+  id_var <- Chad_Harmonization_ID[[lst_test[j]]]
+  df$ID <- if (is.na(id_var)) NA_character_ else { z <- zap_labels(raw[[id_var]]); if (is.numeric(z)) format(z, scientific = FALSE, trim = TRUE) else as.character(z) }
+  for (i in 1:nrow(Chad_Harmonization_variables)) {
+    v <- Chad_Harmonization_variables[[lst_test[j]]][i]
+    df[[Chad_Harmonization_variables$NewVariable_Name[i]]] <- if (is.na(v)) NA else zap_labels(raw[[v]])
+  }
+  assign(lst_test[j], df)
+}
+Chad_pdm_2022$ID = as.character(1:nrow(Chad_pdm_2022))
+```
+
+```{r 24 helpers}
+vars <- Chad_Harmonization_variables$NewVariable_Name
+times <- c("PrtTimeToSite", "PrtWaitingTime", "PrtTimeBack")
+decide <- c("AapDecideResources", "AapDecideAssistance")
+yes_no_vars <- setdiff(vars, c(times, decide))
+yes_no <- function(x, no, yes) { x <- as.numeric(x); stopifnot(all(x[!is.na(x)] %in% c(no, yes))); dplyr::case_when(x == yes ~ 1, x == no ~ 0) }
+from_text <- function(x, codes) {
+  x <- trimws(as.character(x)); x[x == ""] <- NA
+  out <- unname(codes[x]); if (any(!is.na(x) & is.na(out))) stop("Unexpected answer: ", paste(unique(x[!is.na(x) & is.na(out)]), collapse = " | "))
+  out
+}
+```
+
+## EA 2019
+
+```{r}
+df_2019 <- Chad_ea_2019
+for (v in yes_no_vars) if (!all(is.na(df_2019[[v]]))) df_2019[[v]] <- from_text(df_2019[[v]], c(Non = 0, Oui = 1))
+for (v in times) df_2019[[v]] <- from_text(df_2019[[v]], c("< 30min" = 1, "30-60min" = 2, "1-2h" = 3, "> 2h" = 4))
+for (v in decide) df_2019[[v]] <- from_text(df_2019[[v]], c(Homme = 1, Femme = 2, "Homme et Femme" = 3))
+```
+
+## Rounds coded 0/1: EA 2020, PDM 2021, PDM 2023 and EA 2023
+
+```{r}
+for (r in c("Chad_ea_2020", "Chad_pdm_2021", "Chad_pdm_2023", "Chad_ea_2023")) {
+  d <- get(r)
+  for (v in yes_no_vars) if (!all(is.na(d[[v]]))) d[[v]] <- yes_no(d[[v]], 0, 1)
+  assign(r, d)
+}
+```
+
+## Rounds coded 1/2: PDM 2022 and EA 2022
+
+```{r}
+# Codes 3 and 4 of the 2022 annual survey's access question have no label
+table(Chad_ea_2022$PrtAccessProblem, useNA = "ifany")
+Chad_ea_2022$PrtAccessProblem[Chad_ea_2022$PrtAccessProblem %in% c(3, 4)] <- NA
+for (r in c("Chad_pdm_2022", "Chad_ea_2022")) {
+  d <- get(r)
+  for (v in yes_no_vars) if (!all(is.na(d[[v]]))) d[[v]] <- yes_no(d[[v]], 1, 2)
+  assign(r, d)
+}
+```
+
+## Merging all data
+
+```{r}
+df_2019 <- df_2019
+num <- function(d) { for (v in vars) d[[v]] <- as.numeric(d[[v]]); d }
+df_Chad <- dplyr::bind_rows(lapply(list(Chad_baseline_2018, df_2019, Chad_ea_2020, Chad_ea_2021, Chad_ea_2022, Chad_ea_2023,
+                                        Chad_pdm_2020, Chad_pdm_2021, Chad_pdm_2022, Chad_pdm_2023), num))
+for (v in times) stopifnot(all(df_Chad[[v]] %in% c(1:4, NA)))
+for (v in decide) stopifnot(all(df_Chad[[v]] %in% c(1:3, NA)))
+problems <- c("PrtSafetyProblem", "PrtAccessProblem", "PrtSiteProblem", "PrtOtherProblem")
+answered <- rowSums(!is.na(df_Chad[, problems])) > 0
+df_Chad$PrtAnyProblem <- ifelse(answered, as.numeric(rowSums(df_Chad[, problems] == 1, na.rm = TRUE) > 0), NA)
+know <- c("AapKnowSelection", "AapKnowEntitlement", "AapKnowCycle")
+df_Chad$AapInformed <- ifelse(rowSums(!is.na(df_Chad[, know])) == 3, as.numeric(rowSums(df_Chad[, know]) == 3), NA)
+```
+
+```{r}
+for (v in c(yes_no_vars, "PrtAnyProblem", "AapInformed")) df_Chad[[v]] <- labelled(df_Chad[[v]], c("No" = 0, "Yes" = 1))
+for (v in times) df_Chad[[v]] <- labelled(df_Chad[[v]], c("Under 30 minutes" = 1, "30 to 60 minutes" = 2, "1 to 2 hours" = 3, "Over 2 hours" = 4))
+for (v in decide) df_Chad[[v]] <- labelled(df_Chad[[v]], c("Man" = 1, "Woman" = 2, "Man and woman together" = 3))
+for (i in 1:nrow(Chad_Harmonization_variables)) var_label(df_Chad[[Chad_Harmonization_variables$NewVariable_Name[i]]]) <- Chad_Harmonization_variables$Label[i]
+var_label(df_Chad$ID) <- "Household ID"
+var_label(df_Chad$PrtAnyProblem) <- "Household faced at least one safety, access, site or other problem linked to the assistance"
+var_label(df_Chad$AapInformed) <- "Household knows why it was selected, what it is entitled to and the distribution cycle"
+```
+
+## Export all data
+
+```{r}
+df_Chad <- df_Chad %>% dplyr::select(ID, all_of(vars), PrtAnyProblem, AapInformed)
+haven::write_dta(df_Chad, paste0(dir_output_data, "/", "WFP_Chad_Protection.dta"))
+```

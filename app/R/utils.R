@@ -138,6 +138,22 @@ IND <- rbind(IND, data.frame(
   unit = c("%", "%", "%", "%", "%", "TLU", "%", "%", "sources", "%", "%", "%", "%", "%", "%", "%", "%", "%", "%"),
   worse = c("high", "high", "high", "high", "low", "low", "low", "low", "low", "none", "none", "none", "low", "high", "high", "none", "low", "low", "none"),
   group = NA_character_, stringsAsFactors = FALSE))
+IND <- rbind(IND, data.frame(
+  id = c("prt_any", "aap_informed", "aap_complaint", "aap_women", "dbt_contracted", "dbt_current"),
+  label = c("A safety, access or other problem linked to the assistance", "Informed about selection, entitlement and distribution cycle",
+            "Filed a complaint about the assistance", "Women decide, alone or jointly, how the assistance is used",
+            "Contracted a debt in the reference period", "Currently in debt"),
+  short = c("Protection problem", "Informed (AAP)", "Complaint filed", "Women decide on assistance", "Contracted debt", "In debt"),
+  domain = c("Protection and accountability", "Protection and accountability", "Protection and accountability", "Protection and accountability", "Debt", "Debt"),
+  unit = "%", worse = c("high", "low", "none", "low", "high", "high"), group = NA_character_, stringsAsFactors = FALSE))
+IND <- rbind(IND, data.frame(
+  id = c("coh_hosts_good", "coh_tension", "coh_nobody", "adp_apply_any", "adp_trained", "adp_compost"),
+  label = c("Relations with the host population rated polite or friendly", "Assets helped reduce tensions over natural resources",
+            "Could help nobody in the community", "Applies at least one of four adaptation techniques",
+            "Received training in agriculture", "Uses compost pits"),
+  short = c("Good relations with hosts", "Tensions reduced", "Could help nobody", "Applies adaptation", "Trained in agriculture", "Compost pits"),
+  domain = c("Social cohesion", "Social cohesion", "Social cohesion", "Climate adaptation", "Climate adaptation", "Climate adaptation"),
+  unit = "%", worse = c("low", "low", "high", "low", "low", "low"), group = NA_character_, stringsAsFactors = FALSE))
 IND_CHOICES <- lapply(split(IND, factor(IND$domain, levels = unique(IND$domain))), function(g) stats::setNames(g$id, g$label))
 # In the tables of the Overview and Regions pages.
 IND_MAIN <- c("fcs_pb", "fcs_poor", "fcs_mean", "rcsi_mean", "rcsi_p3", "lcs_ce", "hdds_mean", "abi_mean", "rcs_mean", "female_head", "hh_size")

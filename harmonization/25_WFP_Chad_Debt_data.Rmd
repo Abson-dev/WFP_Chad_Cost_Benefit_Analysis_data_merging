@@ -1,0 +1,144 @@
+---
+title: "WFP datasets wrangling - Chad : DEBT"
+author: "Aboubacar HEMA"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    keep_md: true
+---
+
+```{r 25 setup, include=FALSE, results = 'hide'}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, results = "hide")
+```
+
+# Debt
+
+In this section, we harmonize the household's debt. Two sets of questions were asked:
+
+* **Debt contracted** in the reference period, its main source and how the household plans to repay it: 2018 baseline, 2022 annual survey, 2023 PDM and 2023 annual survey, with the same code lists. Whether the credit was used to buy food comes from a multiple-choice question whose code 1 is food in 2018 and 2023; the 2022 file stores combinations of answers as codes and is left out of that variable.
+* **Current debts** and their reasons: 2021 annual survey and from the 2022 annual survey onwards. The list of reasons grew in 2022 (health moved from item 2 to item 3), so the reasons are matched by label. In 2021 only food and health were listed.
+* Yes/No answers are coded 1/2 in 2021 and 2022 and 0/1 elsewhere: recoded to 0 = No, 1 = Yes, 888 = Don't know.
+
+```{r 25 packages needed}
+library(haven)
+library(labelled)
+library(tidyverse)
+library(readxl)
+```
+
+```{r 25 remove environment variables}
+rm(list = ls())
+```
+
+```{r 25 environment settings}
+dir_input_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/input_data/Chad"
+dir_output_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/output_data/Chad"
+```
+
+```{r 25 read harmonization excel file}
+Chad_Harmonization_variables <- read_excel(paste0(dir_input_data, "/Chad_Harmonization_extension.xlsx"), sheet = "variables_harmonization") %>%
+  dplyr::filter(Module == "Debt")
+Chad_Harmonization_description <- read_excel(paste0(dir_input_data, "/Chad_Harmonization.xlsx"), sheet = "description")
+Chad_Harmonization_ID <- read_excel(paste0(dir_input_data, "/Chad_Harmonization.xlsx"), sheet = "variables_harmonization") %>%
+  dplyr::filter(NewVariable_Name == "ID")
+```
+
+```{r 25 data importation}
+lst_data = Chad_Harmonization_description$Data
+lst_test = Chad_Harmonization_description$Name
+for (i in 1:length(lst_data)) {
+  assign(lst_test[i], read_sav(paste0(dir_input_data, "/", lst_data[i])))
+}
+```
+
+```{r 25 select and rename columns needed}
+value_labels <- list()
+for (j in 1:length(lst_test)) {
+  raw <- get(lst_test[j], envir = .GlobalEnv)
+  df <- tibble::tibble(.rows = nrow(raw))
+  id_var <- Chad_Harmonization_ID[[lst_test[j]]]
+  df$ID <- if (is.na(id_var)) NA_character_ else { z <- zap_labels(raw[[id_var]]); if (is.numeric(z)) format(z, scientific = FALSE, trim = TRUE) else as.character(z) }
+  for (i in 1:nrow(Chad_Harmonization_variables)) {
+    v <- Chad_Harmonization_variables[[lst_test[j]]][i]; new <- Chad_Harmonization_variables$NewVariable_Name[i]
+    df[[new]] <- if (is.na(v)) NA else zap_labels(raw[[v]])
+    if (!is.na(v)) value_labels[[lst_test[j]]][[new]] <- list(var = v, label = attr(raw[[v]], "label", exact = TRUE), labels = attr(raw[[v]], "labels"))
+  }
+  assign(lst_test[j], df)
+}
+Chad_pdm_2022$ID = as.character(1:nrow(Chad_pdm_2022))
+```
+
+```{r 25 checks of the mapping}
+# The reason items are matched by label: check that each mapped item carries the expected reason
+expect <- c(DbtReasonFood = "nourriture|manger", DbtReasonHealth = "sant|soigner", DbtReasonInputs = "intrants", DbtReasonEducation = "ducation", DbtReasonCeremonies = "monies")
+for (r in names(value_labels)) for (v in intersect(names(expect), names(value_labels[[r]]))) {
+  stopifnot(grepl(expect[[v]], value_labels[[r]][[v]]$label, ignore.case = TRUE))
+}
+# Same source and repayment lists in every round
+for (v in c("DbtMainSource", "DbtRepayment")) {
+  l <- lapply(value_labels, function(z) if (v %in% names(z)) z[[v]]$labels)
+  l <- l[!vapply(l, is.null, TRUE)]
+  stopifnot(all(vapply(l, function(z) identical(unname(z), unname(l[[1]])) && identical(gsub("\\s+", " ", names(z)), gsub("\\s+", " ", names(l[[1]]))), TRUE)))
+}
+```
+
+```{r 25 helpers}
+yn <- function(x, no, yes, dk = NA) { x <- as.numeric(x); stopifnot(all(x[!is.na(x)] %in% c(no, yes, dk))); dplyr::case_when(x == yes ~ 1, x == no ~ 0, x == dk ~ 888) }
+# Code 1 among the answers of the multiple-choice question on the use of the credit
+food_use <- function(x) { x <- trimws(as.character(x)); ifelse(is.na(x) | x == "", NA, as.numeric(vapply(strsplit(x, " +"), function(t) "1" %in% t, TRUE))) }
+reasons <- c("DbtReasonFood", "DbtReasonHealth", "DbtReasonInputs", "DbtReasonEducation", "DbtReasonCeremonies")
+check01 <- function(x) { x <- as.numeric(x); stopifnot(all(x[!is.na(x)] %in% c(0, 1))); x }
+```
+
+## Baseline 2018, PDM 2023 and EA 2023
+
+```{r}
+for (r in c("Chad_baseline_2018", "Chad_pdm_2023", "Chad_ea_2023")) {
+  d <- get(r)
+  d$DbtContracted <- yn(d$DbtContracted, 0, 1)
+  d$DbtUsedForFood <- food_use(d$DbtUsedForFood)
+  if (!all(is.na(d$DbtCurrent))) d$DbtCurrent <- yn(d$DbtCurrent, 0, 1, 888)
+  assign(r, d)
+}
+```
+
+## EA 2021 and EA 2022
+
+```{r}
+Chad_ea_2021$DbtCurrent <- yn(Chad_ea_2021$DbtCurrent, 1, 2, 3)
+Chad_ea_2022$DbtCurrent <- yn(Chad_ea_2022$DbtCurrent, 1, 2, 3)
+Chad_ea_2022$DbtContracted <- yn(Chad_ea_2022$DbtContracted, 1, 2)
+```
+
+## Merging all data
+
+```{r}
+num <- function(d) { for (v in Chad_Harmonization_variables$NewVariable_Name) d[[v]] <- suppressWarnings(as.numeric(d[[v]])); d }
+df_Chad <- dplyr::bind_rows(lapply(mget(lst_test), num))
+for (v in reasons) df_Chad[[v]] <- check01(df_Chad[[v]])
+stopifnot(all(df_Chad$DbtMainSource %in% c(1:8, NA)), all(df_Chad$DbtRepayment %in% c(1:6, NA)))
+```
+
+```{r}
+for (v in c("DbtContracted", "DbtUsedForFood", reasons)) df_Chad[[v]] <- labelled(df_Chad[[v]], c("No" = 0, "Yes" = 1))
+df_Chad$DbtCurrent <- labelled(df_Chad$DbtCurrent, c("No" = 0, "Yes" = 1, "Don't know" = 888))
+df_Chad$DbtMainSource <- labelled(df_Chad$DbtMainSource, c("Relatives/friends" = 1, "Charity/NGOs" = 2, "Local moneylender" = 3, "Bank/credit union/savings bank" = 4,
+                                                           "Tontine" = 5, "Cooperative" = 6, "Employer" = 7, "Other" = 8))
+df_Chad$DbtRepayment <- labelled(df_Chad$DbtRepayment, c("With part of the vouchers/food" = 1, "By working for the lender" = 2, "From the income of my activities" = 3,
+                                                         "From transfers/gifts from relatives" = 4, "Don't know" = 5, "Other" = 6))
+for (i in 1:nrow(Chad_Harmonization_variables)) var_label(df_Chad[[Chad_Harmonization_variables$NewVariable_Name[i]]]) <- Chad_Harmonization_variables$Label[i]
+var_label(df_Chad$DbtUsedForFood) <- "Buying food was among the uses of the credit"
+var_label(df_Chad$ID) <- "Household ID"
+```
+
+## Export all data
+
+```{r}
+df_Chad <- df_Chad %>% dplyr::select(ID, all_of(Chad_Harmonization_variables$NewVariable_Name))
+haven::write_dta(df_Chad, paste0(dir_output_data, "/", "WFP_Chad_Debt.dta"))
+```

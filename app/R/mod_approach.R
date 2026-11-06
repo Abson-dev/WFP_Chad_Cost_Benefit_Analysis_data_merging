@@ -24,7 +24,7 @@ approach_ui <- function(id, d) {
                 htmltools::div(class = "steps",
                                step(1, "table", "Map", sprintf("A workbook maps %d harmonised variables to their source in each of the 10 files, which name the same questions differently. A second one maps the %d variables of the modules added in 2026.", m$mapped_variables, m$mapped_variables_extension)),
                                step(2, "arrow-left-right", "Recode", "One Rmd per module renames the columns and recodes answers to one scale, round by round."),
-                               step(3, "sign-merge-right", "Clean and merge", sprintf("A do-file removes duplicates, corrects place names, then merges 9 modules 1:1 on ID into %s households. Do-files 16 and 17 add 8 more modules in 2026.", fmt_int(m$households))),
+                               step(3, "sign-merge-right", "Clean and merge", sprintf("A do-file removes duplicates, corrects place names, then merges 9 modules 1:1 on ID into %s households. Do-files 16 to 19 add 12 more modules in 2026.", fmt_int(m$households))),
                                step(4, "calculator", "Compute", "Scores and groups are computed once on the pooled file, so all rounds share the same formulas."),
                                step(5, "link-45deg", "Link", "Cadre Harmonisé phases are joined by department and period, and the original assistance answers are added.")
                 )),

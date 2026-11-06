@@ -16,8 +16,9 @@ if (!file.exists("app/config/issues.csv")) stop("Run this script from the reposi
 
 DIR_MERGED <- Sys.getenv("WFP_MERGED_DIR", "C:/Users/AHema/OneDrive - CGIAR/Desktop/2024/WFP/CBA - Chad/data")
 # The merged file with the modules added in November 2026: shocks, assets, livelihoods and agriculture
-# (merge/16), then expenditure, disability, education and migration (merge/17)
-FINAL_FILE <- "WFP_Chad_2018-2023_20261106_v2.dta"
+# (merge/16), expenditure, disability, education and migration (merge/17), protection and debt (merge/18),
+# social cohesion and climate adaptation (merge/19)
+FINAL_FILE <- "WFP_Chad_2018-2023_20261106_v4.dta"
 OUT <- file.path(DIR_MERGED, "dataverse_deposit")
 PRIVATE <- file.path(DIR_MERGED, "dataverse_deposit_private")
 dir.create(OUT, showWarnings = FALSE); dir.create(PRIVATE, showWarnings = FALSE)
@@ -126,6 +127,10 @@ module_of <- function(v) {
     grepl("^Dis[A-Z]", v) ~ "017_disability",
     grepl("^Edu[A-Z]", v) ~ "018_education",
     grepl("^Mig[A-Z]", v) ~ "019_migration",
+    grepl("^Prt[A-Z]|^Aap[A-Z]", v) ~ "020_protection_accountability",
+    grepl("^Dbt[A-Z]", v) ~ "021_debt",
+    grepl("^Coh[A-Z]", v) ~ "022_social_cohesion",
+    grepl("^Adp[A-Z]", v) ~ "023_climate_adaptation",
     v %in% c("YEAR", "SvyMonth", "SURVEY", "SvyYearMonth", "ADMIN0Name", "adm0_ocha", "ADMIN1Name", "adm1_ocha", "ADMIN2Name", "adm2_ocha") ~ "001_survey_geography",
     grepl("^(exercise|reference|adm[012]_name|adm[012]_pcod|chtype|population|phase|p_phase|IP_var)", v) ~ "002_cadre_harmonise",
     grepl("^HHRCS|^RCS|^SERS", v) ~ "008_resilience_sers_rcs",
@@ -192,8 +197,20 @@ DERIVED <- c(
   DisCognition = "Stored as difficultes_entendre in the raw files except the 2023 PDM (difficultes_cognitive); the 2023 label confirms it asks about remembering or concentrating (Rmd 21).",
   DisAny = "1 if any of the six domains is 'a lot of difficulty' or 'cannot do at all', the Washington Group cut-off (Rmd 21).",
   MigMainReason = "2021 and 2022 codes shifted by an empty first code: matched to the 2023 list by label (Rmd 23). Same for MigDuration.",
-  MigWork12m = "2021 and 2022: 1 No, 2 Yes, 3 Don't know; recoded to 0, 1, 888 as in 2023 (Rmd 23)."
+  MigWork12m = "2021 and 2022: 1 No, 2 Yes, 3 Don't know; recoded to 0, 1, 888 as in 2023 (Rmd 23).",
+  PrtAnyProblem = "1 if any of the safety, access, site or other problem questions is Yes (Rmd 24).",
+  PrtAccessProblem = "2022 annual survey: 168 answers coded 3 or 4, which have no label, set to missing (Rmd 24).",
+  AapInformed = "1 if the household knows why it was selected, what it is entitled to and the distribution cycle, WFP's accountability indicator (Rmd 24).",
+  AapComplaintFiled = "Asked in 2020 annual and from 2022; the 2019 annual and 2021 PDM ask about 'the complaint' without asking whether one was filed, so they are left out of the complaint questions (Rmd 24).",
+  DbtUsedForFood = "Code 1 (food) among the answers of a multiple-choice question; 2022 annual stores combinations as codes and is left out (Rmd 25).",
+  DbtReasonHealth = "Matched by label: item 2 in 2021 annual, item 3 from 2022 (Rmd 25).",
+  CohTensionsReduced = "Same question as ABITensions, asked again in the cohesion section; the two answers agree for about three households in four (Rmd 26).",
+  AdpKnowCount = "Number of the four techniques (soil conservation, crop rotation, destocking, pasture) the household knows (Rmd 27).",
+  AdpApplyAny = "1 if the household applies at least one of the four techniques; 0 also when it knows none, as it was not asked (Rmd 27)."
 )
+for (v in grep("^CohInteract", ALL, value = TRUE)) DERIVED[v] <- "2021 and 2022: 1 No, 2 Yes, 3 Don't know; recoded to 0, 1, 888 as in 2023 (Rmd 26)."
+for (v in grep("^Adp(Know|Apply|Trained|Processing)", ALL, value = TRUE)) if (!v %in% names(DERIVED)) DERIVED[v] <- "1 Yes, 2 No, 3 Don't know recoded to 1, 0, 888; unlabelled codes 4 and 5 of 2021 annual set to missing (Rmd 27)."
+for (v in grep("^(Prt|Aap)", ALL, value = TRUE)) if (!v %in% names(DERIVED)) DERIVED[v] <- "Text in 2019, 0/1 in 2020, 2021 and 2023, 1/2 in 2022: recoded to one scale. From 2022 asked mostly of households that received assistance (Rmd 24)."
 for (v in grep("^Dis(Seeing|Hearing|Walking|SelfCare|Communication)$", ALL, value = TRUE)) DERIVED[v] <- "Refused (5) and don't know (6) set to missing (Rmd 21)."
 for (v in grep("^Edu(Girls|Boys).+Complete$", ALL, value = TRUE)) DERIVED[v] <- "1 Yes, 2 No, 3 Don't know recoded to 1, 0, 888; codes outside the list (0 in 2022 annual, 4-5 in 2021 annual) set to missing (Rmd 22)."
 for (v in grep("^Shk12m_", ALL, value = TRUE)) DERIVED[v] <- "Asked only when the shock happened in the last 5 years: set to No when the 5-year count is 0 (Rmd 16)."
@@ -252,7 +269,9 @@ writeLines(enc2utf8(c(
   "  resilience indicators were computed: FCS, rCSI, LCS, ABI, SERS and HDDS. The files also hold household",
   "  demographics, assistance received and the Cadre Harmonise phase of each household's area, and modules on",
   "  shocks, durable goods and livestock, livelihoods (income sources), agriculture (land, areas, own production),",
-  "  expenditure (monthly totals and food share), disability (Washington Group questions), education and migration.",
+  "  expenditure (monthly totals and food share), disability (Washington Group questions), education, migration,",
+  "  protection and accountability to affected populations, decisions within the household, debt, social cohesion",
+  "  and climate adaptation practices.",
   "  The harmonized data were first built for IFPRI's 2026 cost-benefit analysis of the programme.",
   "",
   "IMPORTANT",
@@ -308,7 +327,7 @@ meta <- c(
   "| Title | WFP Chad Integrated Resilience Programme household survey data, 2018-2023 | From the brief; to confirm |",
   "| Authors | International Food Policy Research Institute (IFPRI), as the guide requires; outside co-authors with affiliations | **Author to confirm co-authors** |",
   "| Contributors | Aboubacar Hema (data merging) | **To complete** |",
-  sprintf("| Description | Household survey data from the World Food Programme's Integrated Resilience Programme in Chad: the 2018 baseline, annual outcome surveys from 2019 to 2023 and post-distribution monitoring rounds from 2020 to 2023, with %s households across 10 rounds. The rounds were mapped to a common structure, administrative codes matched to OCHA subnational boundaries, and comparable WFP indicators computed: Food Consumption Score, reduced Coping Strategy Index, Livelihood Coping Strategies, Asset Benefit Indicator, Self-Evaluated Resilience Score and Household Dietary Diversity Score, with household demographics, assistance received and the Cadre Harmonise phase of each household's area. Modules on shocks, durable goods and livestock, income sources, agriculture, expenditure, disability, education and migration are matched across the rounds that asked them. The data were first harmonized for IFPRI's 2026 cost-benefit analysis of the programme. | From the brief; to confirm |", format(N, big.mark = ",")),
+  sprintf("| Description | Household survey data from the World Food Programme's Integrated Resilience Programme in Chad: the 2018 baseline, annual outcome surveys from 2019 to 2023 and post-distribution monitoring rounds from 2020 to 2023, with %s households across 10 rounds. The rounds were mapped to a common structure, administrative codes matched to OCHA subnational boundaries, and comparable WFP indicators computed: Food Consumption Score, reduced Coping Strategy Index, Livelihood Coping Strategies, Asset Benefit Indicator, Self-Evaluated Resilience Score and Household Dietary Diversity Score, with household demographics, assistance received and the Cadre Harmonise phase of each household's area. Modules on shocks, durable goods and livestock, income sources, agriculture, expenditure, disability, education, migration, protection and accountability, debt, social cohesion and climate adaptation are matched across the rounds that asked them. The data were first harmonized for IFPRI's 2026 cost-benefit analysis of the programme. | From the brief; to confirm |", format(N, big.mark = ",")),
   "| Keywords | Chad; food security; resilience; World Food Programme; household survey; Food Consumption Score; coping strategies; dietary diversity; Cadre Harmonise; humanitarian assistance | To confirm |",
   "| Related publication | IFPRI (2026). Cost-benefit analysis of WFP's integrated resilience programme in Chad (2018-2023) | **Author to add the citation** |",
   "| Funder (grant number) | Release: IFPRI, Open and FAIR Data under Digital Transformation (USD 16,000; cost center to come). Data collection: raw file names mention BMZ | **Author to provide grant numbers** |",
@@ -329,7 +348,7 @@ meta <- c(
   "| Product | Brief | This package |",
   "|---|---|---|",
   "| Layer 1: round-level datasets | 10 cleaned, labelled and anonymized files with all variables collected in each round (about 6,288 variables) | **Not started** |",
-  sprintf("| Layer 2: extended harmonized dataset | The existing harmonized file plus priority modules matched across rounds: shocks, assets, livelihoods, agriculture, nutrition | **Built except nutrition:** %d variables in %d modules, with shocks, assets and livestock, livelihoods, agriculture, expenditure, disability, education and migration added. Nutrition (MAD, MDD-W) left out: its link to households is broken in four rounds |", length(published) + 2, nrow(files)),
+  sprintf("| Layer 2: extended harmonized dataset | The existing harmonized file plus priority modules matched across rounds: shocks, assets, livelihoods, agriculture, nutrition | **Built except nutrition:** %d variables in %d modules, with shocks, assets and livestock, livelihoods, agriculture, expenditure, disability, education, migration, protection and accountability, debt, social cohesion and climate adaptation added. Nutrition (MAD, MDD-W) left out: its link to households is broken in four rounds |", length(published) + 2, nrow(files)),
   "| Codebook and variable metadata | Complete | Layer 2 only: `901_codebook.csv`, `900_variable_treatment.csv` |",
   "| Harmonization and indicator methods | Documented | In the source code and its report; the codebook gives each derived variable's formula |",
   "| Sampling and weights | Documented | **Missing** |",

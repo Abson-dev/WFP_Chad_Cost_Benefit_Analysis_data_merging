@@ -1,0 +1,114 @@
+---
+title: "WFP datasets wrangling - Chad : CLIMATE ADAPTATION PRACTICES"
+author: "Aboubacar HEMA"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    keep_md: true
+---
+
+```{r 27 setup, include=FALSE, results = 'hide'}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, results = "hide")
+```
+
+# Climate adaptation practices
+
+In this section, we harmonize the questions on climate adaptation practices and training of the 2021 annual survey, the 2022 annual survey and the two 2023 rounds. The 2022 PDM and earlier rounds did not ask them.
+
+* **Four techniques:** soil conservation and fertility, crop diversification and rotation, timely destocking before the dry season, and pasture improvement. For each, whether the household knows it and whether it applies it. The application question was asked only of households that know the technique.
+* **Training:** in agriculture, and on destocking, pasture improvement and water for animals; on food processing and enrichment, whether the household masters it and uses it to feed infants.
+* **Good practices** used in the last 12 months (multiple choice): compost pits, improved stoves, livestock fattening, micro-gardens, water, sanitation and hygiene, nutrition with local products, food conservation and processing.
+* Answers are coded 1 = Yes, 2 = No, 3 = Don't know in every round: recoded to 1 = Yes, 0 = No, 888 = Don't know. The 2021 annual survey also holds codes 4 and 5, which have no label (1 to 23 answers per question): they are set to missing.
+* `AdpKnowCount` counts the four techniques the household knows, and `AdpApplyAny` is 1 when it applies at least one.
+
+```{r 27 packages needed}
+library(haven)
+library(labelled)
+library(tidyverse)
+library(readxl)
+```
+
+```{r 27 remove environment variables}
+rm(list = ls())
+```
+
+```{r 27 environment settings}
+dir_input_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/input_data/Chad"
+dir_output_data = "C:/Users/AHema/OneDrive - CGIAR/Desktop/WFP Resilience dataset/data/output_data/Chad"
+```
+
+```{r 27 read harmonization excel file}
+Chad_Harmonization_variables <- read_excel(paste0(dir_input_data, "/Chad_Harmonization_extension.xlsx"), sheet = "variables_harmonization") %>%
+  dplyr::filter(Module == "Adaptation")
+Chad_Harmonization_description <- read_excel(paste0(dir_input_data, "/Chad_Harmonization.xlsx"), sheet = "description")
+Chad_Harmonization_ID <- read_excel(paste0(dir_input_data, "/Chad_Harmonization.xlsx"), sheet = "variables_harmonization") %>%
+  dplyr::filter(NewVariable_Name == "ID")
+```
+
+```{r 27 data importation}
+lst_data = Chad_Harmonization_description$Data
+lst_test = Chad_Harmonization_description$Name
+for (i in 1:length(lst_data)) {
+  assign(lst_test[i], read_sav(paste0(dir_input_data, "/", lst_data[i])))
+}
+```
+
+```{r 27 select and rename columns needed}
+for (j in 1:length(lst_test)) {
+  raw <- get(lst_test[j], envir = .GlobalEnv)
+  df <- tibble::tibble(.rows = nrow(raw))
+  id_var <- Chad_Harmonization_ID[[lst_test[j]]]
+  df$ID <- if (is.na(id_var)) NA_character_ else { z <- zap_labels(raw[[id_var]]); if (is.numeric(z)) format(z, scientific = FALSE, trim = TRUE) else as.character(z) }
+  for (i in 1:nrow(Chad_Harmonization_variables)) {
+    v <- Chad_Harmonization_variables[[lst_test[j]]][i]
+    df[[Chad_Harmonization_variables$NewVariable_Name[i]]] <- if (is.na(v)) NA_real_ else as.numeric(zap_labels(raw[[v]]))
+  }
+  assign(lst_test[j], df)
+}
+Chad_pdm_2022$ID = as.character(1:nrow(Chad_pdm_2022))
+```
+
+## Recoding
+
+```{r}
+vars <- Chad_Harmonization_variables$NewVariable_Name
+practices <- grep("^AdpPractice", vars, value = TRUE)
+answers <- setdiff(vars, practices)
+df_Chad <- dplyr::bind_rows(mget(lst_test))
+for (v in answers) {
+  x <- df_Chad[[v]]
+  print(c(v, sum(x %in% c(4, 5))))
+  stopifnot(all(x %in% c(1:5, NA)))
+  # 1 = Yes, 2 = No, 3 = Don't know; 4 and 5 have no label
+  df_Chad[[v]] <- dplyr::case_when(x == 1 ~ 1, x == 2 ~ 0, x == 3 ~ 888)
+}
+for (v in practices) stopifnot(all(df_Chad[[v]] %in% c(0, 1, NA)))
+know <- grep("^AdpKnow", vars, value = TRUE); apply <- grep("^AdpApply", vars, value = TRUE)
+k <- as.matrix(df_Chad[, know]); k[k == 888] <- NA
+df_Chad$AdpKnowCount <- ifelse(rowSums(!is.na(k)) > 0, rowSums(k == 1, na.rm = TRUE), NA)
+a <- as.matrix(df_Chad[, apply])
+df_Chad$AdpApplyAny <- ifelse(rowSums(!is.na(a)) > 0, as.numeric(rowSums(a == 1, na.rm = TRUE) > 0), NA)
+# Households that know no technique were not asked about applying one
+df_Chad$AdpApplyAny[is.na(df_Chad$AdpApplyAny) & df_Chad$AdpKnowCount %in% 0] <- 0
+```
+
+```{r}
+for (v in answers) df_Chad[[v]] <- labelled(df_Chad[[v]], c("No" = 0, "Yes" = 1, "Don't know" = 888))
+for (v in c(practices, "AdpApplyAny")) df_Chad[[v]] <- labelled(df_Chad[[v]], c("No" = 0, "Yes" = 1))
+for (i in 1:nrow(Chad_Harmonization_variables)) var_label(df_Chad[[Chad_Harmonization_variables$NewVariable_Name[i]]]) <- Chad_Harmonization_variables$Label[i]
+var_label(df_Chad$ID) <- "Household ID"
+var_label(df_Chad$AdpKnowCount) <- "Number of the four adaptation techniques the household knows"
+var_label(df_Chad$AdpApplyAny) <- "Household applies at least one of the four adaptation techniques"
+```
+
+## Export all data
+
+```{r}
+df_Chad <- df_Chad %>% dplyr::select(ID, all_of(vars), AdpKnowCount, AdpApplyAny)
+haven::write_dta(df_Chad, paste0(dir_output_data, "/", "WFP_Chad_Adaptation.dta"))
+```
