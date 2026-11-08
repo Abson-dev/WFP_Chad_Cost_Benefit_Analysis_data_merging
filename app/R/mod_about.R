@@ -17,6 +17,12 @@ about_ui <- function(id, d) {
                                      htmltools::tags$li("On a server, the app requires a login and refuses to start without accounts."),
                                      htmltools::tags$li("Check with the data owners (WFP) before sharing regional figures outside the team.")))
     ),
+    bslib::card(bslib::card_header("Data assistant"),
+                htmltools::p(class = "small", "An AI assistant answers questions in English or French on the same aggregates as this dashboard: how the data were merged, what is wrong or fixed, what the indicators show, and the costs per household. Each answer shows its table, its sources, and a link back to the page of this dashboard that holds the figures.",
+                             " Code and setup: ", htmltools::tags$a(href = "https://github.com/Abson-dev/wfp-chad-data-assistant", target = "_blank", rel = "noopener", "github.com/Abson-dev/wfp-chad-data-assistant"), "."),
+                htmltools::p(class = "small mb-0", if (nzchar(Sys.getenv("WFP_ASSISTANT_URL"))) htmltools::tagList("Open it: ", htmltools::tags$a(href = Sys.getenv("WFP_ASSISTANT_URL"), target = "_blank", rel = "noopener", Sys.getenv("WFP_ASSISTANT_URL")), ".")
+                             else "It is not hosted yet: it runs on the team's computers (run_web.bat). Regional aggregates reach the Anthropic API when a question needs them, so hosting it for others waits for WFP's agreement.",
+                             " Pages of this dashboard can be opened directly: add #page=costs (or merge, validation, issues, variables, trends, regions, assistance, process, crosswalk, rounds, data) to its address.")),
     bslib::card(bslib::card_header("Refresh after a change in the pipeline"),
                 htmltools::p(class = "small", "After fixing the Rmds, the workbook or the do-files and rebuilding the merged file, from the app folder:"),
                 htmltools::tags$pre(class = "code-block", "Rscript prepare_app_data.R     # recomputes all aggregates, checks and flags\nRscript tests/test_app.R        # tests every page and the data boundary\nrun_app.bat                     # opens the dashboard"),

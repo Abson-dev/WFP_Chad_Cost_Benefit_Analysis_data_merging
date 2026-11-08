@@ -7,6 +7,11 @@ library(bslib)
 
 check_auth()
 d <- load_app_data()
+# Deep links: ?page=costs or #page=costs opens that page (the data assistant links to them).
+PAGE_SLUGS <- c(overview = "Overview", merge = "Merge", validation = "Validation", issues = "Data issues", variables = "Variables",
+                trends = "Trends", regions = "Regions", assistance = "Assistance", costs = "Costs", approach = "Approach",
+                process = "Process", crosswalk = "Crosswalk", rounds = "Rounds", data = "Data", about = "About")
+ASSISTANT_URL <- Sys.getenv("WFP_ASSISTANT_URL")
 round_choices <- rev(setNames(d$rounds$round_id, d$rounds$choice))
 
 ui <- protect_ui(page_navbar(
@@ -18,7 +23,9 @@ ui <- protect_ui(page_navbar(
   fillable = FALSE,
   header = tagList(
     tags$link(rel = "stylesheet", href = "styles.css"),
-    useBusyIndicators()
+    useBusyIndicators(),
+    # The hash survives the login screen: pass it to the server once the app is shown.
+    tags$script(HTML("$(document).on('shiny:connected', function() { var h = window.location.hash.replace(/^#/, ''); if (h) Shiny.setInputValue('url_hash_page', h); });"))
   ),
   sidebar = sidebar(
     class = "global-sidebar", width = 260, gap = "0.5rem",
@@ -55,6 +62,7 @@ ui <- protect_ui(page_navbar(
   ),
   nav_panel("Data", icon = bsicons::bs_icon("download"), data_ui("data", d)),
   nav_panel("About", icon = bsicons::bs_icon("info-circle"), about_ui("about", d)),
+  if (nzchar(ASSISTANT_URL)) nav_item(tags$a(href = ASSISTANT_URL, target = "_blank", rel = "noopener", bsicons::bs_icon("chat-dots"), " Ask the assistant")),
   footer = tags$footer(
     class = "app-footer",
     "WFP Chad resilience CBA, 2018–2023 · aggregate data only · unweighted, preliminary, not official WFP results · ",
@@ -64,6 +72,18 @@ ui <- protect_ui(page_navbar(
 
 server <- function(input, output, session) {
   protect_server()
+  # Open the page named in the link, once the navigation exists.
+  page_from <- function(s) { s <- sub(".*page=([A-Za-z_]+).*", "\\1", s); if (tolower(s) %in% names(PAGE_SLUGS)) PAGE_SLUGS[[tolower(s)]] else NULL }
+  # The navigation appears after the login: then read the address (?page=) or the hash sent at connection (#page=).
+  observeEvent(input$page, {
+    target <- page_from(session$clientData$url_search)
+    if (is.null(target) && !is.null(isolate(input$url_hash_page))) target <- page_from(isolate(input$url_hash_page))
+    if (!is.null(target) && !identical(input$page, target)) nav_select("page", target)
+  }, once = TRUE)
+  observeEvent(input$url_hash_page, {
+    target <- page_from(input$url_hash_page)
+    if (!is.null(target)) nav_select("page", target)
+  })
   ref <- reactive(if (is.null(input$ref_round)) unname(round_choices[1]) else input$ref_round)
   est <- reactive(if (is.null(input$estimate)) "m" else input$estimate)
 
