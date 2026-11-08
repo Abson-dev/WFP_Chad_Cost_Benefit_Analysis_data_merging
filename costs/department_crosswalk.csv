@@ -15,3 +15,7 @@ Dartama,Dar-Tama,Wadi Fira,Dar-Tama,TD1702,Renamed,Gueréda sub-office.
 Ennedi Est,Wadi Hawar,Ennedi Est,Wadi Hawar,TD2002,Assumed,The cost sheet gives the region as the department (Amdjarass sub-office). Wadi Hawar is the only surveyed department there. To confirm with WFP.
 Sila,Kimiti,Sila,Kimiti,TD2101,Assumed,The cost sheet gives the region as the department (Goz Beida sub-office). Kimiti is the only surveyed department there. To confirm with WFP.
 "IRIBA, Dougouba","Iriba, Dougouba",Wadi Fira,,,No survey department,No surveyed department matches this name. To confirm with WFP.
+Mamdi et Kaya,Kaya + Mamdi,Lac,Kaya,TD0703,Combined,Spelling of the community template. Costs are not split between the two departments.
+Mamdi et Kaya,Kaya + Mamdi,Lac,Mamdi,TD0701,Combined,Spelling of the community template. Costs are not split between the two departments.
+"BEG SUD, OUEST, NORD",Barh-El-Gazel Sud + Ouest + Nord,Barh-El-Gazel,Barh-El-Gazel Sud,TD1901,Combined,"Community template, 2022 (Moussoro sub-office). Barh-El-Gazel Nord is not surveyed."
+"BEG SUD, OUEST, NORD",Barh-El-Gazel Sud + Ouest + Nord,Barh-El-Gazel,Barh-El-Gazel Ouest,TD1903,Combined,"Community template, 2022 (Moussoro sub-office). Barh-El-Gazel Nord is not surveyed."

@@ -1,0 +1,24 @@
+variable,cost_name,year,amount,currency,unit_rule,months,status,source_note
+DistribVivresSoudure,lean_food,2019,31.75,USD,persons_6,3,template,Full cost per person per month; 6 members assumed by WFP for operational reasons.
+DistribVivresSoudure,lean_food,2020,31.75,USD,persons_6,3,template,Full cost per person per month; 6 members assumed by WFP for operational reasons.
+DistribVivresSoudure,lean_food,2021,31.75,USD,persons_6,3,template,Full cost per person per month; 6 members assumed by WFP for operational reasons.
+DistribVivresSoudure,lean_food,2022,31.75,USD,persons_6,3,template,Full cost per person per month; 6 members assumed by WFP for operational reasons.
+DistribVivresSoudure,lean_food,2023,31.75,USD,persons_6,3,template,Full cost per person per month; 6 members assumed by WFP for operational reasons.
+DistribArgentSoudure,lean_cash,2019,,USD,household,3,to confirm,"WFP: to confirm (42,000 XAF per household first received)."
+DistribArgentSoudure,lean_cash,2020,44.5,USD,household,3,template,Year of revision.
+DistribArgentSoudure,lean_cash,2021,89,USD,household,3,template,14.83 USD per person per month x 6 members.
+DistribArgentSoudure,lean_cash,2022,89,USD,household,3,template,14.83 USD per person per month x 6 members.
+DistribArgentSoudure,lean_cash,2023,89,USD,household,3,template,14.83 USD per person per month x 6 members.
+DistribVivresArgentSoudure,lean_combined,2019,44.5,USD,household,3,assumed,"Food or cash in one question (2019 to 2021 PDM): costed as cash, the lower cost (decision of 8 November 2026). 2019 cash is not given by WFP: the 2020 amount is used."
+DistribVivresArgentSoudure,lean_combined,2020,44.5,USD,household,3,assumed,"Food or cash in one question (2019 to 2021 PDM): costed as cash, the lower cost (decision of 8 November 2026)."
+DistribVivresArgentSoudure,lean_combined,2021,89,USD,household,3,assumed,"Food or cash in one question (2019 to 2021 PDM): costed as cash, the lower cost (decision of 8 November 2026)."
+BlanketFeedingChildren,blanket_children,all,17,USD,children_6_23m,8,template,Prevention; every eligible child counted; 8 months average exposure.
+BlanketFeedingWomen,blanket_women,all,17,USD,one_woman,6,template,Prevention for pregnant and lactating women; at most one woman assumed (no count in the surveys).
+BlanketFeedingChildrenWomen,blanket_combined,all,17,USD,children_6_23m,8,assumed,Children or women in one question (2019 to 2021 PDM): costed as children.
+MAMChildren,mam_children,all,21.7,USD,one_person,2.17,template,Treatment; at most one malnourished child; 60-70 days (65 days = 2.17 months).
+MAMPLWomen,mam_women,all,21.7,USD,one_person,2.17,template,Treatment; at most one woman; 60-70 days (65 days = 2.17 months).
+MAMMASChildrenMAMPLWomen,mam_combined,all,21.7,USD,one_person,2.17,assumed,MAM or MAS in one question (2019 to 2021 PDM): costed as one MAM treatment (MAS is UNICEF's).
+FARNcommunaut,farn,all,39,USD,child_and_woman,2,template,At most one child aged 0-59 months and one woman aged 15-49.
+CantineScolaire,school_meals,all,7.5,USD,children_5_14,9,approximation,Per primary-school child per month; children aged 5-14 counted (the surveys have no 6-11 band): an upper bound.
+CantineScolaireBoursesAdo,school_combined,all,7.5,USD,children_5_14,9,assumed,School meals or bursaries in one question (2020 PDM): costed as school meals.
+BoursesAdo,bursary,all,20000,XAF,household,1,template,Per laureate once; one laureate per household assumed.

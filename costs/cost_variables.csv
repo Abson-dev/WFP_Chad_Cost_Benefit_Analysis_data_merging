@@ -1,0 +1,45 @@
+variable,group,unit,source,rule
+cost_comm_source,Community cost,code,Community template; village match,"0 no village cost; 1 the village's costs per beneficiary; 2 the cost area's average per beneficiary (participant outside a matched village, or village with a cost but no beneficiary count); 3 unknown (no cost data for the area and year); missing in 2018"
+cost_comm_transfer_xaf,Community cost,XAF,Community template: Transfer cost,"Participants in cash or food for assets: transfer cost / WFP beneficiary households, of the village (source 1) or the cost area (source 2); 0 for non-participants"
+cost_comm_capacity_xaf,Community cost,XAF,Community template: Capacity cost,"Every household of a village with costs: capacity cost / WFP beneficiary households, of the village (source 1) or the cost area (source 2)"
+cost_comm_repeat,Community cost,0/1,Community template,1 when the village's capacity cost of the year includes rows where it repeats the transfer cost (to confirm with WFP)
+cost_asset_land_xaf,Community cost by asset type,XAF,Community template: Actif; costs/activity_categories.csv,"Share of cost_comm_transfer_xaf + cost_comm_capacity_xaf for land recovery: dikes, half-moons, anti-erosion"
+cost_asset_trees_xaf,Community cost by asset type,XAF,Community template: Actif; costs/activity_categories.csv,"Share for trees, nurseries and dune fixation"
+cost_asset_water_xaf,Community cost by asset type,XAF,Community template: Actif; costs/activity_categories.csv,"Share for water: wells, ponds, dams, irrigation"
+cost_asset_garden_xaf,Community cost by asset type,XAF,Community template: Actif; costs/activity_categories.csv,Share for market gardening and crops
+cost_asset_hygiene_xaf,Community cost by asset type,XAF,Community template: Actif; costs/activity_categories.csv,Share for household hygiene and improved stoves
+cost_asset_compost_xaf,Community cost by asset type,XAF,Community template: Actif; costs/activity_categories.csv,Share for compost and soil fertility
+cost_asset_roads_xaf,Community cost by asset type,XAF,Community template: Actif; costs/activity_categories.csv,"Share for roads, buildings and maintenance"
+cost_asset_training_xaf,Community cost by asset type,XAF,Community template: Actif; costs/activity_categories.csv,Share for training and capacity building
+cost_asset_school_xaf,Community cost by asset type,XAF,Community template: Actif; costs/activity_categories.csv,Share for school support
+cost_asset_storage_xaf,Community cost by asset type,XAF,Community template: Actif; costs/activity_categories.csv,Share for cereal banks and storage
+cost_asset_livestock_xaf,Community cost by asset type,XAF,Community template: Actif; costs/activity_categories.csv,Share for livestock and fish
+cost_asset_other_xaf,Community cost by asset type,XAF,Community template: Actif; costs/activity_categories.csv,Share for activities the keyword rules do not classify
+cost_asset_lump2020_xaf,Community cost by asset type,XAF,Community template: 2020 (apr-dec),"Share from the 2020 April-December lump sums (COVID-19), not allocated to an activity"
+cost_lean_food_xaf,Household-level intervention,XAF,DistribVivresSoudure; household template,"31.75 USD x 6 persons x 3 months, at the year's exchange rate; 0 if no; missing if not asked"
+cost_lean_cash_xaf,Household-level intervention,XAF,DistribArgentSoudure; household template,89 USD (44.5 in 2020) x 3 months per household
+cost_lean_combined_xaf,Household-level intervention,XAF,DistribVivresArgentSoudure; household template,"Food or cash in one question (2019 to 2021 PDM): costed as cash, 44.5 USD (2019, 2020) or 89 USD (2021) x 3 months"
+cost_blanket_children_xaf,Household-level intervention,XAF,BlanketFeedingChildren; household template,17 USD x 8 months x children aged 6-23 months (at least 1)
+cost_blanket_women_xaf,Household-level intervention,XAF,BlanketFeedingWomen; household template,17 USD x 6 months x 1 woman
+cost_blanket_combined_xaf,Household-level intervention,XAF,BlanketFeedingChildrenWomen; household template,"Children or women in one question (2019 to 2021 PDM): costed as children"
+cost_mam_children_xaf,Household-level intervention,XAF,MAMChildren; household template,21.7 USD x 65 days (2.17 months) x 1 child
+cost_mam_women_xaf,Household-level intervention,XAF,MAMPLWomen; household template,21.7 USD x 65 days x 1 woman
+cost_mam_combined_xaf,Household-level intervention,XAF,MAMMASChildrenMAMPLWomen; household template,MAM or MAS in one question (2019 to 2021 PDM): costed as one MAM treatment
+cost_farn_xaf,Household-level intervention,XAF,FARNcommunaut; household template,39 USD x 2 months x (at most one child aged 0-59 months + at most one woman aged 15-49)
+cost_school_meals_xaf,Household-level intervention,XAF,CantineScolaire; household template,7.5 USD x 9 months x children aged 5-14 (at least 1; an upper bound)
+cost_school_combined_xaf,Household-level intervention,XAF,CantineScolaireBoursesAdo; household template,School meals or bursaries in one question (2020 PDM): costed as school meals
+cost_bursary_xaf,Household-level intervention,XAF,BoursesAdo; household template,"20,000 XAF once, one laureate per household"
+cost_interv_usd,Totals,USD,household_unit_costs.csv,Sum of the USD-priced household-level interventions
+cost_interv_xaf,Totals,XAF,household_unit_costs.csv; exchange_rates.csv,Sum of the household-level intervention columns
+cost_total_xaf,Totals,XAF,All of the above,cost_comm_transfer_xaf + cost_comm_capacity_xaf + cost_interv_xaf; missing when cost_comm_source = 3
+cost_vill_transfer_xaf,Context: village,XAF,Community template,"Transfer cost of the household's village in the survey year (all its matched cost villages, pooled)"
+cost_vill_capacity_xaf,Context: village,XAF,Community template,Capacity cost of the household's village in the survey year
+cost_vill_benef,Context: village,households,Community template: Menage,WFP beneficiary households of the village in the survey year
+cost_vill_cum_transfer_xaf,Context: village,XAF,Community template,"Transfer cost of the village, cumulated from 2019 to the survey year (assets built earlier still serve the household)"
+cost_vill_cum_capacity_xaf,Context: village,XAF,Community template,"Capacity cost of the village, cumulated from 2019 to the survey year"
+cost_vill_cum_benef,Context: village,households,Community template: Menage,"Beneficiary households summed from 2019 to the survey year (a household can count in several years)"
+cost_vill_cost_years,Context: village,years,Community template,"Years with community costs in the village, 2019 to the survey year"
+cost_area_transfer_xaf,Context: cost area,XAF,Community template,"Transfer cost of the household's cost area (department, or departments combined) in the survey year, including blocks that name no village"
+cost_area_capacity_xaf,Context: cost area,XAF,Community template,Capacity cost of the cost area in the survey year
+cost_area_benef,Context: cost area,households,Community template: Menage,WFP beneficiary households of the cost area in the survey year
+cost_area_revised_xaf,Context: cost area,XAF,WFP revised workbook: Cash,Cost of the cost area in the survey year in WFP's revised workbook (single amount; no transfer and capacity split)
