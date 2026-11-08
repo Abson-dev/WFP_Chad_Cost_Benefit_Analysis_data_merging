@@ -19,8 +19,9 @@ env_dir <- function(name, default) { v <- Sys.getenv(name); if (nzchar(v)) v els
 DIR_INPUT <- env_dir("WFP_INPUT_DIR", file.path(base, "WFP Resilience dataset/data/input_data/Chad"))
 DIR_MODULES <- env_dir("WFP_MODULES_DIR", file.path(base, "WFP Resilience dataset/data/output_data/Chad"))
 DIR_MERGED <- env_dir("WFP_MERGED_DIR", file.path(base, "2024/WFP/CBA - Chad/data"))
-# The merged file with the 17 modules added in November 2026 (do-files 16 to 20), and the file before them.
-FINAL_FILE <- "WFP_Chad_2018-2023_20261106_v5.dta"
+# The merged file with the 17 modules added in November 2026 (do-files 16 to 20) and the cost module (do-file 21),
+# and the file before the 2026 modules.
+FINAL_FILE <- "WFP_Chad_2018-2023_20261108_v6.dta"
 PREV_FILE <- "WFP_Chad_2018-2023_20261105_v2.dta"
 REPO <- ".."
 MIN_CELL <- 30
@@ -150,9 +151,13 @@ add_check("Merge", "All module files are unique on ID", pass_if(all(merge_steps$
 add_check("Merge", "No household exists only in a later module", pass_if(all(merge_steps$using_only == 0)), sum(merge_steps$using_only), "0 households",
           "The administrative file is the master: every other module's households are found in it.")
 add_check("Merge", "The replayed merge gives the merged file's households", pass_if(setequal(cur, x$ID)), length(cur), format(N_FINAL, big.mark = ","))
-add_check("Merge", "New modules leave out only the refused interview", pass_if(all(new_left_out == 1)),
-          sprintf("%s household left out per module", paste(unique(new_left_out), collapse = "/")), "1 per module",
-          sprintf("Do-files 16 and 17 keep the first of each duplicated ID, as do-file 12 does, and drop the one interview do-file 12 removed. %d modules checked.", length(new_left_out)))
+# The cost module is built from the merged file itself (costs/prepare_household_cost_module.R), so it leaves out nobody.
+DERIVED_MODULES <- "Costs"
+expected_left_out <- ifelse(names(new_left_out) %in% DERIVED_MODULES, 0, 1)
+add_check("Merge", "New modules leave out only the refused interview", pass_if(all(new_left_out == expected_left_out)),
+          sprintf("%s household left out per survey module; %s for the cost module", paste(unique(new_left_out[expected_left_out == 1]), collapse = "/"), paste(new_left_out[expected_left_out == 0], collapse = "/")),
+          "1 per survey module, 0 for the cost module",
+          sprintf("Do-files 16 to 20 keep the first of each duplicated ID, as do-file 12 does, and drop the one interview do-file 12 removed. The cost module (do-file 21) is built from the merged file. %d modules checked.", length(new_left_out)))
 # The modules added in 2026 must not change anything that was already in the merged file.
 prev <- haven::zap_labels(haven::read_dta(file.path(DIR_MERGED, PREV_FILE))); prev$ID <- as.character(prev$ID)
 prev_same <- identical(prev$ID, x$ID) && isTRUE(all.equal(as.data.frame(prev), as.data.frame(x[names(prev)]), check.attributes = FALSE))
@@ -676,6 +681,7 @@ col_family <- function(v) {
   derived_ext <- ifelse(new_mod, prefix_family(v), NA_character_)
   dplyr::case_when(
     !is.na(derived_ext) ~ derived_ext,
+    grepl("^cost_", v) ~ "Costs",
     grepl("^(exercise|reference|adm[012]_name|adm[012]_pcod|chtype|population|phase|p_phase|IP_var)", v) ~ "Cadre Harmonisé",
     v %in% c("ID", "SvyDate", "YEAR", "SvyMonth", "SURVEY", "ROUND", "round_id") ~ "Identification",
     v %in% c("ADMIN0Name", "adm0_ocha", "ADMIN1Name", "adm1_ocha", "ADMIN2Name", "adm2_ocha", "village", "Longitude", "Latitude", "Longitude_precision", "Latitude_precision") ~ "Geography",
@@ -767,8 +773,12 @@ inputs <- bind_rows(
   hash_row(file.path(DIR_MERGED, FINAL_FILE), "Merged dataset"),
   bind_rows(lapply(c("12_WFP_Chad_CBA_data_preparation.do", "13_WFP_Chad_OriginalAssistenciesVariables.do", "14_WFP_Chad_fix_rCSIBorrow.do",
                      "15_WFP_Chad_fix_FCS_2020PDM.do", "16_WFP_Chad_add_new_modules.do", "17_WFP_Chad_add_more_modules.do",
-                     "18_WFP_Chad_add_protection_debt.do", "19_WFP_Chad_add_cohesion_adaptation.do", "20_WFP_Chad_add_recovery_effects_markets.do"),
-                   function(f) hash_row(file.path(REPO, "merge", f), "Merge code"))))
+                     "18_WFP_Chad_add_protection_debt.do", "19_WFP_Chad_add_cohesion_adaptation.do", "20_WFP_Chad_add_recovery_effects_markets.do",
+                     "21_WFP_Chad_add_costs.do"),
+                   function(f) hash_row(file.path(REPO, "merge", f), "Merge code"))),
+  bind_rows(lapply(c("prepare_cost_data.R", "prepare_community_costs.R", "prepare_household_costs.R", "prepare_household_cost_module.R",
+                     "household_unit_costs.csv", "exchange_rates.csv", "department_crosswalk.csv", "activity_categories.csv", "cost_variables.csv"),
+                   function(f) hash_row(file.path(REPO, "costs", f), "Cost code and rules"))))
 
 # ---- Crosswalk workbook for download ------------------------------------------------------------
 wide <- crosswalk |> select(variable, round_id, source) |> mutate(round = cfg_rounds$label[match(round_id, cfg_rounds$round_id)]) |>
@@ -790,6 +800,66 @@ for (t in COST_TABLES) {
   if ("activity" %in% names(ct)) stop("Activity text in ", t, call. = FALSE)
   write_out(ct, paste0(t, ".csv"))
 }
+
+# ---- Costs per household: the 44 cost variables of the merged file (do-file 21), as aggregates --------
+say("Costs per household...")
+cost_vars <- grep("^cost_", names(x), value = TRUE)
+codebook <- readr::read_csv(file.path(REPO, "costs", "cost_variables.csv"), show_col_types = FALSE)
+add_check("Costs", "The cost dictionary describes exactly the cost variables", pass_if(setequal(codebook$variable, cost_vars)),
+          sprintf("%d variables, %d documented", length(cost_vars), nrow(codebook)), "Same set", "costs/cost_variables.csv against the merged file.")
+asset_vars <- grep("^cost_asset_", cost_vars, value = TRUE)
+item_vars <- setdiff(grep("^cost_.*_xaf$", cost_vars, value = TRUE), c(asset_vars, grep("^cost_(comm|vill|area|interv|total)", cost_vars, value = TRUE)))
+gap_asset <- max(abs(rowSums(x[asset_vars]) - x$cost_comm_transfer_xaf - x$cost_comm_capacity_xaf), na.rm = TRUE)
+gap_item <- max(abs(rowSums(x[item_vars], na.rm = TRUE) - x$cost_interv_xaf), na.rm = TRUE)
+gap_total <- max(abs(x$cost_comm_transfer_xaf + x$cost_comm_capacity_xaf + x$cost_interv_xaf - x$cost_total_xaf), na.rm = TRUE)
+add_check("Costs", "Asset types add up to the community cost", pass_if(gap_asset < 0.1), sprintf("Largest gap %.2f XAF", gap_asset), "Under 0.1 XAF (rounding)",
+          sprintf("%d asset columns against transfer + capacity, household by household.", length(asset_vars)))
+add_check("Costs", "Interventions add up to their total", pass_if(gap_item < 0.1), sprintf("Largest gap %.2f XAF", gap_item), "Under 0.1 XAF (rounding)",
+          sprintf("%d intervention columns against cost_interv_xaf.", length(item_vars)))
+add_check("Costs", "The total cost is community plus interventions", pass_if(gap_total < 0.1), sprintf("Largest gap %.2f XAF", gap_total), "Under 0.1 XAF")
+add_check("Costs", "No cost before the programme years", pass_if(all(is.na(x$cost_comm_source[x$round_id == "R01"]))), sum(!is.na(x$cost_comm_source[x$round_id == "R01"])), "0 households in 2018")
+n_unknown <- sum(x$cost_comm_source %in% 3)
+add_check("Costs", "Every 2019-2023 household has a community cost", pass_if(n_unknown == 0, "warn"), sprintf("%s unknown", format(n_unknown, big.mark = ",")), "0",
+          "Participants in cash for assets in an area and year with no cost, or no beneficiary count, in either cost file. Left missing, not guessed: see the issue register.")
+ledger <- readr::read_csv(file.path(DIR_COSTS, "community_cost_ledger.csv"), show_col_types = FALSE)
+tpl_lines <- readr::read_csv(file.path(DIR_COSTS, "community_cost_lines.csv"), show_col_types = FALSE, col_select = c(transfer_xaf, capacity_xaf))
+ledger_ok <- abs(sum(ledger$transfer_xaf) - sum(tpl_lines$transfer_xaf, na.rm = TRUE)) < 1 && abs(sum(ledger$capacity_xaf) - sum(tpl_lines$capacity_xaf, na.rm = TRUE)) < 1
+add_check("Costs", "Every franc of the community template has a destination", pass_if(ledger_ok),
+          sprintf("%s XAF traced", format(round(sum(ledger$transfer_xaf) + sum(ledger$capacity_xaf)), big.mark = ",")), "Equal to the template",
+          "The ledger of costs/prepare_community_costs.R, by period and destination.")
+cost_ledger <- ledger
+cost_vs_revised <- readr::read_csv(file.path(DIR_COSTS, "community_vs_revised.csv"), show_col_types = FALSE)
+
+hh <- x[x$round_id != "R01", ]
+cost_hh_round <- hh |> group_by(round_id) |> summarise(
+  households = n(), with_total = sum(!is.na(cost_total_xaf)), source_village = sum(cost_comm_source == 1), source_area = sum(cost_comm_source == 2),
+  source_none = sum(cost_comm_source == 0), source_unknown = sum(cost_comm_source == 3), participants = sum(cost_comm_transfer_xaf > 0, na.rm = TRUE),
+  repeat_flag = sum(cost_comm_repeat == 1, na.rm = TRUE),
+  transfer_mean = mean(cost_comm_transfer_xaf[!is.na(cost_total_xaf)]), capacity_mean = mean(cost_comm_capacity_xaf[!is.na(cost_total_xaf)]),
+  interv_mean = mean(cost_interv_xaf[!is.na(cost_total_xaf)]), total_mean = mean(cost_total_xaf, na.rm = TRUE), total_median = median(cost_total_xaf, na.rm = TRUE),
+  transfer_participant_median = median(cost_comm_transfer_xaf[cost_comm_transfer_xaf > 0], na.rm = TRUE), .groups = "drop") |>
+  mutate(across(ends_with(c("_mean", "_median")), ~ round(.x)))
+item_lab <- setNames(codebook$rule, codebook$variable)
+cost_hh_items <- bind_rows(lapply(c("cost_comm_transfer_xaf", "cost_comm_capacity_xaf", item_vars), function(v) {
+  hh |> group_by(round_id) |> summarise(asked = sum(!is.na(.data[[v]])), recipients = sum(.data[[v]] > 0, na.rm = TRUE),
+                                        mean_if_recipient = mean(.data[[v]][.data[[v]] > 0], na.rm = TRUE), total_xaf = sum(.data[[v]], na.rm = TRUE), .groups = "drop") |>
+    mutate(variable = v, label = sub(" \\(.*", "", sub("^Cost: ", "", unname(final_var_labels[v]))))
+})) |> mutate(suppressed = recipients > 0 & recipients < MIN_CELL, mean_if_recipient = ifelse(recipients < MIN_CELL, NA, round(mean_if_recipient)), total_xaf = round(total_xaf)) |>
+  filter(asked > 0)
+cost_hh_assets <- bind_rows(lapply(asset_vars, function(v) {
+  hh |> filter(!is.na(.data[[v]])) |> group_by(round_id) |> summarise(households = n(), with_cost = sum(.data[[v]] > 0), mean_xaf = mean(.data[[v]]), .groups = "drop") |>
+    mutate(variable = v, asset = sub(", XAF$", "", sub("^Community cost, asset type: ", "", unname(final_var_labels[v]))))
+})) |> mutate(mean_xaf = round(mean_xaf))
+cost_hh_region <- hh |> filter(!is.na(cost_total_xaf)) |> group_by(round_id, region = ADMIN1Name) |>
+  summarise(households = n(), total_mean = mean(cost_total_xaf), total_median = median(cost_total_xaf), community_mean = mean(cost_comm_transfer_xaf + cost_comm_capacity_xaf),
+            interv_mean = mean(cost_interv_xaf), .groups = "drop") |>
+  mutate(suppressed = households < MIN_CELL, across(c(total_mean, total_median, community_mean, interv_mean), ~ ifelse(suppressed, NA, round(.x))))
+write_out(cost_hh_round, "cost_household_by_round.csv")
+write_out(cost_hh_items, "cost_household_items.csv")
+write_out(cost_hh_assets, "cost_household_assets.csv")
+write_out(cost_hh_region, "cost_household_region.csv")
+write_out(cost_ledger, "cost_ledger.csv")
+write_out(cost_vs_revised, "cost_template_vs_revised.csv")
 
 # ---- Write --------------------------------------------------------------------------------------
 say("Writing %s/ ...", OUT)

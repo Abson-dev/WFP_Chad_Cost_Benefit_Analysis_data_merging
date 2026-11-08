@@ -26,8 +26,8 @@ costs_ui <- function(id, d) {
       kpi("Surveyed households with a cost", fmt_pct(100 * hh_linked / hh, 1), sprintf("%s of %s, 2019 to 2023", fmt_int(hh_linked), fmt_int(hh)), "people", "blue")
     ),
     callout(type = "info", htmltools::strong("How to read these costs. "),
-            "Costs are in XAF as WFP reported them, by partner and activity, with no household-level amounts. April to December 2020 holds lump sums per partner, because of COVID-19, so they are never split across activities. ",
-            "Package values are in USD per person per month and are not converted. This page has no cost per household: the household figures in WFP's sheets are missing in some periods and can count the same household under several activities."),
+            "The top of the page shows WFP's revised workbook: costs in XAF by partner and activity. April to December 2020 holds lump sums per partner, because of COVID-19, so they are never split across activities. ",
+            "The section Cost per household shows the 44 cost variables of the merged file (do-file 21), built from IFPRI's community and household templates: see costs/README.md."),
     bslib::layout_columns(
       col_widths = c(6, 6),
       bslib::card(full_screen = TRUE, bslib::card_header("Costs by period and type of activity, million XAF"), plotly::plotlyOutput(ns("by_period"), height = "430px"),
@@ -50,8 +50,120 @@ costs_ui <- function(id, d) {
       bslib::card(full_screen = TRUE, bslib::card_header("Assistance packages, USD per person per month"), bslib::card_body(padding = 0, reactable::reactableOutput(ns("composition"))),
                   bslib::card_footer(class = "table-note", "From WFP's composition file: ration per person per day, and the package's value in USD. Not converted to XAF, as no exchange rate was provided.")),
       bslib::card(full_screen = TRUE, bslib::card_header("Costs by partner and year, million XAF"), reactable::reactableOutput(ns("partners")))
-    )
+    ),
+    household_costs_ui(ns, d)
   )
+}
+
+# ---- Cost per household: the cost variables of the merged file, as aggregates ------------------------------
+household_costs_ui <- function(ns, d) {
+  r <- d$cost_hh_round; led <- d$cost_ledger
+  reach <- sum(led$transfer_xaf[grepl("^1", led$destination)] + led$capacity_xaf[grepl("^1", led$destination)]) / sum(led$transfer_xaf + led$capacity_xaf)
+  htmltools::tagList(
+    htmltools::h4(class = "mt-4", "Cost per household (merged file, do-file 21)"),
+    bslib::layout_column_wrap(
+      width = "200px", fill = FALSE, heights_equal = "row",
+      kpi("Mean cost per household", paste0(fmt_xaf(sum(r$total_mean * r$with_total) / sum(r$with_total)), " XAF"), "Community plus household-level, 2019 to 2023", "cash-coin", "navy"),
+      kpi("Households with a cost", fmt_pct(100 * sum(r$with_total) / sum(r$households), 1), sprintf("%s of %s surveyed from 2019", fmt_int(sum(r$with_total)), fmt_int(sum(r$households))), "people", "green"),
+      kpi("Community cost unknown", fmt_int(sum(r$source_unknown)), "No cost or no beneficiary count for the area and year", "question-circle", "brown"),
+      kpi("Template costs reaching households", fmt_pct(100 * reach, 1), "Surveyed village, same year; the rest is in the context variables", "diagram-3", "blue")
+    ),
+    bslib::layout_columns(
+      col_widths = c(7, 5),
+      bslib::card(full_screen = TRUE, bslib::card_header("Mean cost per household by round, XAF"), plotly::plotlyOutput(ns("hh_round"), height = "400px"),
+                  bslib::card_footer(class = "table-note", "Over households with a cost. Transfer: cash for assets, participants only. Capacity: every household of a village with community costs. In 2020, lump sums spread over few declared beneficiaries raise the transfer cost.")),
+      bslib::card(full_screen = TRUE, bslib::card_header("Source of the community cost, households"), bslib::card_body(padding = 0, reactable::reactableOutput(ns("hh_source"))),
+                  bslib::card_footer(class = "table-note", "Village: the village's costs per WFP beneficiary household. Area: the cost area's average. Unknown: left missing. Repeated: capacity cost that may repeat the transfer cost, to confirm with WFP."))
+    ),
+    bslib::card(full_screen = TRUE, bslib::card_header("Mean cost per recipient household, by intervention and round, thousand XAF"), plotly::plotlyOutput(ns("hh_items"), height = "560px"),
+                bslib::card_footer(class = "table-note", "Empty: not asked in that round, or fewer than 30 recipients. Combined: questions that join two interventions (2019 to 2021 PDM), costed by the rules in costs/household_unit_costs.csv.")),
+    bslib::card(full_screen = TRUE, bslib::card_header("Community cost by asset type, mean per household, XAF"), plotly::plotlyOutput(ns("hh_assets"), height = "480px"),
+                bslib::card_footer(class = "table-note", "Asset types from the keyword rules on the activity text. A cost covering several activities is shared equally between them. Grey: the 2020 lump sums, not allocated to an activity.")),
+    bslib::layout_columns(
+      col_widths = c(6, 6),
+      bslib::card(full_screen = TRUE, bslib::card_header("Mean cost per household by region and round, thousand XAF"), plotly::plotlyOutput(ns("hh_region"), height = "430px"),
+                  bslib::card_footer(class = "table-note", "Cells with fewer than 30 households with a cost are hidden.")),
+      bslib::card(full_screen = TRUE, bslib::card_header("Where the community template's costs go, million XAF"), bslib::card_body(padding = 0, reactable::reactableOutput(ns("ledger"))),
+                  bslib::card_footer(class = "table-note", "Every franc of the template has one destination; the total equals the template. Other years: in the cumulated village variables. Not surveyed or no village: in the cost area variables."))
+    ),
+    bslib::card(full_screen = TRUE, bslib::card_header("Community template against WFP's revised workbook, XAF"), bslib::card_body(padding = 0, reactable::reactableOutput(ns("vs_revised"))),
+                bslib::card_footer(class = "table-note", "The template is the reference for household costs (decision of 8 November 2026). Its transfer costs equal the revised workbook in 2020 January-March and 2021 only; the revised amount stays in cost_area_revised_xaf."))
+  )
+}
+
+household_costs_server <- function(input, output, d) {
+  lab <- function(rid) factor(d$rounds$label[match(rid, d$round_ids)], levels = d$round_levels)
+  output$hh_round <- plotly::renderPlotly({
+    r <- d$cost_hh_round; x <- lab(r$round_id)
+    parts <- list(c("transfer_mean", "Transfer (cash for assets)", "#007DBC"), c("capacity_mean", "Capacity (community assets)", "#03924A"), c("interv_mean", "Household-level interventions", "#FAB219"))
+    p <- plotly::plot_ly()
+    for (k in parts) p <- plotly::add_bars(p, x = x, y = r[[k[1]]], name = k[2], marker = list(color = k[3]), hovertemplate = paste0("%{x}<br>", k[2], ": %{y:,.0f} XAF<extra></extra>"))
+    p |> plotly_style(barmode = "stack", yaxis = list(tickformat = ",.0f"), margin = list(t = 40, r = 10)) |>
+      plotly::layout(legend = list(orientation = "h", x = 0, y = 1.12, yanchor = "bottom"), xaxis = list(tickangle = -30))
+  })
+  output$hh_source <- reactable::renderReactable({
+    r <- d$cost_hh_round
+    t <- data.frame(Round = as.character(lab(r$round_id)), Households = r$households, Village = r$source_village, Area = r$source_area, `No cost` = r$source_none,
+                    Unknown = r$source_unknown, Repeated = r$repeat_flag, check.names = FALSE)
+    reactable::reactable(t, compact = TRUE, pagination = FALSE, sortable = FALSE, class = "dark-table",
+                         defaultColDef = reactable::colDef(align = "right", minWidth = 62, format = reactable::colFormat(separators = TRUE)),
+                         columns = list(Round = reactable::colDef(align = "left", class = "cell-label", minWidth = 110)))
+  })
+  output$hh_items <- plotly::renderPlotly({
+    x <- d$cost_hh_items
+    short <- c(cost_comm_transfer_xaf = "Cash for assets: community transfer", cost_comm_capacity_xaf = "Community assets: capacity",
+               cost_lean_food_xaf = "Lean season: food", cost_lean_cash_xaf = "Lean season: cash", cost_lean_combined_xaf = "Lean season: food or cash",
+               cost_blanket_children_xaf = "Blanket feeding: children", cost_blanket_women_xaf = "Blanket feeding: women", cost_blanket_combined_xaf = "Blanket feeding: children or women",
+               cost_mam_children_xaf = "MAM treatment: children", cost_mam_women_xaf = "MAM treatment: women", cost_mam_combined_xaf = "Malnutrition treatment (combined)",
+               cost_farn_xaf = "FARN", cost_school_meals_xaf = "School meals", cost_school_combined_xaf = "School meals or bursaries", cost_bursary_xaf = "Bursaries for girls")
+    x$label <- ifelse(x$variable %in% names(short), short[x$variable], x$label)
+    tot <- tapply(x$total_xaf, x$label, sum); rows <- names(sort(tot, decreasing = TRUE)); cols <- d$round_levels[d$round_ids %in% x$round_id]
+    x$round <- as.character(lab(x$round_id))
+    z <- tapply(x$mean_if_recipient, list(factor(x$label, levels = rows), factor(x$round, levels = cols)), function(v) v[1])
+    n <- tapply(x$recipients, list(factor(x$label, levels = rows), factor(x$round, levels = cols)), function(v) v[1])
+    hov <- matrix(sprintf("<b>%s · %s</b><br>%s XAF per recipient<br>%s recipients", rep(rows, length(cols)), rep(cols, each = length(rows)), fmt_xaf(z), ifelse(is.na(n), "not asked", fmt_int(n))), nrow = length(rows))
+    cell <- matrix(ifelse(is.na(z), "", formatC(z / 1000, format = "f", digits = 0, big.mark = ",")), nrow = length(rows))
+    round_heatmap(rows, cols, unname(z), hov, cell, list(c(0, "#F3F9FC"), c(.5, "#89D1F4"), c(1, "#004670")), colorbar = FALSE)
+  })
+  output$hh_assets <- plotly::renderPlotly({
+    x <- d$cost_hh_assets
+    tot <- tapply(x$mean_xaf * x$households, x$asset, sum); cats <- c(setdiff(names(sort(tot, decreasing = TRUE)), LUMP_CATEGORY), intersect(LUMP_CATEGORY, names(tot)))
+    p <- plotly::plot_ly()
+    for (k in cats) {
+      s <- x[x$asset == k, ]
+      p <- plotly::add_bars(p, x = lab(s$round_id), y = s$mean_xaf, name = k, marker = list(color = unname(CATEGORY_COL[k]), line = list(color = "#fff", width = .5)),
+                            hovertemplate = paste0("%{x}<br>", k, ": %{y:,.0f} XAF<extra></extra>"))
+    }
+    p |> plotly_style(barmode = "stack", yaxis = list(tickformat = ",.0f"), margin = list(t = 20, r = 10)) |>
+      plotly::layout(legend = list(orientation = "v", x = 1.02, y = 1, yanchor = "top", font = list(size = 11)), xaxis = list(tickangle = -30))
+  })
+  output$hh_region <- plotly::renderPlotly({
+    x <- d$cost_hh_region[d$cost_hh_region$region != "" & !is.na(d$cost_hh_region$region), ]
+    rows <- sort(unique(x$region)); cols <- d$round_levels[d$round_ids %in% x$round_id]; x$round <- as.character(lab(x$round_id))
+    z <- tapply(x$total_mean / 1000, list(factor(x$region, levels = rows), factor(x$round, levels = cols)), function(v) v[1])
+    n <- tapply(x$households, list(factor(x$region, levels = rows), factor(x$round, levels = cols)), function(v) v[1])
+    hov <- matrix(sprintf("<b>%s · %s</b><br>%s thousand XAF<br>%s households", rep(rows, length(cols)), rep(cols, each = length(rows)), ifelse(is.na(z), "hidden or none", formatC(z, format = "f", digits = 0, big.mark = ",")), ifelse(is.na(n), "0", fmt_int(n))), nrow = length(rows))
+    cell <- matrix(ifelse(is.na(z), "", formatC(z, format = "f", digits = 0, big.mark = ",")), nrow = length(rows))
+    round_heatmap(rows, cols, unname(z), hov, cell, list(c(0, "#FFF8E6"), c(.5, "#FAB219"), c(1, "#AA5628")), colorbar = FALSE)
+  })
+  output$ledger <- reactable::renderReactable({
+    x <- d$cost_ledger
+    a <- stats::aggregate(cbind(transfer_xaf, capacity_xaf) ~ destination, x, sum)
+    t <- data.frame(Destination = sub("^[0-9] ", "", a$destination), Transfer = round(a$transfer_xaf / 1e6, 1), Capacity = round(a$capacity_xaf / 1e6, 1))
+    t <- rbind(t, data.frame(Destination = "Total, equal to the template", Transfer = sum(t$Transfer), Capacity = sum(t$Capacity)))
+    reactable::reactable(t, compact = TRUE, pagination = FALSE, sortable = FALSE, class = "dark-table", rowClass = function(i) if (i == nrow(t)) "row-current",
+                         defaultColDef = reactable::colDef(align = "right", minWidth = 80, format = reactable::colFormat(separators = TRUE, digits = 1)),
+                         columns = list(Destination = reactable::colDef(align = "left", class = "cell-label", minWidth = 230)))
+  })
+  output$vs_revised <- reactable::renderReactable({
+    x <- d$cost_vs_revised
+    t <- data.frame(Period = x$period, Transfer = fmt_xaf(x$transfer_xaf), Capacity = fmt_xaf(x$capacity_xaf), Revised = fmt_xaf(x$revised_cash_xaf),
+                    Difference = ifelse(abs(x$transfer_minus_revised_xaf) < 1, "0", fmt_xaf(x$transfer_minus_revised_xaf)), stringsAsFactors = FALSE)
+    reactable::reactable(t, compact = TRUE, pagination = FALSE, sortable = FALSE, class = "dark-table", rowClass = function(i) if (t$Difference[i] != "0") "row-flag",
+                         defaultColDef = reactable::colDef(align = "right", minWidth = 110),
+                         columns = list(Period = reactable::colDef(align = "left", class = "cell-label", minWidth = 105), Revised = reactable::colDef(name = "Revised workbook"),
+                                        Difference = reactable::colDef(name = "Transfer minus revised")))
+  })
 }
 
 costs_server <- function(id, d) {
@@ -144,5 +256,7 @@ costs_server <- function(id, d) {
       reactable::reactable(t[order(-t$Total), ], compact = TRUE, striped = TRUE, defaultPageSize = 12, searchable = TRUE, defaultColDef = reactable::colDef(align = "right", minWidth = 70, na = "–", format = reactable::colFormat(separators = TRUE, digits = 1)),
                            columns = list(Partner = reactable::colDef(align = "left", class = "cell-label", minWidth = 125), Total = reactable::colDef(style = list(fontWeight = 700))))
     })
+
+    household_costs_server(input, output, d)
   })
 }

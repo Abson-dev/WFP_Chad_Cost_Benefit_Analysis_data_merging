@@ -18,8 +18,8 @@ DIR_MERGED <- Sys.getenv("WFP_MERGED_DIR", "C:/Users/AHema/OneDrive - CGIAR/Desk
 # The merged file with the modules added in November 2026: shocks, assets, livelihoods and agriculture
 # (merge/16), expenditure, disability, education and migration (merge/17), protection and debt (merge/18),
 # social cohesion and climate adaptation (merge/19), shock impact, programme effects, markets, accountability and
-# additions to earlier modules (merge/20)
-FINAL_FILE <- "WFP_Chad_2018-2023_20261106_v5.dta"
+# additions to earlier modules (merge/20), and the costs per household (merge/21, built by the scripts of costs/)
+FINAL_FILE <- "WFP_Chad_2018-2023_20261108_v6.dta"
 OUT <- file.path(DIR_MERGED, "dataverse_deposit")
 PRIVATE <- file.path(DIR_MERGED, "dataverse_deposit_private")
 dir.create(OUT, showWarnings = FALSE); dir.create(PRIVATE, showWarnings = FALSE)
@@ -75,6 +75,9 @@ REMOVED <- c(
 # 2018 baseline areas as reported: units mixed (hectares, square metres, cordes) and values up to millions.
 # The hectare values are published in the AgrArea variables, and the units in the AgrArea...Unit variables.
 for (v in grep("^AgrArea.+Reported$", ALL, value = TRUE)) REMOVED[v] <- "2018 baseline value in mixed units, with extreme values that identify households. The hectare values are in the variable without 'Reported'."
+# Costs per household (merge/21): the village totals are unique to each village and year, so they would point to the
+# village, which is removed. They stay in the merged file.
+for (v in grep("^cost_vill_", ALL, value = TRUE)) REMOVED[v] <- "Village cost totals: unique to each village and year, they would point to the household's village, which is removed. Kept in the merged file."
 REPLACED <- c(ID = "Replaced by hh_key, a random key. The link to the original ID stays private.")
 COARSENED <- c(
   SvyDate = "Interview date limited to year and month (SvyYearMonth), as IFPRI's guide requires.",
@@ -104,6 +107,18 @@ for (v in grep("^EduGirls(Primary|Secondary)(Supported)?$|^EduGirlsSupportedPast
   CAPS[v] <- 5
   COARSENED[v] <- "Top-coded at 5 girls: larger numbers are rare, and values up to 30,000 are amounts entered by mistake."
 }
+# Costs per household. Community costs are the same for every household of a village and year, so they would point
+# to the village: they are replaced by the mean of the household's department, round and participation group (the
+# department is published). Asset types follow, so they still add up. Costs that grow with the number of children are
+# top-coded at their 99.5th percentile, as rare counts identify households. Totals are recomputed from the published parts.
+COMM_COSTS <- c("cost_comm_transfer_xaf", "cost_comm_capacity_xaf", grep("^cost_asset_", ALL, value = TRUE))
+for (v in COMM_COSTS) COARSENED[v] <- "Village amounts replaced by the mean of the department, round and participation group (participants in cash for assets or not): the exact amount would point to the household's village, which is removed."
+for (v in intersect(c("cost_blanket_children_xaf", "cost_blanket_combined_xaf", "cost_school_meals_xaf", "cost_school_combined_xaf"), ALL)) {
+  CAPS[v] <- ceiling(quantile(as.numeric(zap_labels(x[[v]])), 0.995, na.rm = TRUE) / 1000) * 1000
+  COARSENED[v] <- sprintf("Top-coded at %s XAF, the 99.5th percentile rounded up: the cost grows with the number of children, and rare counts identify households.", format(CAPS[[v]], big.mark = ","))
+}
+for (v in intersect(c("cost_interv_xaf", "cost_interv_usd", "cost_total_xaf"), ALL)) COARSENED[v] <- "Recomputed from the published parts (community costs averaged, child-based costs top-coded)."
+cost_as_merged <- as.data.frame(zap_labels(x[, intersect(c("ROUND", "adm2_ocha", "village", "HHHSex", "HHSize", COMM_COSTS), names(x))]))
 
 x$SvyYearMonth <- format(as.Date(x$SvyDate), "%Y-%m")
 attr(x$SvyYearMonth, "label") <- "Interview year and month"
@@ -116,6 +131,24 @@ top <- function(v, cap) { lab <- get_label(v); o <- pmin(as.numeric(zap_labels(v
 x$HHSize <- top(x$HHSize, 15)
 for (v in COMPOSITION) x[[v]] <- top(x[[v]], 10)
 for (v in names(CAPS)) x[[v]] <- top(x[[v]], CAPS[[v]])
+if (length(COMM_COSTS)) {
+  g <- paste(zap_labels(x$ROUND), x$adm2_ocha, zap_labels(x$cost_comm_transfer_xaf) > 0, zap_labels(x$cost_comm_source) %in% c(1, 2))
+  for (v in COMM_COSTS) {
+    lab <- get_label(x[[v]]); z <- as.numeric(zap_labels(x[[v]]))
+    m <- ave(z, g, FUN = function(a) if (all(is.na(a))) NA_real_ else mean(a, na.rm = TRUE))
+    x[[v]] <- round(ifelse(is.na(z), NA, m), 2); attr(x[[v]], "label") <- paste0(lab, " (mean of department, round and participation)")
+  }
+  usd_items <- intersect(grep("^cost_(lean|blanket|mam|farn|school)", ALL, value = TRUE), ALL)
+  items <- intersect(c(usd_items, "cost_bursary_xaf"), ALL)
+  fx <- read_csv("costs/exchange_rates.csv", show_col_types = FALSE)
+  rate_of <- fx$xaf_per_usd[match(zap_labels(x$YEAR), fx$year)]
+  relabel <- function(v, value) { lab <- get_label(x[[v]]); o <- value; attr(o, "label") <- lab; o }
+  x$cost_interv_xaf <- relabel("cost_interv_xaf", round(rowSums(as.data.frame(lapply(items, function(v) as.numeric(zap_labels(x[[v]])))), na.rm = TRUE), 2))
+  x$cost_interv_xaf[is.na(zap_labels(x$cost_comm_source))] <- NA
+  x$cost_total_xaf <- relabel("cost_total_xaf", round(as.numeric(x$cost_comm_transfer_xaf) + as.numeric(x$cost_comm_capacity_xaf) + as.numeric(x$cost_interv_xaf), 2))
+  x$cost_interv_usd <- relabel("cost_interv_usd", round(rowSums(as.data.frame(lapply(usd_items, function(v) as.numeric(zap_labels(x[[v]])))), na.rm = TRUE) / rate_of, 2))
+  x$cost_interv_usd[is.na(zap_labels(x$cost_comm_source))] <- NA
+}
 
 # ---- Files by module, as the guide asks. All join on hh_key ---------------------------------------
 module_of <- function(v) {
@@ -124,6 +157,7 @@ module_of <- function(v) {
     grepl("^Eff[A-Z]", v) ~ "025_programme_effects",
     grepl("^Mkt[A-Z]", v) ~ "026_markets",
     grepl("^Fsn[A-Z]", v) ~ "027_food_shortage_2018_2021",
+    grepl("^cost_", v) ~ "028_costs",
     grepl("^Shk", v) ~ "012_shocks",
     grepl("^Ast|^Lvs", v) ~ "013_assets_livestock",
     grepl("^Liv[A-Z]", v) ~ "014_livelihoods",
@@ -227,6 +261,8 @@ for (v in grep("^Adp(Know|Apply|Trained|Processing)", ALL, value = TRUE)) if (!v
 for (v in grep("^(Prt|Aap)", ALL, value = TRUE)) if (!v %in% names(DERIVED)) DERIVED[v] <- "Text in 2019, 0/1 in 2020, 2021 and 2023, 1/2 in 2022: recoded to one scale. From 2022 asked mostly of households that received assistance (Rmd 24)."
 for (v in grep("^Dis(Seeing|Hearing|Walking|SelfCare|Communication)$", ALL, value = TRUE)) DERIVED[v] <- "Refused (5) and don't know (6) set to missing (Rmd 21)."
 for (v in grep("^Edu(Girls|Boys).+Complete$", ALL, value = TRUE)) DERIVED[v] <- "1 Yes, 2 No, 3 Don't know recoded to 1, 0, 888; codes outside the list (0 in 2022 annual, 4-5 in 2021 annual) set to missing (Rmd 22)."
+cost_rules <- read_csv("costs/cost_variables.csv", show_col_types = FALSE)
+for (i in seq_len(nrow(cost_rules))) if (cost_rules$variable[i] %in% ALL) DERIVED[cost_rules$variable[i]] <- paste0(cost_rules$rule[i], " Source: ", cost_rules$source[i], ". See costs/README.md.")
 for (v in grep("^Shk12m_", ALL, value = TRUE)) DERIVED[v] <- "Asked only when the shock happened in the last 5 years: set to No when the 5-year count is 0 (Rmd 16)."
 for (v in grep("^Lvs(Cattle|Sheep|Goats|Poultry|Camels|Horses|Donkeys)$", ALL, value = TRUE)) DERIVED[v] <- "2018 baseline and 2022-2023: adult animals only. 2019 to 2021: all animals; set to 0 when the household does not raise livestock (Rmd 17)."
 for (v in c("AstCart", "AstPlough", "AstBicycle", "AstPushcart", "AstMotorbike")) DERIVED[v] <- "2018 baseline asked the number: owned when above 0 (Rmd 17)."
@@ -260,6 +296,21 @@ disclosure <- bind_rows(
   review("Round, department, sex, age band, size, education, marital status", c("ROUND", "ADMIN2Name", "HHHSex", "HHHAge_group", "HHSize", "HHHEdu", "HHHMatrimonial"), "Yes"),
   review("Round, department, sex, age band, top-coded size, top-coded cattle and camels", c("ROUND", "ADMIN2Name", "HHHSex", "HHHAge_group", "HHSize", "LvsCattle", "LvsCamels"), "Yes")
 )
+# Community costs: as merged they single out the village; as published (department means) they do not.
+if (length(COMM_COSTS)) {
+  one_village <- function(cost) {
+    k <- paste(cost_as_merged$ROUND, cost_as_merged$adm2_ocha, cost)
+    nv <- tapply(cost_as_merged$village, k, function(v) length(unique(v)))
+    villages_dept <- tapply(cost_as_merged$village, paste(cost_as_merged$ROUND, cost_as_merged$adm2_ocha), function(v) length(unique(v)))
+    sel <- !is.na(cost) & cost > 0
+    # Share of households whose cost narrows their department and round down to one village, where it has several.
+    round(100 * mean((nv[k] == 1 & villages_dept[paste(cost_as_merged$ROUND, cost_as_merged$adm2_ocha)] > 1)[sel]), 1)
+  }
+  disclosure <- bind_rows(disclosure, data.frame(
+    what_someone_might_know = c("Round, department, community capacity cost as merged: households whose cost singles out one village of several", "The same, with the cost as published (department mean)"),
+    in_package = c("No", "Yes"), unique_households = NA, households_in_groups_under_5 = NA,
+    pct_under_5 = c(one_village(cost_as_merged$cost_comm_capacity_xaf), one_village(as.numeric(zap_labels(x$cost_comm_capacity_xaf))))))
+}
 small <- as.data.frame(table(round = xz$ROUND, department = xz$adm2_ocha), stringsAsFactors = FALSE) |> filter(Freq > 0, Freq < 30)
 write_csv(disclosure, file.path(OUT, "910_disclosure_review.csv"))
 
@@ -286,7 +337,9 @@ writeLines(enc2utf8(c(
   "  expenditure (monthly totals and food share), disability (Washington Group questions), education, migration,",
   "  protection and accountability to affected populations, decisions within the household, debt, social cohesion,",
   "  climate adaptation practices, the impact of shocks and recovery from them, changes credited to the programme,",
-  "  and markets.",
+  "  and markets. 028_costs.dta holds the cost of WFP's assistance per household (2019 to 2023), in XAF: community costs",
+  "  of cash for assets and the assets built (by asset type), the household-level interventions it reports, and the",
+  "  costs of its department, from WFP's cost data and IFPRI's cost templates.",
   "  The harmonized data were first built for IFPRI's 2026 cost-benefit analysis of the programme.",
   "",
   "IMPORTANT",
@@ -318,6 +371,8 @@ writeLines(enc2utf8(c(
   "  Coarsened: interview date to year and month; head's age to 10-year bands; household size at 15; composition counts at 10;",
   "  livestock counts, TLU, areas and expenditure at their 99.5th percentile; months of own production at 12;",
   "  shocks in 5 years at 10; migrants at 10; girls at school at 5.",
+  "  Costs: village cost totals removed; community costs per household replaced by the mean of the department, round and",
+  "  participation group; costs that grow with the number of children top-coded at their 99.5th percentile.",
   "  Removed too: the 2018 baseline areas in mixed units (the hectare values are kept).",
   "",
   "SOURCE CODE",
@@ -363,7 +418,7 @@ meta <- c(
   "| Product | Brief | This package |",
   "|---|---|---|",
   "| Layer 1: round-level datasets | 10 cleaned, labelled and anonymized files with all variables collected in each round (about 6,288 variables) | **Not started** |",
-  sprintf("| Layer 2: extended harmonized dataset | The existing harmonized file plus priority modules matched across rounds: shocks, assets, livelihoods, agriculture, nutrition | **Built except nutrition:** %d variables in %d modules, with shocks, assets and livestock, livelihoods, agriculture, expenditure, disability, education, migration, protection and accountability, debt, social cohesion, climate adaptation, shock impact and recovery, programme effects and markets added. Nutrition (MAD, MDD-W) left out: its link to households is broken in four rounds |", length(published) + 2, nrow(files)),
+  sprintf("| Layer 2: extended harmonized dataset | The existing harmonized file plus priority modules matched across rounds: shocks, assets, livelihoods, agriculture, nutrition | **Built except nutrition:** %d variables in %d modules, with shocks, assets and livestock, livelihoods, agriculture, expenditure, disability, education, migration, protection and accountability, debt, social cohesion, climate adaptation, shock impact and recovery, programme effects and markets added, and the costs per household (`028_costs.dta`). Nutrition (MAD, MDD-W) left out: its link to households is broken in four rounds |", length(published) + 2, nrow(files)),
   "| Codebook and variable metadata | Complete | Layer 2 only: `901_codebook.csv`, `900_variable_treatment.csv` |",
   "| Harmonization and indicator methods | Documented | In the source code and its report; the codebook gives each derived variable's formula |",
   "| Sampling and weights | Documented | **Missing** |",
@@ -387,6 +442,8 @@ meta <- c(
   sprintf("- %d round and department cells have fewer than 30 households.", nrow(small)),
   "- Whether the removed columns can be offered under restricted access. The guide does not describe this option; the brief asks that data which cannot be open go through the restricted-access process, with a discoverable metadata record.",
   "- `Montant` (cash amount received) is kept as merged, but could be rare in some places.",
+  sprintf("- **Costs per household:** community costs as merged single out the village for %.1f%% of households with a cost; as published (department means) for %.1f%%. Village cost totals are removed. The exact values could go under restricted access. See `910_disclosure_review.csv`.", disclosure$pct_under_5[nrow(disclosure) - 1], disclosure$pct_under_5[nrow(disclosure)]),
+  "- `cost_comm_repeat` marks villages whose capacity cost may repeat the transfer cost: a binary flag kept as merged.",
   "- The guide advises files by module and non-proprietary formats. Files are Stata, to keep the labels; it says Dataverse converts them."
 )
 writeLines(enc2utf8(meta), file.path(PRIVATE, "SUBMISSION_NOTES_for_IFPRI_KM.md"), useBytes = TRUE)

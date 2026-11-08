@@ -30,7 +30,7 @@ merge_ui <- function(id, d) {
       bslib::card(bslib::card_header("Place names"), bslib::card_body(padding = 0, reactable::reactableOutput(ns("places"))))
     ),
     bslib::card(full_screen = TRUE, bslib::card_header("Which module reaches which round: households"), plotly::plotlyOutput(ns("modules"), height = "520px"),
-                bslib::card_footer(class = "table-note", "Steps 9 to 25 are the modules added in November 2026 by do-files 16 to 20. A module counts a household when its file has a row for it, even if the round did not ask its questions: see the completeness by group below.")),
+                bslib::card_footer(class = "table-note", "Steps 9 to 25 are the modules added in November 2026 by do-files 16 to 20; step 26 is the cost module, added by do-file 21. A module counts a household when its file has a row for it, even if the round did not ask its questions: see the completeness by group below.")),
     bslib::card(full_screen = TRUE, bslib::card_header("Columns of the merged file: average completeness by group and round"),
                 plotly::plotlyOutput(ns("families"), height = "600px"),
                 bslib::card_footer(class = "table-note", "Assistance columns are low by design: each original-answer column belongs to one round only. Geography is lowered by the GPS columns, available mainly in 2018.")),

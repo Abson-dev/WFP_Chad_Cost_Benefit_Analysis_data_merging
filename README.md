@@ -5,7 +5,7 @@
 ![Shiny](https://img.shields.io/badge/dashboard-R%20Shiny-1F77B4)
 ![Data](https://img.shields.io/badge/survey%20data-not%20included-lightgrey)
 
-This repository builds the household dataset for the cost-benefit analysis (CBA) of WFP's resilience interventions in Chad. It merges **10 survey rounds** into one file of **17,255 households and 626 columns** (305 from the first harmonization, and 321 from 17 modules added in November 2026: shocks, shock impact and recovery, assets and livestock, livelihoods, agriculture, expenditure, disability, education, migration, protection and accountability, debt, social cohesion, climate adaptation, changes credited to the programme, markets, and additions to earlier modules), documents the problems found on the way, and checks the result in a dashboard.
+This repository builds the household dataset for the cost-benefit analysis (CBA) of WFP's resilience interventions in Chad. It merges **10 survey rounds** into one file of **17,255 households and 670 columns** (305 from the first harmonization, 321 from 17 modules added in November 2026, and 44 cost variables per household; the 17 modules are: shocks, shock impact and recovery, assets and livestock, livelihoods, agriculture, expenditure, disability, education, migration, protection and accountability, debt, social cohesion, climate adaptation, changes credited to the programme, markets, and additions to earlier modules), adds the cost of WFP's assistance to each household, documents the problems found on the way, and checks the result in a dashboard.
 
 | Part | What it is | Where |
 |---|---|---|
@@ -13,14 +13,14 @@ This repository builds the household dataset for the cost-benefit analysis (CBA)
 | Merge | Stata do-files that clean, merge, fix and extend the file, and compute the indicators | [`merge/`](merge/) |
 | Data release | Package for IFPRI Dataverse: files by module, codebook, privacy treatment | [`deposit/`](deposit/README.md) |
 | Report | Bookdown report on harmonisation issues | [Read online](https://bookdown.org/aboubacarhema94/WFP_Chad_Cost_Benefit_Analysis_data_merging/), [`report/`](report/) |
-| Costs | WFP's cost data reconciled, grouped by activity and linked to the surveys by department and year | [`costs/`](costs/README.md) |
+| Costs | WFP's cost data reconciled and linked to the surveys; community costs by village and asset type, intervention costs, and 44 cost variables per household (do-file 21), with a ledger that traces every franc | [`costs/`](costs/README.md) |
 | Dashboard | R Shiny app showing the merge, its checks, the results and the costs | [`app/`](app/README.md) |
 
 ![Overview page of the dashboard, with synthetic estimates](app/docs/screenshots/01-overview.png)
 
 *The dashboard's Overview page. The estimates in this screenshot are synthetic.*
 
-> **Read this before using the merged file.** An audit found defects in the merged file that change results in several rounds. The latest version is `WFP_Chad_2018-2023_20261106_v5.dta` (6 November 2026); two defects are fixed, the others are not yet. See [Known issues](#known-issues).
+> **Read this before using the merged file.** An audit found defects in the merged file that change results in several rounds. The latest version is `WFP_Chad_2018-2023_20261108_v6.dta` (8 November 2026), which adds the costs per household to v5; two defects are fixed, the others are not yet. See [Known issues](#known-issues).
 
 ## Contents
 
@@ -55,7 +55,12 @@ flowchart LR
     rmd2 --> mods2["17 module files<br/>added in 2026"]
     fix --> add["Do-files 16 to 20<br/>1:1 merge on ID"]
     mods2 --> add
-    add --> final["Merged dataset<br/>17,255 households, 626 columns"]
+    add --> v5["Merged dataset v5<br/>626 columns"]
+    cost["Cost files and templates"] --> cmod["costs/ scripts<br/>cost module"]
+    v5 --> cmod
+    v5 --> d21["Do-file 21<br/>1:1 merge on ID"]
+    cmod --> d21
+    d21 --> final["Merged dataset v6<br/>17,255 households, 670 columns"]
     final --> app["Dashboard<br/>aggregates and checks"]
     final --> dep["Dataverse package<br/>files by module"]
 ```
@@ -72,6 +77,7 @@ Each fix or extension writes a new file and leaves its input unchanged:
 | `WFP_Chad_2018-2023_20261106_v3.dta` | Do-file 18 | Protection and accountability, debt added |
 | `WFP_Chad_2018-2023_20261106_v4.dta` | Do-file 19 | Social cohesion, climate adaptation practices added |
 | `WFP_Chad_2018-2023_20261106_v5.dta` | Do-file 20 | Shock impact and recovery, programme effects, markets, more accountability questions, additions to earlier modules |
+| `WFP_Chad_2018-2023_20261108_v6.dta` | Do-file 21 | Costs per household: community transfer and capacity costs by asset type, household-level interventions, totals, village and cost area context (see [`costs/`](costs/README.md)) |
 
 ## Survey rounds
 
@@ -184,6 +190,7 @@ Without the source files, a fresh clone cannot run the dashboard, as `app/data/`
 
 ```bash
 Rscript costs/prepare_cost_data.R   # cost tables, from the repository's root; reads the source files, read-only
+# (after new cost data: the other scripts of costs/ and do-file 21, as costs/README.md explains)
 cd app
 Rscript prepare_app_data.R     # aggregates and checks; reads the source files, read-only
 Rscript tests/test_app.R       # tests every page, the figures and the data boundary

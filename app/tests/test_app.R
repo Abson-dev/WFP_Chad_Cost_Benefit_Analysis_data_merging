@@ -101,7 +101,24 @@ ok("costs: unclear activities stay few", stopifnot(sum(d$cost_category$cash_xaf[
 ok("costs: every category has a colour", stopifnot(all(d$cost_category$amount_category %in% names(CATEGORY_COL))))
 ok("costs: crosswalk codes are surveyed departments", {
   xw <- d$cost_crosswalk[!is.na(d$cost_crosswalk$adm2_ocha), ]
-  stopifnot(!anyDuplicated(xw$adm2_ocha))
+  # The community template's own spellings repeat a department on purpose; the workbook's rows do not.
+  wb <- xw[!grepl("community template", xw$note, ignore.case = TRUE), ]
+  stopifnot(!anyDuplicated(wb$adm2_ocha), !anyDuplicated(paste(xw$cost_department, xw$adm2_ocha)))
+})
+section("Costs per household")
+testServer(costs_server, args = list(d = d), {
+  ok("household cost outputs", { output$hh_round; output$hh_source; output$hh_items; output$hh_assets; output$hh_region; output$ledger; output$vs_revised })
+})
+ok("household costs: every 2019-2023 household has a source", stopifnot(all(with(d$cost_hh_round, source_village + source_area + source_none + source_unknown == households))))
+ok("household costs: households with a total are those with a known source", stopifnot(all(with(d$cost_hh_round, with_total == households - source_unknown))))
+ok("household costs: the ledger traces the template's 17.4 billion XAF", stopifnot(abs(sum(d$cost_ledger$transfer_xaf) - 10290087109) < 1, abs(sum(d$cost_ledger$capacity_xaf) - 7126217899) < 1))
+ok("household costs: small cells are hidden", {
+  stopifnot(all(is.na(d$cost_hh_region$total_mean[d$cost_hh_region$households < 30])), all(is.na(d$cost_hh_items$mean_if_recipient[d$cost_hh_items$recipients < 30])))
+})
+ok("household costs: every asset type has a colour", stopifnot(all(d$cost_hh_assets$asset %in% names(CATEGORY_COL))))
+ok("household costs: the cost checks pass, except the unknown households", {
+  ck <- d$checks[d$checks$group == "Costs", ]
+  stopifnot(nrow(ck) == 7, all(ck$status[ck$check != "Every 2019-2023 household has a community cost"] == "pass"))
 })
 ok("costs: composition is in USD, 6 packages", stopifnot(nrow(unique(d$composition[, c("programme", "target")])) == 6, min(d$composition$value_usd_per_person_month) == 10.9, max(d$composition$value_usd_per_person_month) == 31.75))
 ok("costs: no activity text or village in the app's tables", {
@@ -174,7 +191,7 @@ ok("flags: unresolved stay flagged in the corrected view", stopifnot("R02" %in% 
 ok("attention: serious point on a flagged round", stopifnot(any(vapply(attention_points(d, "R10", "m"), function(p) p$level == "serious", TRUE))))
 
 section("Figures against an independent recomputation from the merged file")
-merged_path <- file.path(Sys.getenv("WFP_MERGED_DIR", "C:/Users/AHema/OneDrive - CGIAR/Desktop/2024/WFP/CBA - Chad/data"), "WFP_Chad_2018-2023_20261106_v5.dta")
+merged_path <- file.path(Sys.getenv("WFP_MERGED_DIR", "C:/Users/AHema/OneDrive - CGIAR/Desktop/2024/WFP/CBA - Chad/data"), "WFP_Chad_2018-2023_20261108_v6.dta")
 if (file.exists(merged_path) && !demo_mode()) {
   x <- haven::zap_labels(haven::read_dta(merged_path))
   x$rid <- sprintf("R%02d", x$ROUND)

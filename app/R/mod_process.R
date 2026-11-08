@@ -19,7 +19,7 @@ PIPELINE_NODES <- function(d) {
     node("Do-file 12:\nscores", "step", 6, "Recomputes FCS and its groups, rCSI, maximum coping category, RCS and its groups on the pooled file. ABI comes from Rmd 07."),
     node("Cadre Harmonisé\nanalyses", "input", 6, "CH analyses for Chad, 2017 to 2023. Only the current period is kept. Joined on year, cycle and department."),
     node("Do-file 13:\nassistance", "step", 7, "Adds the original assistance answers for each round, sets all interventions to yes / no / don't know, recodes food for assets to cash and reorders the columns."),
-    node("Do-files 14 to 20:\nfixes and new modules", "merge", 8, "14 and 15 fix rCSIBorrow and the 2020 PDM FCS in new files. 16 to 20 add the 17 newer modules 1:1 on ID, keeping the first of each duplicated ID and leaving every earlier column unchanged."),
+    node("Do-files 14 to 21:\nfixes and new modules", "merge", 8, "14 and 15 fix rCSIBorrow and the 2020 PDM FCS in new files. 16 to 20 add the 17 newer modules 1:1 on ID, keeping the first of each duplicated ID and leaving every earlier column unchanged. 21 adds the costs per household, built by the scripts of costs/."),
     node("Merged dataset\n(.dta)", "output", 9, sprintf("%s, %s households and %d columns.", d$manifest$merged_file, fmt_int(d$manifest$households), d$manifest$columns)),
     node("This dashboard's\nchecks", "check", 10, "prepare_app_data.R replays the merge, compares raw and merged values, recomputes the scores and writes aggregates only.")
   ) -> n
@@ -50,7 +50,7 @@ process_server <- function(id, d) {
       mods <- nodes$id[nodes$group == "module"]; mods_new <- nodes$id[nodes$group == "module_new"]; off <- nodes$id[nodes$group == "offmerge"]
       clean <- id_of("Do-file 12:\nclean"); mrg <- id_of("Do-file 12:\nmerge 1:1 on ID"); sc <- id_of("Do-file 12:\nscores")
       ch <- id_of("Cadre Harmonisé\nanalyses"); d13 <- id_of("Do-file 13:\nassistance"); fin <- id_of("Merged dataset\n(.dta)"); chk <- id_of("This dashboard's\nchecks")
-      d17 <- id_of("Do-files 14 to 20:\nfixes and new modules")
+      d17 <- id_of("Do-files 14 to 21:\nfixes and new modules")
       rmd <- id_of("Rmds 01 to 11"); rmd2 <- id_of("Rmds 16 to 32"); raw <- id_of("10 SPSS files\n(raw .sav)"); wb <- id_of("Harmonisation\nworkbook")
       wb2 <- id_of("Extension\nworkbook"); rep <- id_of("MAD and MDDW\nrepeat files")
       edges <- data.frame(from = c(raw, wb, rep, raw, wb2, rep(rmd, length(mods)), rmd, rep(rmd2, length(mods_new)), mods, mods_new, clean, mrg, sc, ch, d13, d17, fin),

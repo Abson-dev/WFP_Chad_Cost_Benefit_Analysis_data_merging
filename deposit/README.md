@@ -13,16 +13,16 @@ It writes outside this repository, next to the merged file:
 | `dataverse_deposit/` | Data files by module, README, codebook, treatment of each variable, known issues, disclosure review | With IFPRI's Knowledge Management team, once ready |
 | `dataverse_deposit_private/` | Link between household keys and original IDs, and submission notes | **Keep the key file private.** The notes are for the submission |
 
-## What happens to the 626 columns
+## What happens to the 670 columns
 
-The script reads `WFP_Chad_2018-2023_20261106_v5.dta`: the merged file with the modules added in November 2026. Shocks, assets and livestock, livelihoods and agriculture (`merge/16_WFP_Chad_add_new_modules.do`) are published as files 012 to 015; expenditure, disability, education and migration (`merge/17_WFP_Chad_add_more_modules.do`) as files 016 to 019; protection and accountability, and debt (`merge/18_WFP_Chad_add_protection_debt.do`) as files 020 and 021; social cohesion and climate adaptation (`merge/19_WFP_Chad_add_cohesion_adaptation.do`) as files 022 and 023; shock impact and recovery, programme effects, markets and food shortage as files 024 to 027 (`merge/20_WFP_Chad_add_recovery_effects_markets.do`), whose other additions join the files of their module. Nutrition (MAD, MDD-W) is not included: its link to households is broken in four rounds. All columns are accounted for in `900_variable_treatment.csv`.
+The script reads `WFP_Chad_2018-2023_20261108_v6.dta`: the merged file with the modules added in November 2026 and the costs per household. Shocks, assets and livestock, livelihoods and agriculture (`merge/16_WFP_Chad_add_new_modules.do`) are published as files 012 to 015; expenditure, disability, education and migration (`merge/17_WFP_Chad_add_more_modules.do`) as files 016 to 019; protection and accountability, and debt (`merge/18_WFP_Chad_add_protection_debt.do`) as files 020 and 021; social cohesion and climate adaptation (`merge/19_WFP_Chad_add_cohesion_adaptation.do`) as files 022 and 023; shock impact and recovery, programme effects, markets and food shortage as files 024 to 027 (`merge/20_WFP_Chad_add_recovery_effects_markets.do`), whose other additions join the files of their module. The costs per household (`merge/21_WFP_Chad_add_costs.do`, built by the scripts of [`costs/`](../costs/README.md)) are file 028. Nutrition (MAD, MDD-W) is not included: its link to households is broken in four rounds. All columns are accounted for in `900_variable_treatment.csv`.
 
 | Treatment | Columns | Why |
 |---|---|---|
-| Removed (11) | `Longitude`, `Latitude`, their precision, `village`, `DateDerniereAssist_other`; the five 2018 baseline areas as reported (`AgrArea...Reported`) | Coordinates point to households; villages make most households unique; free text can hold names; the baseline areas mix units and reach millions (their hectare values are kept) |
+| Removed (18) | `Longitude`, `Latitude`, their precision, `village`, `DateDerniereAssist_other`; the five 2018 baseline areas as reported (`AgrArea...Reported`); the seven village cost totals (`cost_vill_*`) | Coordinates point to households; villages make most households unique; free text can hold names; the baseline areas mix units and reach millions (their hectare values are kept); village cost totals are unique to a village and year, so they would point to the village |
 | Replaced (1) | `ID`, by the random `hh_key` | Direct identifier |
-| Coarsened (59) | `SvyDate` to year and month; `HHHAge` to 10-year bands; `HHSize` at 15; composition counts at 10; livestock counts, TLU, areas and expenditure at their 99.5th percentile; months of own production at 12; shocks in 5 years at 10; migrants at 10; girls at school, now and in the past, at 5 | The guide's rules, rare values that identify households, and impossible values |
-| Kept as merged (555) | All others | |
+| Coarsened (81) | `SvyDate` to year and month; `HHHAge` to 10-year bands; `HHSize` at 15; composition counts at 10; livestock counts, TLU, areas and expenditure at their 99.5th percentile; months of own production at 12; shocks in 5 years at 10; migrants at 10; girls at school, now and in the past, at 5. Costs: the 15 community cost variables (transfer, capacity, asset types) replaced by the mean of the department, round and participation group; the four costs that grow with the number of children at their 99.5th percentile; the three totals recomputed from the published parts | The guide's rules, rare values that identify households, and impossible values. Community costs as merged single out the village for 65.4% of households with a cost; as published, for 1.3% |
+| Kept as merged (570) | All others | |
 
 The values are those of the merged file, including its known defects: see `902_known_issues.csv`. The script stops if an identifier reaches the package, or if a kept value differs from the merged file.
 
@@ -35,7 +35,7 @@ The project brief (`Project brief.docx`, kept with the data) sets out two produc
 | Product | Content | Status |
 |---|---|---|
 | Layer 1: round-level datasets | 10 cleaned, labelled, anonymized files with every variable collected in each round | Not started |
-| Layer 2: extended harmonized dataset | The harmonized file, plus shocks, assets, livelihoods, agriculture and nutrition modules matched across rounds | Harmonized file only |
+| Layer 2: extended harmonized dataset | The harmonized file, plus shocks, assets, livelihoods, agriculture and nutrition modules matched across rounds | Built except nutrition, with 17 modules and the costs per household |
 
 The submission notes take the title, description and scope from the brief, and flag where the brief and the data differ: the brief lists 8 regions while the data hold 10, and it calls the data representative by region although the files hold no weights.
 
