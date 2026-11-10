@@ -14,7 +14,8 @@ version 16
 global modules "C:\Users\AHema\OneDrive - CGIAR\Desktop\WFP Resilience dataset\data\output_data\Chad"
 global data "C:\Users\AHema\OneDrive - CGIAR\Desktop\2024\WFP\CBA - Chad\data"
 global old_merged "WFP_Chad_2018-2023_20261106_v5.dta"
-global new_merged "WFP_Chad_2018-2023_20261108_v6.dta"
+* v6 (8 November 2026) had the automatic village matches only; v7 adds the village decisions of 10 November 2026.
+global new_merged "WFP_Chad_2018-2023_20261110_v7.dta"
 
 use "$data\\$old_merged", clear
 local n_merged = _N

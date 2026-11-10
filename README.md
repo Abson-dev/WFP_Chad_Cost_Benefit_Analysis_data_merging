@@ -20,7 +20,7 @@ This repository builds the household dataset for the cost-benefit analysis (CBA)
 
 *The dashboard's Overview page. The estimates in this screenshot are synthetic.*
 
-> **Read this before using the merged file.** An audit found defects in the merged file that change results in several rounds. The latest version is `WFP_Chad_2018-2023_20261108_v6.dta` (8 November 2026), which adds the costs per household to v5; two defects are fixed, the others are not yet. See [Known issues](#known-issues).
+> **Read this before using the merged file.** An audit found defects in the merged file that change results in several rounds. The latest version is `WFP_Chad_2018-2023_20261110_v7.dta` (10 November 2026), which adds the costs per household to v5; two defects are fixed, the others are not yet. See [Known issues](#known-issues).
 
 ## Contents
 
@@ -60,7 +60,7 @@ flowchart LR
     v5 --> cmod
     v5 --> d21["Do-file 21<br/>1:1 merge on ID"]
     cmod --> d21
-    d21 --> final["Merged dataset v6<br/>17,255 households, 670 columns"]
+    d21 --> final["Merged dataset v7<br/>17,255 households, 670 columns"]
     final --> app["Dashboard<br/>aggregates and checks"]
     final --> dep["Dataverse package<br/>files by module"]
 ```
@@ -77,7 +77,8 @@ Each fix or extension writes a new file and leaves its input unchanged:
 | `WFP_Chad_2018-2023_20261106_v3.dta` | Do-file 18 | Protection and accountability, debt added |
 | `WFP_Chad_2018-2023_20261106_v4.dta` | Do-file 19 | Social cohesion, climate adaptation practices added |
 | `WFP_Chad_2018-2023_20261106_v5.dta` | Do-file 20 | Shock impact and recovery, programme effects, markets, more accountability questions, additions to earlier modules |
-| `WFP_Chad_2018-2023_20261108_v6.dta` | Do-file 21 | Costs per household: community transfer and capacity costs by asset type, household-level interventions, totals, village and cost area context (see [`costs/`](costs/README.md)) |
+| `WFP_Chad_2018-2023_20261108_v6.dta` | Do-file 21 | Costs per household: community transfer and capacity costs by asset type, household-level interventions, totals, village and cost area context, automatic village matches (see [`costs/`](costs/README.md)) |
+| `WFP_Chad_2018-2023_20261110_v7.dta` | Do-file 21 | The same, with the first manual review of the village matches: 69 households take their own village's cost |
 
 ## Survey rounds
 

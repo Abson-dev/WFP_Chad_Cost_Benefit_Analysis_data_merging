@@ -21,7 +21,7 @@ DIR_MODULES <- env_dir("WFP_MODULES_DIR", file.path(base, "WFP Resilience datase
 DIR_MERGED <- env_dir("WFP_MERGED_DIR", file.path(base, "2024/WFP/CBA - Chad/data"))
 # The merged file with the 17 modules added in November 2026 (do-files 16 to 20) and the cost module (do-file 21),
 # and the file before the 2026 modules.
-FINAL_FILE <- "WFP_Chad_2018-2023_20261108_v6.dta"
+FINAL_FILE <- "WFP_Chad_2018-2023_20261110_v7.dta"
 PREV_FILE <- "WFP_Chad_2018-2023_20261105_v2.dta"
 REPO <- ".."
 MIN_CELL <- 30

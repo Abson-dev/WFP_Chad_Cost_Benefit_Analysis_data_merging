@@ -19,7 +19,7 @@ DIR_MERGED <- Sys.getenv("WFP_MERGED_DIR", "C:/Users/AHema/OneDrive - CGIAR/Desk
 # (merge/16), expenditure, disability, education and migration (merge/17), protection and debt (merge/18),
 # social cohesion and climate adaptation (merge/19), shock impact, programme effects, markets, accountability and
 # additions to earlier modules (merge/20), and the costs per household (merge/21, built by the scripts of costs/)
-FINAL_FILE <- "WFP_Chad_2018-2023_20261108_v6.dta"
+FINAL_FILE <- "WFP_Chad_2018-2023_20261110_v7.dta"
 OUT <- file.path(DIR_MERGED, "dataverse_deposit")
 PRIVATE <- file.path(DIR_MERGED, "dataverse_deposit_private")
 dir.create(OUT, showWarnings = FALSE); dir.create(PRIVATE, showWarnings = FALSE)

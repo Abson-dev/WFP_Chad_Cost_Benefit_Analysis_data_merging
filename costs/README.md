@@ -2,11 +2,11 @@
 
 This folder turns WFP's resilience cost data into clean tables for the cost-benefit analysis. It reconciles the costs, groups them by activity, links them to the surveys by department and year, and spreads the community costs over villages matched to the surveyed villages.
 
-**Status (8 November 2026).**
+**Status (10 November 2026).**
 - **Department costs:** done; they feed the dashboard.
-- **Community costs by village and the village match:** built. A first review is proposed and awaits validation.
+- **Community costs by village and the village match:** done. The first manual review (23 cost villages) was validated on 10 November 2026.
 - **Costs of household-level interventions:** done, converted to XAF at the World Bank's annual rates.
-- **Household cost module (step 4):** done. Merged by do-file 21 into `WFP_Chad_2018-2023_20261108_v6.dta` (17,255 households, 670 columns: the 626 earlier columns unchanged and 44 cost variables). Every franc of the cost files is accounted for: see [No loss of information](#no-loss-of-information).
+- **Household cost module (step 4):** done. Merged by do-file 21 into `WFP_Chad_2018-2023_20261110_v7.dta` (17,255 households, 670 columns: the 626 earlier columns unchanged and 44 cost variables). Every franc of the cost files is accounted for: see [No loss of information](#no-loss-of-information).
 
 ## At a glance
 
@@ -27,16 +27,16 @@ flowchart LR
   V --> P4["prepare_household_cost_module.R"]
   I --> P4
   P4 --> K["WFP_Chad_Costs.dta"]
-  K --> S["merge/21 → merged file v6"]
+  K --> S["merge/21 → merged file v7"]
 ```
 
 | Step | Script | Status | Output |
 |---|---|---|---|
 | Department costs | `prepare_cost_data.R` | Done, feeds the dashboard | Reconciled lines, tables by category, area and partner, link to the surveys |
 | 1. Community costs by village | `prepare_community_costs.R` | Done | Transfer and capacity costs by village and period |
-| 2. Match to the surveyed villages | `prepare_community_costs.R` | Done; proposed review to validate | Each cost village and its surveyed village(s) |
+| 2. Match to the surveyed villages | `prepare_community_costs.R` | Done; first manual review applied | Each cost village and its surveyed village(s) |
 | 3. Costs of household-level interventions | `prepare_household_costs.R` | Done | Cost per household from the interventions it reports |
-| 4. Household cost module | `prepare_household_cost_module.R`, `merge/21_WFP_Chad_add_costs.do` | Done | 44 cost variables in the merged file (v6) |
+| 4. Household cost module | `prepare_household_cost_module.R`, `merge/21_WFP_Chad_add_costs.do` | Done | 44 cost variables in the merged file (v7) |
 
 ## Source files
 
@@ -49,7 +49,7 @@ All in `CBA - Chad/data/cost data/`, read-only. None is in this repository.
 | `TEMPLATE_Community (resilience)_20241216.xlsx` | IFPRI, filled with WFP | The same cost lines, plus the **villages** of each line and the cost **split into transfer and capacity costs**; the rule to assign costs to households | `prepare_community_costs.R` |
 | `TEMPLATE_Household resilience_20241219.xlsx` | IFPRI, filled with WFP | Full cost per household-level intervention, exposure period and beneficiary unit, with WFP's answers to IFPRI's questions | Copied into `household_unit_costs.csv` (step 3) |
 | `village_matches_manual.csv` | IFPRI | A person's decisions on village matches | `prepare_community_costs.R` |
-| `village_matches_proposed.csv` | IFPRI | Proposed decisions, to validate and copy into the manual file | Not read; try with `WFP_VILLAGE_DECISIONS` |
+| `village_matches_proposed.csv` | IFPRI | The first review as proposed, kept for the record (all of it is now in the manual file) | Not read |
 
 ## Run it
 
@@ -60,7 +60,7 @@ Rscript costs/prepare_cost_data.R          # department costs
 Rscript costs/prepare_community_costs.R    # community costs by village and village match
 Rscript costs/prepare_household_costs.R    # costs of the household-level interventions
 Rscript costs/prepare_household_cost_module.R   # the cost module, WFP_Chad_Costs.dta
-# then merge/21_WFP_Chad_add_costs.do in Stata, which writes the merged file v6
+# then merge/21_WFP_Chad_add_costs.do in Stata, which writes the merged file v7
 Rscript app/prepare_app_data.R             # then the dashboard (from app/, see app/README.md)
 ```
 
@@ -134,25 +134,28 @@ The merged file has 321 surveyed villages. Names are compared once written plain
 
 | Match | Cost villages |
 |---|---:|
-| Same name | 105 |
-| Surveyed name + suffix | 37 |
-| Close name | 73 |
+| Same name | 100 |
+| Surveyed name + suffix | 27 |
+| Close name | 62 |
 | Same name, other department | 2 |
-| Not surveyed | 201 |
+| Checked by hand: linked | 21 |
+| Checked by hand: not a surveyed village | 2 |
+| Not surveyed | 199 |
 | No surveyed department (Iriba, Dougouba) | 12 |
+| **All** | **425** |
 
 Surveyed households living in a village with community costs in the same year:
 
 | 2019 | 2020 | 2021 | 2022 | 2023 |
 |---:|---:|---:|---:|---:|
-| 47.9% | 79.4% | 66.8% | 71.4% | 49.1% |
+| 47.9% | 84.1% | 67.1% | 71.6% | 49.1% |
 
 ### Manual review
 
 Two lists, in `cost data clean/`:
 
-- `community_village_match_to_review.csv`: the 112 matches that are not an exact name, to confirm or reject.
-- `community_survey_villages_unmatched.csv`: the 159 surveyed villages (4,740 households) of a cost department with no cost village, with the nearest cost name, to catch missed matches.
+- `community_village_match_to_review.csv`: the 94 automatic matches that are not an exact name, to confirm or reject.
+- `community_survey_villages_unmatched.csv`: the 149 surveyed villages (4,304 households) of a cost department with no cost village, with the nearest cost name, to catch missed matches.
 
 Decisions go in `cost data/village_matches_manual.csv`:
 
@@ -166,12 +169,14 @@ Decisions go in `cost data/village_matches_manual.csv`:
 
 All rows of a cost village replace its automatic matches: one row links one surveyed spelling, several rows link several. Then rerun the script.
 
-**First review, proposed.** `cost data/village_matches_proposed.csv` holds 40 rows for 23 cost villages, to validate before copying them into the manual file:
-- **Rejections and corrections:** 4 cost villages, where the closest spelling is another village (two hamlets of a surveyed village, and two names closer in sound to a different surveyed village).
+**First review, validated on 10 November 2026.** The 40 proposed rows for 23 cost villages were accepted as proposed and copied into the manual file (`decided_by`: "proposal accepted by AH, 2026-11-10"). They are in the merged file from v7 on:
+- **Rejections and corrections:** 4 cost villages, where the closest spelling is another village. Two hamlets of a surveyed village are now "not a surveyed village"; two names keep only the surveyed village closer in sound.
 - **Lists without separators:** 11 cost "villages" are two or three villages written without a separator; each surveyed village among them is linked.
 - **Surveyed spellings that were missed:** 8 cost villages gain a spelling used in one survey round.
 
-To try them without changing the manual file: `WFP_VILLAGE_DECISIONS="<path to the proposed file>" Rscript costs/prepare_community_costs.R`. They add about 60 covered households in 2020 and a few dozen in other years.
+Effect: 69 households move to their village's own cost (63 had the cost area average, 6 had no community cost), and 207.6 million XAF more transfer cost reaches a surveyed village in its survey year (see the ledger below). The 2,114 households with an unknown cost are unchanged: their cost area has no cost, which no village decision can change.
+
+To try other decisions without changing the manual file: `WFP_VILLAGE_DECISIONS="<path to a decisions file>" Rscript costs/prepare_community_costs.R`. This rewrites the clean tables, so rerun with the manual file afterwards.
 
 Still open, left automatic: 6 doubtful close spellings and 2 names surveyed only in another department. They are in `community_village_match_to_review.csv`, outside the repository, as village names stay out of it.
 
@@ -240,7 +245,7 @@ The amounts, units and months are in [`household_unit_costs.csv`](household_unit
 
 A surveyed village linked to several cost villages pools them: the cost per beneficiary is the ratio of the sums. The cost is missing (`cost_comm_source = 3`) only when the cost area has no cost or no beneficiary count that year: 2,114 households, listed in the issue register. It is never guessed.
 
-**Variables added to the merged file (v6).** 44 in all, each described (group, unit, source, rule) in [`cost_variables.csv`](cost_variables.csv):
+**Variables added to the merged file (v7).** 44 in all, each described (group, unit, source, rule) in [`cost_variables.csv`](cost_variables.csv):
 
 | Group | Variables | What they hold |
 |---|---:|---|
@@ -308,14 +313,14 @@ Each intervention column is 0 when the household said no and missing when the ro
 | Round | Transfer | Capacity | Interventions | Total | Households with a total |
 |---|---:|---:|---:|---:|---:|
 | 2019 Annual | 53,448 | 34,500 | 104,659 | 201,415 | 522 of 775 |
-| 2020 PDM | 94,889 | 61,585 | 196,950 | 337,908 | 237 of 271 |
+| 2020 PDM | 94,833 | 61,285 | 196,950 | 337,552 | 237 of 271 |
 | 2020 Annual | 206,127 | 43,890 | 111,061 | 358,869 | 1,034 of 1,063 |
-| 2021 PDM | 23,887 | 47,611 | 151,431 | 217,300 | 745 of 786 |
+| 2021 PDM | 23,883 | 47,642 | 151,431 | 217,327 | 745 of 786 |
 | 2021 Annual | 14,715 | 49,745 | 168,072 | 193,698 | 1,253 of 1,431 |
 | 2022 PDM | 45,400 | 72,338 | 329,142 | 430,079 | 1,210 of 1,579 |
-| 2022 Annual | 52,607 | 94,990 | 249,100 | 407,083 | 1,537 of 1,712 |
+| 2022 Annual | 52,439 | 94,959 | 249,100 | 406,883 | 1,537 of 1,712 |
 | 2023 PDM | 30,671 | 89,499 | 237,770 | 368,326 | 2,537 of 2,868 |
-| 2023 Annual | 43,383 | 170,631 | 232,301 | 467,276 | 2,087 of 2,791 |
+| 2023 Annual | 43,391 | 170,622 | 232,301 | 467,273 | 2,087 of 2,791 |
 
 Transfer means are over all households, participants or not. For participants with a village cost, the median transfer is 46,267 XAF, against the 30,000 XAF they receive in hand. The difference is the delivery cost included in WFP's full cost.
 
@@ -360,9 +365,9 @@ Nothing in the cost files is dropped. Every amount, line and attribute is kept i
 
 | Destination | Transfer cost | Capacity cost | Where it is in the merged file |
 |---|---:|---:|---|
-| 1. Surveyed village, same year | 5,153,130,091 | 3,664,030,440 | Per household (`cost_comm_*`, `cost_asset_*`) and in `cost_vill_*` |
-| 2. Surveyed village, other years only | 2,657,338,161 | 1,816,328,702 | In `cost_vill_cum_*` for later surveys of the village |
-| 3. Village not surveyed | 2,285,025,918 | 1,645,858,757 | In the cost area totals (`cost_area_*`) |
+| 1. Surveyed village, same year | 5,360,683,685 | 3,661,884,607 | Per household (`cost_comm_*`, `cost_asset_*`) and in `cost_vill_*` |
+| 2. Surveyed village, other years only | 2,530,920,697 | 1,826,366,334 | In `cost_vill_cum_*` for later surveys of the village |
+| 3. Village not surveyed | 2,203,889,787 | 1,637,966,959 | In the cost area totals (`cost_area_*`) |
 | 4. No village named | 148,166,439 | 0 | In the cost area totals (`cost_area_*`) |
 | 5. Department not surveyed (Iriba, Dougouba) | 46,426,500 | 0 | Not in the merged file: no household there; kept in the clean tables |
 | **Total, equal to the template** | **10,290,087,109** | **7,126,217,899** | |
