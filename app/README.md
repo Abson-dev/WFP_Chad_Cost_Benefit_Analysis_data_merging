@@ -1,6 +1,6 @@
 # WFP Chad data merging dashboard (R Shiny)
 
-The dashboard of the merging process behind the cost-benefit analysis of WFP's resilience interventions in Chad, 2018 to 2023. It shows how 10 household survey rounds became one dataset of 17,255 households and 670 columns, including the 17 modules added in November 2026 and the costs per household (do-file 21), and how far that dataset can be trusted.
+The dashboard of the merging process behind the cost-benefit analysis of WFP's resilience interventions in Chad, 2018 to 2023. It shows how 10 household survey rounds became one dataset of 17,255 households and 739 columns, including the 19 modules added in November 2026 (do-files 16 to 20 and 22) and the costs per household (do-file 21), and how far that dataset can be trusted.
 
 > **No household-level data.** The app holds only variable metadata, check results and aggregate indicators by round and region. It has no household ID, village name or GPS coordinate, and regional cells under 30 households are suppressed. Figures are unweighted and preliminary, not official WFP results.
 

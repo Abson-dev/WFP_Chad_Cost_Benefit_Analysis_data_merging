@@ -21,7 +21,7 @@ DIR_MODULES <- env_dir("WFP_MODULES_DIR", file.path(base, "WFP Resilience datase
 DIR_MERGED <- env_dir("WFP_MERGED_DIR", file.path(base, "2024/WFP/CBA - Chad/data"))
 # The merged file with the 17 modules added in November 2026 (do-files 16 to 20) and the cost module (do-file 21),
 # and the file before the 2026 modules.
-FINAL_FILE <- "WFP_Chad_2018-2023_20261110_v7.dta"
+FINAL_FILE <- "WFP_Chad_2018-2023_20261111_v8.dta"
 PREV_FILE <- "WFP_Chad_2018-2023_20261105_v2.dta"
 REPO <- ".."
 MIN_CELL <- 30
@@ -203,14 +203,16 @@ say("Crosswalk...")
 NEW_FAMILY <- c(Shocks = "Shocks", Assets = "Assets and livestock", Livelihoods = "Livelihoods", Agriculture = "Agriculture",
                 Expenditure = "Expenditure", Disability = "Disability", Education = "Education", Migration = "Migration",
                 Protection = "Protection and accountability", Debt = "Debt", Cohesion = "Social cohesion", Adaptation = "Climate adaptation",
-                ShockImpact = "Shock impact and recovery", Effects = "Programme effects", Markets = "Markets", Accountability = "Protection and accountability")
+                ShockImpact = "Shock impact and recovery", Effects = "Programme effects", Markets = "Markets", Accountability = "Protection and accountability",
+                Crops = "Crop production and sales", FoodSources = "Food sources")
 # Variables of the 2026 modules by name prefix; the "Additions" module's variables join the family of their prefix.
 prefix_family <- function(v) dplyr::case_when(
   grepl("^ShkImp|^ShkRec", v) ~ "Shock impact and recovery", grepl("^Shk", v) ~ "Shocks", grepl("^Ast|^Lvs", v) ~ "Assets and livestock",
   grepl("^Liv[A-Z]", v) ~ "Livelihoods", grepl("^Agr[A-Z]", v) ~ "Agriculture", grepl("^Exp[A-Z]", v) ~ "Expenditure", grepl("^Dis[A-Z]", v) ~ "Disability",
   grepl("^Edu[A-Z]", v) ~ "Education", grepl("^Mig[A-Z]", v) ~ "Migration", grepl("^Prt[A-Z]|^Aap[A-Z]", v) ~ "Protection and accountability",
   grepl("^Dbt[A-Z]", v) ~ "Debt", grepl("^Coh[A-Z]", v) ~ "Social cohesion", grepl("^Adp[A-Z]", v) ~ "Climate adaptation",
-  grepl("^Eff[A-Z]", v) ~ "Programme effects", grepl("^Mkt[A-Z]", v) ~ "Markets", grepl("^Fsn[A-Z]", v) ~ "Food shortage (2018-2021)")
+  grepl("^Eff[A-Z]", v) ~ "Programme effects", grepl("^Mkt[A-Z]", v) ~ "Markets", grepl("^Fsn[A-Z]", v) ~ "Food shortage (2018-2021)",
+  grepl("^Crp[A-Z]", v) ~ "Crop production and sales", grepl("^Fsr[A-Z]", v) ~ "Food sources")
 family_of <- function(v) {
   in_ext <- v %in% ext$NewVariable_Name
   fam_ext <- ifelse(in_ext, prefix_family(v), NA_character_)
@@ -239,7 +241,7 @@ FAMILY_ORDER <- c("Identification", "Geography", "Respondent", "Household", "Foo
                   "Migration", "Social capital", "Women's diet (MDDW)", "Child diet (MAD)",
                   "Shocks", "Assets and livestock", "Livelihoods", "Agriculture", "Expenditure", "Disability", "Education",
                   "Protection and accountability", "Debt", "Social cohesion", "Climate adaptation", "Shock impact and recovery",
-                  "Programme effects", "Markets", "Food shortage (2018-2021)", "Other")
+                  "Programme effects", "Markets", "Food shortage (2018-2021)", "Crop production and sales", "Food sources", "Other")
 SENSITIVE_META <- c("ID", "Key_with_subset_data", "ADMIN1Name", "ADMIN2Name", "ADMIN3Name", "sous_bureau", "site", "site_autre", "village", "village_autre", "Longitude", "Latitude", "Longitude_precision", "Latitude_precision")
 final_names <- c(names(x), "SvyDatePDM")
 
@@ -632,8 +634,15 @@ new_indicators <- function(d) {
     eff_income_up = pct(ifelse(is.na(d$EffChanged_Income), NA, d$EffDirection_Income %in% 3)),
     mkt_difficult = pct(d$MktAccessDifficult == 1), mkt_sold = pct(d$MktSoldProduce == 1),
     aap_satisfied = pct(d$AapSatisfied == 1), aap_contact = pct(d$AapKnowHowToContact == 1),
-    fsn_not_enough = pct(d$FsnNotEnoughFood30d == 1)
+    fsn_not_enough = pct(d$FsnNotEnoughFood30d == 1),
+    crp_harvest_any = pct(any_positive(d, "^CrpHarvest_")), crp_sold_any = pct(any_positive(d, "^CrpSold_")),
+    fsr_bought = pct(d$FsrBoughtFood7d == 1), fsr_own_cereals = pct(d$FsrOwnProdGift_Cereals == 1)
   )
+}
+# 1 if any matching column is above 0, 0 if all answered columns are 0, NA when none was asked.
+any_positive <- function(d, pattern) {
+  m <- as.matrix(d[, grep(pattern, names(d)), drop = FALSE])
+  ifelse(rowSums(!is.na(m)) == 0, NA, rowSums(m > 0, na.rm = TRUE) > 0)
 }
 both <- function(t) { m <- setNames(t, paste0(names(t), "_m")); c <- setNames(t, paste0(names(t), "_c")); bind_cols(m, c) }
 ind_round <- x |> group_by(round_id) |> group_modify(~ indicators(.x)) |> ungroup()
@@ -677,7 +686,7 @@ rounds <- cfg_rounds |> left_join(flow, by = "round_id") |> left_join(fw, by = "
 # ---- Final dataset's columns --------------------------------------------------------------------
 col_family <- function(v) {
   # Columns of the 2026 modules: those in the extension workbook and those derived from them (ShkAny12m, LvsTLU...)
-  new_mod <- v %in% ext$NewVariable_Name | grepl("^(Shk|Ast|Lvs|Liv|Agr|Exp|Dis|Edu|Mig|Prt|Aap|Dbt|Coh|Adp|Eff|Mkt|Fsn)[A-Z0-9_]", v)
+  new_mod <- v %in% ext$NewVariable_Name | grepl("^(Shk|Ast|Lvs|Liv|Agr|Exp|Dis|Edu|Mig|Prt|Aap|Dbt|Coh|Adp|Eff|Mkt|Fsn|Crp|Fsr)[A-Z0-9_]", v)
   derived_ext <- ifelse(new_mod, prefix_family(v), NA_character_)
   dplyr::case_when(
     !is.na(derived_ext) ~ derived_ext,
@@ -774,7 +783,7 @@ inputs <- bind_rows(
   bind_rows(lapply(c("12_WFP_Chad_CBA_data_preparation.do", "13_WFP_Chad_OriginalAssistenciesVariables.do", "14_WFP_Chad_fix_rCSIBorrow.do",
                      "15_WFP_Chad_fix_FCS_2020PDM.do", "16_WFP_Chad_add_new_modules.do", "17_WFP_Chad_add_more_modules.do",
                      "18_WFP_Chad_add_protection_debt.do", "19_WFP_Chad_add_cohesion_adaptation.do", "20_WFP_Chad_add_recovery_effects_markets.do",
-                     "21_WFP_Chad_add_costs.do"),
+                     "21_WFP_Chad_add_costs.do", "22_WFP_Chad_add_crops_food_sources.do"),
                    function(f) hash_row(file.path(REPO, "merge", f), "Merge code"))),
   bind_rows(lapply(c("prepare_cost_data.R", "prepare_community_costs.R", "prepare_household_costs.R", "prepare_household_cost_module.R",
                      "household_unit_costs.csv", "exchange_rates.csv", "department_crosswalk.csv", "activity_categories.csv", "cost_variables.csv"),

@@ -191,7 +191,7 @@ ok("flags: unresolved stay flagged in the corrected view", stopifnot("R02" %in% 
 ok("attention: serious point on a flagged round", stopifnot(any(vapply(attention_points(d, "R10", "m"), function(p) p$level == "serious", TRUE))))
 
 section("Figures against an independent recomputation from the merged file")
-merged_path <- file.path(Sys.getenv("WFP_MERGED_DIR", "C:/Users/AHema/OneDrive - CGIAR/Desktop/2024/WFP/CBA - Chad/data"), "WFP_Chad_2018-2023_20261110_v7.dta")
+merged_path <- file.path(Sys.getenv("WFP_MERGED_DIR", "C:/Users/AHema/OneDrive - CGIAR/Desktop/2024/WFP/CBA - Chad/data"), "WFP_Chad_2018-2023_20261111_v8.dta")
 if (file.exists(merged_path) && !demo_mode()) {
   x <- haven::zap_labels(haven::read_dta(merged_path))
   x$rid <- sprintf("R%02d", x$ROUND)
@@ -239,6 +239,24 @@ if (file.exists(merged_path) && !demo_mode()) {
   ok("claim: cash for assets shares", { y <- d$assistance[d$assistance$variable == "ArgentContreTravail" & d$assistance$answered > 0, ]; stopifnot(all(round(y$yes_pct[y$round_id %in% c("R02", "R03")]) == c(98, 99)), round(min(y$yes_pct)) == 68, round(max(y$yes_pct[!y$round_id %in% c("R02", "R03")])) == 94) })
   ok("claim: 91 assistance pairs same", stopifnot(nrow(d$assistance_audit) == 91, all(d$assistance_audit$pct_same == 100)))
   ok("claim: 12 report cells differ", stopifnot(nrow(d$assistance_documented) == 12))
+  crops <- sub("^CrpHarvest_", "", grep("^CrpHarvest_", names(x), value = TRUE))
+  ok("claim: crop units (2022 Annual area codes, 61 unlabelled in 2021 Annual)", stopifnot(sum(x$CrpHarvestUnit %in% 71:73) == 1478, all(x$rid[x$CrpHarvestUnit %in% 71:73] == "R08"),
+    sum(x$CrpHarvestUnit %in% 6) == 61, all(x$CrpHarvestUnit[x$rid %in% c("R09", "R10")] %in% c(1, 3, 4, NA))))
+  ok("claim: 216 households with a crop area above 100, up to 40,000", {
+    a <- as.matrix(x[, paste0("CrpArea_", crops)]); stopifnot(sum(rowSums(a > 100, na.rm = TRUE) > 0) == 216, max(a, na.rm = TRUE) == 40000) })
+  ok("claim: 567 households sell more kg than they harvest (144/204/219)", {
+    s <- Reduce(`|`, lapply(crops, function(k) { a <- x[[paste0("CrpSold_", k)]]; b <- x[[paste0("CrpHarvest_", k)]]; !is.na(a) & !is.na(b) & x$CrpHarvestUnit %in% 1 & x$CrpSoldUnit %in% 1 & a > b }))
+    stopifnot(sum(s) == 567, all(as.integer(table(x$rid[s])) == c(144, 204, 219))) })
+  ok("claim: impossible crop values set to missing", stopifnot(all(x$CrpGardeningMonths <= 12, na.rm = TRUE),
+    all(as.matrix(x[, grep("^CrpArea_|^CrpHarvest_[A-Z]|^CrpSold_[A-Z]|^CrpPostHarvestLoss$", names(x))]) >= 0, na.rm = TRUE)))
+  ok("claim: months usually covered by own production from 2022 PDM; AgrMonthsOwnProduction not in 2022 PDM",
+    stopifnot(all(x$rid[!is.na(x$CrpMonthsOwnProdUsual)] %in% c("R07", "R08", "R09", "R10")), sum(!is.na(x$CrpMonthsOwnProdUsual[x$rid == "R07"])) == 1368, all(is.na(x$AgrMonthsOwnProduction[x$rid == "R07"]))))
+  ok("claim: tuber sources asked of the cereal households", stopifnot(identical(is.na(x$FsrOwnProdGift_Tubers), is.na(x$FsrOwnProdGift_Cereals)), sum(!is.na(x$FsrOwnProdGift_Cereals)) > 8000))
+  any_pos <- function(z, p) { m <- as.matrix(z[, grep(p, names(z))]); v <- ifelse(rowSums(!is.na(m)) == 0, NA, rowSums(m > 0, na.rm = TRUE) > 0); m_or_na(100 * v) }
+  chk("crp_harvest_any", function(z) any_pos(z, "^CrpHarvest_[A-Z]"))
+  chk("crp_sold_any", function(z) any_pos(z, "^CrpSold_[A-Z]"))
+  chk("fsr_bought", function(z) m_or_na(100 * (z$FsrBoughtFood7d == 1)))
+  chk("fsr_own_cereals", function(z) m_or_na(100 * (z$FsrOwnProdGift_Cereals == 1)))
   ok("claim: places", stopifnot(d$places$value[d$places$measure == "Village names before cleaning"] == 387, d$places$value[d$places$measure == "Village names in the merged file"] == 321, d$places$value[d$places$measure == "Households without a department before cleaning"] == 272))
 } else cat("  merged file not found or demo data: skipped\n")
 

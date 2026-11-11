@@ -162,6 +162,14 @@ IND <- rbind(IND, data.frame(
   short = c("Recovered from drought", "Income up (programme)", "Market access difficult", "Sold produce", "Satisfied", "Knows WFP contact", "Not enough food (30 d)"),
   domain = c("Shock impact and recovery", "Programme effects", "Markets", "Markets", "Protection and accountability", "Protection and accountability", "Food shortage (2018-2021)"),
   unit = "%", worse = c("low", "low", "high", "none", "low", "low", "high"), group = NA_character_, stringsAsFactors = FALSE))
+# Rmds 33 and 34 (do-file 22). Quantities are not compared, as their units are unreliable: only whether the household harvested or sold.
+IND <- rbind(IND, data.frame(
+  id = c("crp_harvest_any", "crp_sold_any", "fsr_bought", "fsr_own_cereals"),
+  label = c("Harvested at least one of 10 crops", "Sold part of at least one of 10 crops", "Bought food in the last 7 days",
+            "Part of the cereals eaten came from own production or a gift (households eating cereals)"),
+  short = c("Harvested a crop", "Sold a crop", "Bought food (7 d)", "Own or gift cereals"),
+  domain = c("Crop production and sales", "Crop production and sales", "Food sources", "Food sources"),
+  unit = "%", worse = c("low", "none", "none", "none"), group = NA_character_, stringsAsFactors = FALSE))
 IND_CHOICES <- lapply(split(IND, factor(IND$domain, levels = unique(IND$domain))), function(g) stats::setNames(g$id, g$label))
 # In the tables of the Overview and Regions pages.
 IND_MAIN <- c("fcs_pb", "fcs_poor", "fcs_mean", "rcsi_mean", "rcsi_p3", "lcs_ce", "hdds_mean", "abi_mean", "rcs_mean", "female_head", "hh_size")
