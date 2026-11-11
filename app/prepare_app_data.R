@@ -21,7 +21,7 @@ DIR_MODULES <- env_dir("WFP_MODULES_DIR", file.path(base, "WFP Resilience datase
 DIR_MERGED <- env_dir("WFP_MERGED_DIR", file.path(base, "2024/WFP/CBA - Chad/data"))
 # The merged file with the 17 modules added in November 2026 (do-files 16 to 20) and the cost module (do-file 21),
 # and the file before the 2026 modules.
-FINAL_FILE <- "WFP_Chad_2018-2023_20261111_v8.dta"
+FINAL_FILE <- "WFP_Chad_2018-2023_20261111_v9.dta"
 PREV_FILE <- "WFP_Chad_2018-2023_20261105_v2.dta"
 REPO <- ".."
 MIN_CELL <- 30
@@ -158,11 +158,23 @@ add_check("Merge", "New modules leave out only the refused interview", pass_if(a
           sprintf("%s household left out per survey module; %s for the cost module", paste(unique(new_left_out[expected_left_out == 1]), collapse = "/"), paste(new_left_out[expected_left_out == 0], collapse = "/")),
           "1 per survey module, 0 for the cost module",
           sprintf("Do-files 16 to 20 keep the first of each duplicated ID, as do-file 12 does, and drop the one interview do-file 12 removed. The cost module (do-file 21) is built from the merged file. %d modules checked.", length(new_left_out)))
-# The modules added in 2026 must not change anything that was already in the merged file.
+# The modules added in 2026 must not change anything that was already in the merged file, except the answers that
+# do-file 23 corrects on purpose: the coping answers and scores, and the 2022 Annual ABI answers and score.
+FIX23_LCS <- c("LhCSIStress1", "LhCSIStress2", "LhCSIStress3", "LhCSIStress4", "LhCSICrisis1", "LhCSICrisis2", "LhCSICrisis3",
+               "LhCSIEmergency1", "LhCSIEmergency2", "LhCSIEmergency3", "stress_coping_FS", "crisis_coping_FS", "emergency_coping_FS", "Max_coping_behaviourFS")
+FIX23_ABI <- c("ABIProteger", "ABIProduction", "ABIdifficultes", "ABIMarches", "ABIGererActifs", "ABIEnvironnement", "ABIutiliseractifs", "ABITensions",
+               "HHAssetProtect", "HHAssetProduct", "HHAssetDecHardship", "HHAssetAccess", "HHTrainingAsset", "HHAssetEnv", "HHWorkAsset", "ABIScore")
 prev <- haven::zap_labels(haven::read_dta(file.path(DIR_MERGED, PREV_FILE))); prev$ID <- as.character(prev$ID)
-prev_same <- identical(prev$ID, x$ID) && isTRUE(all.equal(as.data.frame(prev), as.data.frame(x[names(prev)]), check.attributes = FALSE))
-add_check("Merge", "The 2026 modules leave the earlier columns unchanged", pass_if(prev_same), if (prev_same) sprintf("%d columns identical", ncol(prev)) else "Changed", "Identical",
-          sprintf("Against %s, the merged file before do-files 16 and 17. %d columns added.", PREV_FILE, ncol(final_lab) - ncol(prev)))
+keep_cols <- setdiff(names(prev), c(FIX23_LCS, FIX23_ABI))
+prev_same <- identical(prev$ID, x$ID) && isTRUE(all.equal(as.data.frame(prev[keep_cols]), as.data.frame(x[keep_cols]), check.attributes = FALSE))
+add_check("Merge", "The 2026 modules leave the earlier columns unchanged", pass_if(prev_same), if (prev_same) sprintf("%d columns identical", length(keep_cols)) else "Changed", "Identical",
+          sprintf("Against %s, the merged file before do-files 16 and 17, apart from the %d columns that do-file 23 corrects. %d columns added.", PREV_FILE, ncol(prev) - length(keep_cols), ncol(final_lab) - ncol(prev)))
+chg <- function(v) { a <- prev[[v]]; b <- x[[v]]; !((is.na(a) & is.na(b)) | (!is.na(a) & !is.na(b) & a == b)) }
+fix23_where <- c(unlist(lapply(setdiff(FIX23_LCS, c("LhCSIStress1", "stress_coping_FS", "Max_coping_behaviourFS")), function(v) x$round_id[chg(v)])) %in% c("R01", "R03", "R10"),
+                 unlist(lapply(FIX23_ABI, function(v) x$round_id[chg(v)])) == "R08",
+                 unlist(lapply(c("LhCSIStress1", "stress_coping_FS", "Max_coping_behaviourFS"), function(v) x$round_id[chg(v)])) != "R02")
+add_check("Merge", "Do-file 23 changes only the answers it corrects", pass_if(all(fix23_where)), sprintf("%s values changed, %d outside their rounds", format(length(fix23_where), big.mark = ","), sum(!fix23_where)), "0 outside",
+          "Coping answers only in 2018 Baseline, 2020 PDM and 2023 Annual, LhCSIStress1 and the coping scores in any round but the 2019 Annual, ABI answers and score only in the 2022 Annual.")
 rm(prev)
 miss_ch <- sum(is.na(x$phase_class))
 add_check("Merge", "Every household links to a Cadre Harmonisé phase", pass_if(miss_ch == 0, "warn"), sprintf("%d without a phase", miss_ch), "0",
@@ -783,7 +795,7 @@ inputs <- bind_rows(
   bind_rows(lapply(c("12_WFP_Chad_CBA_data_preparation.do", "13_WFP_Chad_OriginalAssistenciesVariables.do", "14_WFP_Chad_fix_rCSIBorrow.do",
                      "15_WFP_Chad_fix_FCS_2020PDM.do", "16_WFP_Chad_add_new_modules.do", "17_WFP_Chad_add_more_modules.do",
                      "18_WFP_Chad_add_protection_debt.do", "19_WFP_Chad_add_cohesion_adaptation.do", "20_WFP_Chad_add_recovery_effects_markets.do",
-                     "21_WFP_Chad_add_costs.do", "22_WFP_Chad_add_crops_food_sources.do"),
+                     "21_WFP_Chad_add_costs.do", "22_WFP_Chad_add_crops_food_sources.do", "23_WFP_Chad_fix_coping_ABI.do", "23_WFP_Chad_fix_coping_ABI.R"),
                    function(f) hash_row(file.path(REPO, "merge", f), "Merge code"))),
   bind_rows(lapply(c("prepare_cost_data.R", "prepare_community_costs.R", "prepare_household_costs.R", "prepare_household_cost_module.R",
                      "household_unit_costs.csv", "exchange_rates.csv", "department_crosswalk.csv", "activity_categories.csv", "cost_variables.csv"),

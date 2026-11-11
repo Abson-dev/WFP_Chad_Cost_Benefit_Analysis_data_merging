@@ -20,7 +20,7 @@ This repository builds the household dataset for the cost-benefit analysis (CBA)
 
 *The dashboard's Overview page. The estimates in this screenshot are synthetic.*
 
-> **Read this before using the merged file.** An audit found defects in the merged file that change results in several rounds. The latest version is `WFP_Chad_2018-2023_20261111_v8.dta` (11 November 2026), which adds the costs per household, crop production and sales, and the sources of the food eaten to v5; two defects are fixed, the others are not yet. See [Known issues](#known-issues).
+> **Read this before using the merged file.** An audit found defects in the merged file that change results in several rounds. The latest version is `WFP_Chad_2018-2023_20261111_v9.dta` (11 November 2026), which adds the costs per household, crop production and sales, and the sources of the food eaten to v5, and corrects the coping and asset benefit answers; six defects are fixed, the others are not yet. See [Known issues](#known-issues).
 
 ## Contents
 
@@ -63,7 +63,10 @@ flowchart LR
     d21 --> v7["Merged dataset v7<br/>670 columns"]
     v7 --> d22["Do-file 22<br/>crops and food sources"]
     mods2 --> d22
-    d22 --> final["Merged dataset v8<br/>17,255 households, 739 columns"]
+    d22 --> v8["Merged dataset v8"]
+    v8 --> d23["Do-file 23<br/>coping and ABI fixes"]
+    raw --> d23
+    d23 --> final["Merged dataset v9<br/>17,255 households, 739 columns"]
     final --> app["Dashboard<br/>aggregates and checks"]
     final --> dep["Dataverse package<br/>files by module"]
 ```
@@ -83,6 +86,7 @@ Each fix or extension writes a new file and leaves its input unchanged:
 | `WFP_Chad_2018-2023_20261108_v6.dta` | Do-file 21 | Costs per household: community transfer and capacity costs by asset type, household-level interventions, totals, village and cost area context, automatic village matches (see [`costs/`](costs/README.md)) |
 | `WFP_Chad_2018-2023_20261110_v7.dta` | Do-file 21 | The same, with the first manual review of the village matches: 69 households take their own village's cost |
 | `WFP_Chad_2018-2023_20261111_v8.dta` | Do-file 22 | Crop production and sales (10 crops: area, harvest, sales, units, sales income, market gardening, losses) and the sources of the food eaten (own production or gifts, credit, by food group) |
+| `WFP_Chad_2018-2023_20261111_v9.dta` | Do-file 23 | Coping answers of R1, R3 and R10 and `LhCSIStress1` in 9 rounds, and the R8 asset benefit answers, taken again from the raw files; coping categories and ABI score recomputed (see [Known issues](#known-issues)) |
 
 ## Survey rounds
 
@@ -144,20 +148,23 @@ MAD and MDDW are left out: in R6 to R9 the household file combines several surve
 
 The merge itself holds up: all 17,270 raw rows are accounted for (14 duplicates and 1 refused interview removed), every module joins without unmatched records, and the score formulas are correct. The defects come earlier, from the mapping and recoding of some rounds.
 
-| Round | Problem | Where to fix | As merged | Rebuilt from raw files |
+**Fixed in the merged file v9 (11 November 2026), by do-file 23.** The answers are taken again from the raw files, and the scores recomputed with the rules of do-file 12 and Rmd 07. Files built before v9 keep the old values.
+
+| Round | Problem | Where it comes from | Before v9 | From v9 |
 |---|---|---|---:|---:|
-| R10 | Coping answers not recoded, so "No need" counts as coping | `05_*.Rmd` | Emergency coping 56.7% | 5.8% |
+| R10 | Coping answers not recoded, so "No need" counted as coping | `05_*.Rmd` | Emergency coping 56.7% | 5.8% |
 | R3 | Raw coping code 0 recoded to Yes | `05_*.Rmd` | Emergency coping 49.4% | 8.5% |
 | R1 | Raw coping code 0 recoded to Yes | `05_*.Rmd` | Emergency coping 29.6% | 21.2% |
-| R8 | Recode sets every asset benefit answer to 0 | `07_*.Rmd` | Mean ABI 0.0 | 5.8 |
-| 9 of 10 rounds | `LhCSIStress1` emptied | `05_*.Rmd` | No answers kept | Answers exist in the raw files |
+| R8 | Recode set every asset benefit answer to 0 | `07_*.Rmd` | Mean ABI 0.0 | 5.8 |
+| 9 of 10 rounds | `LhCSIStress1` emptied | `05_*.Rmd` | No answers kept | Taken from the raw files |
+
+Rmds 05 and 07 still hold these defects: after rebuilding the modules, run [`merge/23_WFP_Chad_fix_coping_ABI.R`](merge/23_WFP_Chad_fix_coping_ABI.R) and then do-file 23. Two readings remain to confirm with the questionnaires or WFP: raw code 0 as No in the 2020 PDM (it has no label; it is labelled Non in 2018), and 1 as Yes in the 2022 Annual asset benefit answers (the file's labels say 1 = Non, but the answers are coded 0/1). The 2019 Annual coping codes, which have no labels, are not changed.
 
 **Fixed in the merged file dated 5 November 2026 (`_v2`).** Results built on earlier files keep the old values until rebuilt.
 
 - **`rCSIBorrow`, R7, R9 and R10:** it was mapped to the `rCSILessQlty` column. Mean rCSI is now 7.59, 4.63 and 4.89 instead of 9.10, 5.48 and 5.89, and equals the analysts' for 100% of households.
 - **FCS, R3:** the main food groups hold 0/1 flags instead of days, and the day counts cannot be rebuilt. FCS now takes the analysts' SCA, so the mean is 53.2 instead of 11.9, and the groups match the analysts' for all 271 households. The eight main food groups are empty in this round. Compare this round with care: in R1, R2 and R5, the SCA runs 2 to 3 points above the recomputed FCS.
 
-The rebuilt values are indicative and need review. The meaning of raw code 0 in R1 and R3, and of 1 in the R8 asset benefit answers, should be confirmed with the questionnaires or WFP.
 
 **In the 2026 modules.** These are documented, and kept as reported in the merged file unless stated:
 
@@ -186,7 +193,7 @@ You need the source files, R, and Stata.
 1. **Set the folders.** The paths are written into the code, so change them on your computer: `dir_input_data` and `dir_output_data` at the top of each Rmd, and `global input_data` and `global output_data` in each do-file.
 2. **Build the modules.** Knit the Rmds in `harmonization/`, in order. They overwrite the module files in `dir_output_data`. They need `haven`, `labelled`, `tidyverse`, `Hmisc`, `gtsummary`, `readxl`, `foreign`, `sjPlot`, `sjmisc`, `sjlabelled`, `stringr`, `expss` and `plyr`.
 3. **Merge.** From the `merge/` folder, run `12_WFP_Chad_CBA_data_preparation.do`, then `13_WFP_Chad_OriginalAssistenciesVariables.do`. Do-file 12 also needs the Cadre Harmonisé workbook in its data folder, and writes `RCS_table.xlsx` to Stata's working directory. The workbook now holds the rCSI fix and do-file 12 the FCS fix, so do-files 14 and 15 are needed only to fix a file built before them.
-4. **Add the 2026 modules.** Knit Rmds 16 to 34, then run do-files `16_WFP_Chad_add_new_modules.do`, `17_WFP_Chad_add_more_modules.do`, `18_WFP_Chad_add_protection_debt.do`, `19_WFP_Chad_add_cohesion_adaptation.do` `20_WFP_Chad_add_recovery_effects_markets.do`, then, after the costs (`21_WFP_Chad_add_costs.do`, see `costs/`), `22_WFP_Chad_add_crops_food_sources.do`. They read `Chad_Harmonization_extension.xlsx` from the input folder, and save new files without `replace`: delete or rename an existing output first.
+4. **Add the 2026 modules.** Knit Rmds 16 to 34, then run do-files `16_WFP_Chad_add_new_modules.do`, `17_WFP_Chad_add_more_modules.do`, `18_WFP_Chad_add_protection_debt.do`, `19_WFP_Chad_add_cohesion_adaptation.do` `20_WFP_Chad_add_recovery_effects_markets.do`, then, after the costs (`21_WFP_Chad_add_costs.do`, see `costs/`), `22_WFP_Chad_add_crops_food_sources.do`, and last `Rscript merge/23_WFP_Chad_fix_coping_ABI.R` then `23_WFP_Chad_fix_coping_ABI.do`. They read `Chad_Harmonization_extension.xlsx` from the input folder, and save new files without `replace`: delete or rename an existing output first.
 5. **Check.** Refresh the dashboard (below): it recomputes all checks from the new files.
 6. **Package.** From the repository's root, `Rscript deposit/prepare_dataverse_package.R` builds the Dataverse package next to the merged file.
 
@@ -212,7 +219,7 @@ Then double-click `app/run_app.bat`, or open `app/app.R` in RStudio and choose *
 ├── harmonization/                      step 1: one Rmd per module (01 to 11, and 16 to 34 added in 2026)
 │   ├── Chad_Harmonization.xlsx         variable mapping across rounds
 │   └── Chad_Harmonization_extension.xlsx   mapping of the 2026 modules
-├── merge/                              step 2: do-files 12 and 13, with Rmd copies for the report; 14 and 15 apply the rCSIBorrow and FCS fixes; 16 to 20 and 22 add the 2026 modules, 21 the costs
+├── merge/                              step 2: do-files 12 and 13, with Rmd copies for the report; 14 and 15 apply the rCSIBorrow and FCS fixes; 16 to 20 and 22 add the 2026 modules, 21 the costs, 23 fixes the coping and ABI answers
 │   └── RCS_table.xlsx                  resilience capacity table from do-file 12
 ├── app/                                step 3: dashboard, see app/README.md
 ├── costs/                              cost data rules and script, see costs/README.md

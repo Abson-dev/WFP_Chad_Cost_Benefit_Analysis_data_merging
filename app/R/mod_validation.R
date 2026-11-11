@@ -40,7 +40,7 @@ validation_ui <- function(id, d) {
                   bslib::card_header(class = "d-flex justify-content-between align-items-center flex-wrap gap-2", "Share of households adopting each coping strategy",
                                      shiny::radioButtons(ns("lcs_view"), NULL, c("As merged" = "merged_yes", "Corrected" = "corrected_yes"), inline = TRUE)),
                   plotly::plotlyOutput(ns("lcs"), height = "400px"),
-                  bslib::card_footer(class = "table-note", "Answered Yes or already exhausted. Look for columns that stand out in the merged view: 2020 PDM and 2023 Annual. The empty top row is LhCSIStress1.")),
+                  bslib::card_footer(class = "table-note", "Answered Yes or already exhausted. Since do-file 23 (merged file v9), the merged and corrected views agree, except where the 2019 Annual codes have no labels.")),
     bslib::card(full_screen = TRUE, bslib::card_header("Values unchanged between the raw and merged files"),
                 plotly::plotlyOutput(ns("agree"), height = "340px"),
                 bslib::card_footer(class = "table-note", "Share of non-missing values equal in both files. Below 100% is expected where a module is recoded, so this is a map of where recoding happens, not a list of errors."))

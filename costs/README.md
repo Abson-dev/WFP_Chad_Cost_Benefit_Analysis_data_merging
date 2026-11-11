@@ -6,7 +6,7 @@ This folder turns WFP's resilience cost data into clean tables for the cost-bene
 - **Department costs:** done; they feed the dashboard.
 - **Community costs by village and the village match:** done. The first manual review (23 cost villages) was validated on 10 November 2026.
 - **Costs of household-level interventions:** done, converted to XAF at the World Bank's annual rates.
-- **Household cost module (step 4):** done. Merged by do-file 21 into `WFP_Chad_2018-2023_20261110_v7.dta` (17,255 households, 670 columns: the 626 earlier columns unchanged and 44 cost variables), and carried into v8 by do-file 22. Every franc of the cost files is accounted for: see [No loss of information](#no-loss-of-information).
+- **Household cost module (step 4):** done. Merged by do-file 21 into `WFP_Chad_2018-2023_20261110_v7.dta` (17,255 households, 670 columns: the 626 earlier columns unchanged and 44 cost variables), and carried into v8 and v9 by do-files 22 and 23. Every franc of the cost files is accounted for: see [No loss of information](#no-loss-of-information).
 
 ## At a glance
 
