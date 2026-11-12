@@ -10,7 +10,7 @@ d <- load_app_data()
 # Deep links: ?page=costs or #page=costs opens that page (the data assistant links to them).
 PAGE_SLUGS <- c(overview = "Overview", merge = "Merge", validation = "Validation", issues = "Data issues", variables = "Variables",
                 trends = "Trends", regions = "Regions", assistance = "Assistance", costs = "Costs", approach = "Approach",
-                process = "Process", crosswalk = "Crosswalk", rounds = "Rounds", data = "Data", about = "About")
+                process = "Process", crosswalk = "Crosswalk", original = "Original vs merged", rounds = "Rounds", data = "Data", about = "About")
 ASSISTANT_URL <- Sys.getenv("WFP_ASSISTANT_URL")
 round_choices <- rev(setNames(d$rounds$round_id, d$rounds$choice))
 
@@ -58,6 +58,7 @@ ui <- protect_ui(page_navbar(
     nav_panel("Approach", icon = bsicons::bs_icon("signpost-split"), approach_ui("approach", d)),
     nav_panel("Process", icon = bsicons::bs_icon("diagram-3"), process_ui("process", d)),
     nav_panel("Crosswalk", icon = bsicons::bs_icon("table"), crosswalk_ui("crosswalk", d)),
+    nav_panel("Original vs merged", icon = bsicons::bs_icon("arrow-left-right"), original_ui("original", d)),
     nav_panel("Rounds", icon = bsicons::bs_icon("calendar3"), rounds_ui("rounds", d))
   ),
   nav_panel("Data", icon = bsicons::bs_icon("download"), data_ui("data", d)),
@@ -122,6 +123,7 @@ server <- function(input, output, session) {
   approach_server("approach", d)
   process_server("process", d)
   crosswalk_server("crosswalk", d)
+  original_server("original", d)
   rounds_server("rounds", d)
   data_server("data", d)
   about_server("about", d)

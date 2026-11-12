@@ -49,6 +49,22 @@ for (f in c("cost_by_category.csv", "cost_by_area.csv", "cost_by_partner.csv")) 
 x <- read("cost_survey_link.csv"); for (k in c("cost_xaf", "cost_activity_xaf", "cost_lump_sum_xaf")) x[[k]] <- round(jitter_rel(x[[k]], .25)); write(x, "cost_survey_link.csv")
 x <- read("cost_reconciliation.csv"); for (k in c("stated_total_xaf", "reconciled_total_xaf", "difference_xaf")) x[[k]] <- round(jitter_rel(x[[k]], .25)); write(x, "cost_reconciliation.csv")
 
+# Original against merged: the same invented factor on both sides of a variable, so its status still reads true.
+ov <- read("original_vs_merged_variables.csv")
+f <- 1 + stats::rnorm(nrow(ov), 0, .15)
+for (k in c("raw_mean", "merged_mean", "raw_median", "merged_median")) ov[[k]] <- round(ov[[k]] * f, 3)
+for (k in c("raw_rows_answered", "raw_answered", "merged_answered", "compared", "same_value")) ov[[k]] <- round(ov[[k]] * f)
+write(ov, "original_vs_merged_variables.csv")
+oc <- read("original_vs_merged_categories.csv")
+for (k in c("households", "raw_code_total", "merged_code_total")) oc[[k]] <- round(jitter_rel(oc[[k]], .25))
+oc$pct_of_raw_code <- round(100 * oc$households / oc$raw_code_total, 1)
+write(oc, "original_vs_merged_categories.csv")
+oi <- read("original_vs_merged_indicators.csv")
+f <- 1 + stats::rnorm(nrow(oi), 0, .12)
+for (k in c("raw_value", "merged_value", "difference")) oi[[k]] <- round(oi[[k]] * f, 3)
+oi$note <- ifelse(oi$note == "Same.", oi$note, "Illustration: note hidden in the synthetic version.")
+write(oi, "original_vs_merged_indicators.csv")
+
 # Text with figures: replaced, so that no real estimate leaves in a screenshot.
 ck <- read("checks.csv")
 ck$detail <- ifelse(ck$status == "pass", ck$detail, "Illustration: detail hidden in the synthetic version.")

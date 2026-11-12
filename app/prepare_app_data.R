@@ -811,6 +811,9 @@ writexl::write_xlsx(list(
   Rounds = rounds |> select(Round = label, Survey = survey, Series = series, `Raw file` = raw_file, `Raw rows` = raw_rows, `Merged rows` = final_rows)
 ), file.path(OUT, "WFP_Chad_crosswalk_2018-2023.xlsx"))
 
+# ---- Original files against the merged file -----------------------------------------------------
+source("prepare_original_vs_merged.R", local = TRUE)
+
 # ---- Costs: tables built by costs/prepare_cost_data.R. Activity texts, which name villages, stay out. ----
 DIR_COSTS <- file.path(DIR_MERGED, "cost data clean")
 COST_TABLES <- c("cost_reconciliation", "cost_by_category", "cost_by_area", "cost_by_partner", "cost_lump_sum_activities", "cost_survey_link", "cost_department_crosswalk", "composition_usd")

@@ -18,7 +18,7 @@ The **reference round** and the **figures** option in the left panel drive Overv
 | **Data issues** | What was found, where does it come from and what should be done? |
 | **Variables** | What does each of the 305 merged columns hold? Label, completeness and distribution by round. Columns that can identify households show their completeness only, and answers from fewer than 5 households are hidden |
 | **Results** | *Trends*, *Regions*, *Assistance* and *Costs*: indicators over time and by region; the 20 intervention variables with their recoding audit; WFP's costs reconciled, grouped by activity and linked to the surveys by department and year, and the costs per household of the merged file (by intervention, asset type, region and round, with the ledger of the community template) |
-| **Method** | *Approach*, *Process* (pipeline diagram), *Crosswalk* (217 variables x 10 rounds, downloads), *Rounds* (fieldwork, inventory, departments) |
+| **Method** | *Approach*, *Process* (pipeline diagram), *Crosswalk* (217 variables x 10 rounds, downloads), *Original vs merged* (each variable's statistics in WFP's raw files and in the merged file on the same households, how each raw code became a merged code, FCS and rCSI recomputed from the raw items, and an Excel workbook of it all), *Rounds* (fieldwork, inventory, departments) |
 | **Data** | Filter the aggregate indicators and download them as CSV or Excel |
 | **About** | How to refresh, data statement, SHA-256 of each input |
 

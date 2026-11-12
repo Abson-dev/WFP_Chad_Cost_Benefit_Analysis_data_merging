@@ -23,7 +23,7 @@ plotly_json <- function(p) { jsonlite::fromJSON(plotly::plotly_json(p, jsonedit 
 section <- function(s) cat("-", s, "\n")
 
 section("UI builders")
-for (m in c("situation", "merge", "validation", "issues", "variables", "costs", "trends", "regions", "assistance", "approach", "process", "crosswalk", "rounds", "data", "about")) {
+for (m in c("situation", "merge", "validation", "issues", "variables", "costs", "trends", "regions", "assistance", "approach", "process", "crosswalk", "original", "rounds", "data", "about")) {
   ok(paste("ui:", m), get(paste0(m, "_ui"))(m, d))
 }
 
@@ -155,6 +155,18 @@ testServer(crosswalk_server, args = list(d = d), {
   session$setInputs(families = c("Reduced coping (rCSI)"), gaps_only = TRUE); ok("crosswalk filtered", { output$matrix; output$table })
   ok("crosswalk csv", stopifnot(file.size(output$dl_csv) > 0)); ok("crosswalk xlsx", stopifnot(file.size(output$dl_xlsx) > 0))
 })
+testServer(original_server, args = list(d = d), {
+  all_s <- unique(d$ovm_variables$status)
+  session$setInputs(round = "", workbook = "", status = all_s, variable = "")
+  ok("original all", { output$status_plot; output$indicators; output$variables; output$profile; output$profile_rounds })
+  ok("original status chart json", jsonlite::fromJSON(output$status_plot))
+  session$setInputs(variable = "HHHSex", cat_round = "R01"); ok("original HHHSex categories", { output$profile; output$profile_cats })
+  session$setInputs(round = "R10", workbook = "2026 modules", status = "Identical"); ok("original filtered", output$variables)
+  ok("original csv", stopifnot(file.size(output$dl_csv) > 0))
+  xl <- output$dl_xlsx
+  ok("original xlsx: six sheets", stopifnot(identical(openxlsx::getSheetNames(xl), c("Read me", "Rounds", "Summary", "Indicators", "Variables", "Categories"))))
+  ok("original xlsx: every variable-round", stopifnot(nrow(openxlsx::read.xlsx(xl, "Variables")) == nrow(d$ovm_variables)))
+})
 testServer(rounds_server, args = list(d = d), ok("rounds", { output$calendar; output$inventory; output$departments }))
 testServer(data_server, args = list(d = d), {
   session$setInputs(indicators = NULL, geo = NULL, rounds = NULL, series = "")
@@ -170,6 +182,23 @@ for (rid in c("R01", "R03", "R10")) {
   x <- d$ind_round
   ok(sprintf("series_bars json[%s]", rid), plotly_json(series_bars(x, "fcs_pb", rid, "m", d, "#FBC4A8", "#F0512D")))
 }
+
+section("Original files against the merged file")
+ov <- d$ovm_variables; oc <- d$ovm_categories; oi <- d$ovm_indicators
+ok("original: every round compared", stopifnot(setequal(ov$round_id, d$rounds$round_id)))
+ok("original: one row per variable and round", stopifnot(!anyDuplicated(ov[, c("variable", "round_id")])))
+ok("original: identical means 100% same and the same answers", with(ov[ov$status == "Identical", ], stopifnot(all(pct_same == 100), all(raw_answered == merged_answered))))
+ok("original: values differ means under 100% same", with(ov[grepl("^Values differ", ov$status), ], stopifnot(all(pct_same < 100))))
+ok("original: same households compared as answered", stopifnot(all(ov$compared <= pmin(ov$raw_answered, ov$merged_answered), na.rm = TRUE)))
+ok("original: no identifier or place compared", stopifnot(!any(ov$variable %in% c("ID", "village", "ADMIN1Name", "ADMIN2Name", "Longitude", "Latitude"))))
+ok("original: category counts under 5 hidden", stopifnot(all(is.na(oc$households) | oc$households >= 5), all(is.na(oc$households) == oc$suppressed)))
+ok("original: categories add up to the raw code", stopifnot(all(oc$pct_of_raw_code <= 100, na.rm = TRUE)))
+ok("original: every indicator difference explained", stopifnot(!any(oi$note == "Unexplained difference.")))
+ok("original: 'Same.' means under 0.05 apart", with(oi[oi$note == "Same.", ], stopifnot(all(abs(difference) < 0.05))))
+ok("original: 2020 PDM FCS is the documented fix", stopifnot(grepl("analysts", oi$note[oi$round_id == "R03" & oi$indicator == "Mean FCS"])))
+ok("original: the checks are on the Validation page", stopifnot(sum(d$checks$group == "Original files") == 2,
+   d$checks$status[grepl("^FCS and rCSI from the raw items", d$checks$check)] == "pass"))
+ok("original: HHHSex recoded in R01 (1 Masculin -> 2)", stopifnot(any(oc$variable == "HHHSex" & oc$round_id == "R01" & oc$raw_code == 1 & oc$merged_code == 2)))
 
 section("Column content")
 ok("crosswalk: label holds the SPSS label, not the round", stopifnot(!any(d$crosswalk$label %in% as.character(d$rounds$label))))
