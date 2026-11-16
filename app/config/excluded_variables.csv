@@ -1,0 +1,28 @@
+variable,rounds,merged_as,reason
+MigrationEmploi,,MigWork12m,"The same raw column is merged once, under the name of the variable that holds it in the merged file."
+NbMigrants,,MigNumber,"The same raw column is merged once, under the name of the variable that holds it in the merged file."
+TransfBenef,,CashTransfert,"The same raw column is merged once, under the name of the variable that holds it in the merged file."
+RaisonMigration,,MigMainReason,"The same raw column is merged once, under the name of the variable that holds it in the merged file."
+TendanceMigration,,MigTrend,"The same raw column is merged once, under the name of the variable that holds it in the merged file."
+DureeMigration,,MigDuration,"The same raw column is merged once, under the name of the variable that holds it in the merged file."
+RaisonBaisseMig,,MigReasonDecrease,"The same raw column is merged once, under the name of the variable that holds it in the merged file."
+RaisonHausseMig,,MigReasonIncrease,"The same raw column is merged once, under the name of the variable that holds it in the merged file."
+DebutAssistance,R04,DateDerniereAssist; DistribVivresArgentSoudure,"In the 2020 Annual the workbook maps a yes/no question (assisted last year), not a date; that column is merged under the two variables named."
+MDDW_resp_age,R03,,Women's diet (MDD-W): left out with the diet modules until they can be linked to households (issue: Child and women's diet cannot be linked to households).
+PWMDDWCond,R03,,Women's diet (MDD-W): left out with the diet modules until they can be linked to households (issue: Child and women's diet cannot be linked to households).
+PWMDDWDairy,R03,,Women's diet (MDD-W): left out with the diet modules until they can be linked to households (issue: Child and women's diet cannot be linked to households).
+PWMDDWFruitOrg,R03,,Women's diet (MDD-W): left out with the diet modules until they can be linked to households (issue: Child and women's diet cannot be linked to households).
+PWMDDWFruitOth,R03,,Women's diet (MDD-W): left out with the diet modules until they can be linked to households (issue: Child and women's diet cannot be linked to households).
+PWMDDWNuts,R03,,Women's diet (MDD-W): left out with the diet modules until they can be linked to households (issue: Child and women's diet cannot be linked to households).
+PWMDDWOth1,R03,,Women's diet (MDD-W): left out with the diet modules until they can be linked to households (issue: Child and women's diet cannot be linked to households).
+PWMDDWPrEgg,R03,,Women's diet (MDD-W): left out with the diet modules until they can be linked to households (issue: Child and women's diet cannot be linked to households).
+PWMDDWPrFish,R03,,Women's diet (MDD-W): left out with the diet modules until they can be linked to households (issue: Child and women's diet cannot be linked to households).
+PWMDDWPrMeatF,R03,,Women's diet (MDD-W): left out with the diet modules until they can be linked to households (issue: Child and women's diet cannot be linked to households).
+PWMDDWPrMeatO,R03,,Women's diet (MDD-W): left out with the diet modules until they can be linked to households (issue: Child and women's diet cannot be linked to households).
+PWMDDWPulse,R03,,Women's diet (MDD-W): left out with the diet modules until they can be linked to households (issue: Child and women's diet cannot be linked to households).
+PWMDDWSnf,R03,,Women's diet (MDD-W): left out with the diet modules until they can be linked to households (issue: Child and women's diet cannot be linked to households).
+PWMDDWStapCer,R03,,Women's diet (MDD-W): left out with the diet modules until they can be linked to households (issue: Child and women's diet cannot be linked to households).
+PWMDDWStapRoo,R03,,Women's diet (MDD-W): left out with the diet modules until they can be linked to households (issue: Child and women's diet cannot be linked to households).
+PWMDDWVegGre,R03,,Women's diet (MDD-W): left out with the diet modules until they can be linked to households (issue: Child and women's diet cannot be linked to households).
+PWMDDWVegOrg,R03,,Women's diet (MDD-W): left out with the diet modules until they can be linked to households (issue: Child and women's diet cannot be linked to households).
+PWMDDWVegOth,R03,,Women's diet (MDD-W): left out with the diet modules until they can be linked to households (issue: Child and women's diet cannot be linked to households).

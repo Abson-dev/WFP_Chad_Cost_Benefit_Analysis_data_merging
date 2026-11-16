@@ -196,7 +196,16 @@ ok("original: categories add up to the raw code", stopifnot(all(oc$pct_of_raw_co
 ok("original: every indicator difference explained", stopifnot(!any(oi$note == "Unexplained difference.")))
 ok("original: 'Same.' means under 0.05 apart", with(oi[oi$note == "Same.", ], stopifnot(all(abs(difference) < 0.05))))
 ok("original: 2020 PDM FCS is the documented fix", stopifnot(grepl("analysts", oi$note[oi$round_id == "R03" & oi$indicator == "Mean FCS"])))
-ok("original: the checks are on the Validation page", stopifnot(sum(d$checks$group == "Original files") == 2,
+ok("original: no workbook variable missing without a reason", stopifnot(!any(ov$status == "Not in the merged file"),
+   d$checks$status[grepl("^Every workbook variable with a raw column", d$checks$check)] == "pass"))
+ok("original: every exclusion has a reason, and is used", {
+  ex <- readr::read_csv("config/excluded_variables.csv", show_col_types = FALSE)
+  stopifnot(all(nzchar(ex$reason)), all(ex$variable %in% ov$variable[ov$status %in% c("Left out on purpose", "Merged under another name")]))
+})
+ok("original: the 29 variables of step 24 reach the merged file", stopifnot(all(c("RESPAge", "RESPSex", "RESPConsent", "SCIEvolRessSociales",
+   "EpargnePieds", "ABISexparticipant", "ExpFoodShareAnalysts", "DebutAssistance") %in% d$merged_columns$variable)))
+ok("original: respondent sex recoded to the HHHSex scale in 2023", stopifnot(any(oc$variable == "RESPSex" & oc$round_id == "R10" & oc$raw_code == 0 & oc$merged_code == 1)))
+ok("original: the checks are on the Validation page", stopifnot(sum(d$checks$group == "Original files") == 4,
    d$checks$status[grepl("^FCS and rCSI from the raw items", d$checks$check)] == "pass"))
 ok("original: HHHSex recoded in R01 (1 Masculin -> 2)", stopifnot(any(oc$variable == "HHHSex" & oc$round_id == "R01" & oc$raw_code == 1 & oc$merged_code == 2)))
 
@@ -221,7 +230,7 @@ ok("attention: serious point on a round with a known defect", { rid <- d$flags$r
 ok("attention: uncertain coping codes of 2019 Annual are a point to watch", stopifnot(any(vapply(attention_points(d, "R02", "m"), function(p) p$level == "watch" && grepl("Livelihood coping", p$title), TRUE))))
 
 section("Figures against an independent recomputation from the merged file")
-merged_path <- file.path(Sys.getenv("WFP_MERGED_DIR", "C:/Users/AHema/OneDrive - CGIAR/Desktop/2024/WFP/CBA - Chad/data"), "WFP_Chad_2018-2023_20261111_v9.dta")
+merged_path <- file.path(Sys.getenv("WFP_MERGED_DIR", "C:/Users/AHema/OneDrive - CGIAR/Desktop/2024/WFP/CBA - Chad/data"), "WFP_Chad_2018-2023_20261116_v10.dta")
 if (file.exists(merged_path) && !demo_mode()) {
   x <- haven::zap_labels(haven::read_dta(merged_path))
   x$rid <- sprintf("R%02d", x$ROUND)

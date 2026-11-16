@@ -13,9 +13,18 @@ OVM_MIN_COUNT <- 5
 OVM_MAX_CATEGORIES <- 40
 OVM_STATUS <- c(identical = "Identical", coverage = "Same values, different number of answers",
                 differ = "Values differ: recoded on purpose, or a defect", built = "Built in the merge (no raw column)",
-                absent = "Not in the merged file", text = "Text: answers counted only", date = "Date: answers counted only",
+                absent = "Not in the merged file", other_name = "Merged under another name", excluded = "Left out on purpose",
+                text = "Text: answers counted only", date = "Date: answers counted only",
                 none = "No household answered in both")
 
+# Workbook variables that are not in the merged file on purpose, with their reason (rounds empty = every round).
+ovm_excluded <- readr::read_csv("config/excluded_variables.csv", show_col_types = FALSE, col_types = readr::cols(.default = "c"))
+ovm_exclusion <- function(v, rid) {
+  e <- ovm_excluded[ovm_excluded$variable == v, ]
+  if (!nrow(e)) return(NULL)
+  e <- e[is.na(e$rounds) | vapply(strsplit(as.character(ifelse(is.na(e$rounds), "", e$rounds)), " "), function(r) rid %in% r, TRUE), ]
+  if (nrow(e)) e[1, ] else NULL
+}
 ovm_source <- function(ds, v) { s <- source_any(ds, v); if (!is.na(s) && s %in% names(raw[[ds]])) s else NA_character_ }
 # The raw row of each merged household of a round, in the merged file's order (first row of an ID, as in do-file 12).
 ovm_index <- list()
@@ -53,7 +62,11 @@ for (i in seq_len(nrow(cfg_rounds))) {
     n_mer <- if (!is.null(mer)) sum(ovm_nonmiss(mer)) else NA_integer_
     same <- if (any(k)) sum(a[k] == b[k]) else NA_integer_
     pct <- if (any(k)) round(100 * mean(a[k] == b[k]), 1) else NA_real_
-    status <- if (is.na(s)) OVM_STATUS[["built"]] else if (!in_merged) OVM_STATUS[["absent"]] else if (is_text) OVM_STATUS[["text"]] else
+    # An exclusion applies in its rounds, also when the variable exists in the merged file for other rounds.
+    ex <- ovm_exclusion(v, rid)
+    if (!is.null(ex) && in_merged && any(ovm_nonmiss(xr[[v]]))) stop(v, " is listed as left out in ", rid, " but has answers there.", call. = FALSE)
+    status <- if (is.na(s)) OVM_STATUS[["built"]] else if (!is.null(ex)) OVM_STATUS[[if (!is.na(ex$merged_as)) "other_name" else "excluded"]] else
+      if (!in_merged) OVM_STATUS[["absent"]] else if (is_text) OVM_STATUS[["text"]] else
       if (is_date) OVM_STATUS[["date"]] else if (!any(k)) OVM_STATUS[["none"]] else if (pct == 100 && n_raw == n_mer) OVM_STATUS[["identical"]] else
       if (pct == 100) OVM_STATUS[["coverage"]] else OVM_STATUS[["differ"]]
     sr <- if (!is.null(a)) ovm_stats(a) else rep(NA_real_, 4)
@@ -66,7 +79,9 @@ for (i in seq_len(nrow(cfg_rounds))) {
       raw_answered = n_raw, merged_answered = n_mer,
       raw_mean = sr[1], merged_mean = sm[1], raw_median = sr[2], merged_median = sm[2],
       raw_min = sr[3], merged_min = sm[3], raw_max = sr[4], merged_max = sm[4],
-      compared = sum(k), same_value = same, pct_same = pct, status = status, stringsAsFactors = FALSE)
+      compared = sum(k), same_value = same, pct_same = pct, status = status,
+      note = if (is.null(ex)) NA_character_ else if (!is.na(ex$merged_as)) paste0("Merged as ", ex$merged_as, ". ", ex$reason) else ex$reason,
+      stringsAsFactors = FALSE)
 
     # How each raw code became a merged code, for coded variables with few values.
     if (!is.null(a) && !is.null(b)) {
@@ -142,6 +157,16 @@ add_check("Original files", "Every mapped variable is compared with its raw colu
           sprintf("%d variable-rounds have a raw column but no household answered in both files. Values that differ are mostly recodes: see the Original vs merged page.",
                   st_count[[OVM_STATUS[["none"]]]]))
 
+n_absent <- st_count[[OVM_STATUS[["absent"]]]]
+absent_vars <- unique(ovm_variables$variable[ovm_variables$status == OVM_STATUS[["absent"]]])
+add_check("Original files", "Every workbook variable with a raw column is merged, or left out on purpose with its reason",
+          pass_if(n_absent == 0), sprintf("%d variable-rounds missing", n_absent), "0",
+          if (n_absent) paste("Missing:", paste(utils::head(absent_vars, 15), collapse = ", ")) else
+            sprintf("%d variable-rounds left out on purpose or merged under another name: app/config/excluded_variables.csv.",
+                    st_count[[OVM_STATUS[["excluded"]]]] + st_count[[OVM_STATUS[["other_name"]]]]))
+unused_ex <- setdiff(ovm_excluded$variable, ovm_variables$variable[ovm_variables$status %in% OVM_STATUS[c("excluded", "other_name")]])
+add_check("Original files", "Every entry of the exclusion list is still needed", pass_if(!length(unused_ex), "warn"),
+          sprintf("%d unused", length(unused_ex)), "0", if (length(unused_ex)) paste("Now merged or unmapped:", paste(unused_ex, collapse = ", ")) else "")
 write_out(ovm_variables, "original_vs_merged_variables.csv")
 write_out(ovm_categories, "original_vs_merged_categories.csv")
 write_out(ovm_indicators, "original_vs_merged_indicators.csv")

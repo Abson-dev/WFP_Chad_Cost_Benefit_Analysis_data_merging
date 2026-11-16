@@ -19,7 +19,7 @@ DIR_MERGED <- Sys.getenv("WFP_MERGED_DIR", "C:/Users/AHema/OneDrive - CGIAR/Desk
 # (merge/16), expenditure, disability, education and migration (merge/17), protection and debt (merge/18),
 # social cohesion and climate adaptation (merge/19), shock impact, programme effects, markets, accountability and
 # additions to earlier modules (merge/20), and the costs per household (merge/21, built by the scripts of costs/)
-FINAL_FILE <- "WFP_Chad_2018-2023_20261111_v9.dta"
+FINAL_FILE <- "WFP_Chad_2018-2023_20261116_v10.dta"
 OUT <- file.path(DIR_MERGED, "dataverse_deposit")
 PRIVATE <- file.path(DIR_MERGED, "dataverse_deposit_private")
 dir.create(OUT, showWarnings = FALSE); dir.create(PRIVATE, showWarnings = FALSE)
@@ -82,6 +82,8 @@ REPLACED <- c(ID = "Replaced by hh_key, a random key. The link to the original I
 COARSENED <- c(
   SvyDate = "Interview date limited to year and month (SvyYearMonth), as IFPRI's guide requires.",
   HHHAge = "Age of the household head grouped in 10-year bands (HHHAge_group).",
+  RESPAge = "Age of the respondent grouped in the same 10-year bands (RESPAge_group).",
+  DebutAssistance = "Date assistance started limited to year and month (DebutAssistanceYearMonth), as for the interview date.",
   HHSize = "Top-coded at 15 members: rare sizes identify households, and values above 30 are errors."
 )
 COMPOSITION <- grep("^HHSize.+[MF]$", ALL, value = TRUE)
@@ -128,6 +130,11 @@ cost_as_merged <- as.data.frame(zap_labels(x[, intersect(c("ROUND", "adm2_ocha",
 
 x$SvyYearMonth <- format(as.Date(x$SvyDate), "%Y-%m")
 attr(x$SvyYearMonth, "label") <- "Interview year and month"
+x$DebutAssistanceYearMonth <- format(as.Date(x$DebutAssistance), "%Y-%m")
+attr(x$DebutAssistanceYearMonth, "label") <- "Year and month assistance started"
+x$RESPAge_group <- labelled(as.numeric(cut(as.numeric(zap_labels(x$RESPAge)), c(-Inf, 19, 29, 39, 49, 59, 69, Inf), labels = FALSE)),
+                            c("Under 20" = 1, "20-29" = 2, "30-39" = 3, "40-49" = 4, "50-59" = 5, "60-69" = 6, "70 or more" = 7),
+                            label = "Age of the respondent, in bands")
 age <- as.numeric(zap_labels(x$HHHAge))
 x$HHHAge_group <- labelled(as.numeric(cut(age, c(-Inf, 19, 29, 39, 49, 59, 69, Inf), labels = FALSE)),
                            c("Under 20" = 1, "20-29" = 2, "30-39" = 3, "40-49" = 4, "50-59" = 5, "60-69" = 6, "70 or more" = 7),
@@ -173,7 +180,8 @@ module_of <- function(v) {
     grepl("^Exp[A-Z]", v) ~ "016_expenditure",
     grepl("^Dis[A-Z]", v) ~ "017_disability",
     grepl("^Edu[A-Z]", v) ~ "018_education",
-    grepl("^Mig[A-Z]", v) ~ "019_migration",
+    grepl("^Mig[A-Z]", v) | v %in% c("DestinationMigration", "RaisonAccesServices", "AutreRaisonEconomiques") ~ "019_migration",
+    grepl("^RESP|^RelationWith_HHH$|^SCI|Epargne|^PossibilitePret$|^AutreSourcePret$", v) ~ "031_respondent_savings_social_capital",
     grepl("^Prt[A-Z]|^Aap[A-Z]", v) ~ "020_protection_accountability",
     grepl("^Dbt[A-Z]", v) ~ "021_debt",
     grepl("^Coh[A-Z]", v) ~ "022_social_cohesion",
@@ -192,7 +200,8 @@ module_of <- function(v) {
   )
 }
 KEYS <- c("hh_key", "ROUND")
-published <- c(setdiff(ALL, c(names(REMOVED), names(REPLACED), "SvyDate", "HHHAge", "ROUND")), "SvyYearMonth", "HHHAge_group")
+published <- c(setdiff(ALL, c(names(REMOVED), names(REPLACED), "SvyDate", "HHHAge", "RESPAge", "DebutAssistance", "ROUND")),
+               "SvyYearMonth", "HHHAge_group", "RESPAge_group", "DebutAssistanceYearMonth")
 mods <- module_of(published)
 # Random row order: the original order could point back to the source files.
 ord <- order(x$hh_key)
@@ -212,6 +221,7 @@ treatment <- data.frame(merged_variable = ALL, stringsAsFactors = FALSE) |>
   mutate(treatment = case_when(merged_variable %in% names(REMOVED) ~ "Removed", merged_variable %in% names(REPLACED) ~ "Replaced",
                                merged_variable %in% names(COARSENED) ~ "Coarsened", TRUE ~ "Kept as merged"),
          published_as = case_when(merged_variable == "ID" ~ "hh_key", merged_variable == "SvyDate" ~ "SvyYearMonth", merged_variable == "HHHAge" ~ "HHHAge_group",
+                                  merged_variable == "RESPAge" ~ "RESPAge_group", merged_variable == "DebutAssistance" ~ "DebutAssistanceYearMonth",
                                   merged_variable %in% names(REMOVED) ~ "", TRUE ~ merged_variable),
          file = ifelse(merged_variable == "ROUND", "All files", ifelse(published_as %in% c("", "hh_key"), ifelse(published_as == "hh_key", "All files", ""), paste0(module_of(published_as), ".dta"))),
          reason = case_when(merged_variable %in% names(REMOVED) ~ unname(REMOVED[merged_variable]), merged_variable %in% names(REPLACED) ~ unname(REPLACED[merged_variable]),
@@ -230,6 +240,7 @@ DERIVED <- c(
   SvyMonth = "Interview month, imputed to link with Cadre Harmonisé.", IP_var = "Year, cycle and department code: the key of the Cadre Harmonisé link.",
   hh_key = "Random household key. Joins the files of this deposit. Not linked to any published ID.", ROUND = "Survey round, 1 to 10.",
   SvyYearMonth = "Year and month of the interview date.", HHHAge_group = "HHHAge in bands.",
+  RESPAge_group = "RESPAge in the same bands as HHHAge_group.", DebutAssistanceYearMonth = "Year and month of DebutAssistance.",
   ShkCount12m = "Count of the 17 shocks answered Yes for the last 12 months (Rmd 16).",
   ShkAny12m = "1 if any of the 17 shocks is answered Yes for the last 12 months (Rmd 16).",
   AstCount = "Count of the durable goods owned. The lists differ between rounds, so counts compare only within a round (Rmd 17).",
@@ -469,21 +480,23 @@ source_all <- read_dta(file.path(DIR_MERGED, FINAL_FILE))
 src <- zap_labels(source_all); src$ID <- as.character(src$ID)
 src_key <- keys$hh_key[match(src$ID, keys$ID)]
 dta <- list.files(OUT, "\\.dta$", full.names = TRUE)
-seen <- character(); forbidden <- c("ID", names(REMOVED), "SvyDate", "HHHAge")
+seen <- character(); forbidden <- c("ID", names(REMOVED), "SvyDate", "HHHAge", "RESPAge", "DebutAssistance")
+long_ids <- unique(as.character(src$ID)[nchar(as.character(src$ID)) >= 5])
 for (f in dta) {
   d <- read_dta(f); dz <- zap_labels(d)
   if (any(forbidden %in% names(d))) stop("Identifier in ", f, call. = FALSE)
   if (nrow(d) != N || anyDuplicated(d$hh_key)) stop("Rows wrong in ", f, call. = FALSE)
   if (is.unsorted(d$hh_key)) stop("Row order not randomised in ", f, call. = FALSE)
   j <- match(dz$hh_key, src_key)
-  for (v in setdiff(names(d), c(KEYS, "SvyYearMonth", "HHHAge_group", names(COARSENED)))) {
+  for (v in setdiff(names(d), c(KEYS, "SvyYearMonth", "HHHAge_group", "RESPAge_group", "DebutAssistanceYearMonth", names(COARSENED)))) {
     a <- dz[[v]]; b <- src[[v]][j]
     if (is.character(a)) { a[is.na(a)] <- ""; b[is.na(b)] <- ""; same <- all(a == b) } else same <- isTRUE(all.equal(as.numeric(a), as.numeric(b), tolerance = 1e-6))
     if (!same) stop("Value differs from the merged file: ", v, call. = FALSE)
   }
   seen <- c(seen, setdiff(names(d), KEYS))
   all_text <- unlist(lapply(d[vapply(d, is.character, TRUE)], unique))
-  if (any(unique(as.character(src$ID)) %in% all_text)) stop("Original ID in ", f, call. = FALSE)
+  # IDs of 5 characters or more: the 2022 PDM's IDs are row numbers, the same short numbers as answer codes ("1 3").
+  if (any(long_ids %in% all_text)) stop("Original ID in ", f, call. = FALSE)
   villages <- setdiff(unique(src$village), c("", NA, "UNKNOWN"))
   if (any(villages %in% all_text[!all_text %in% unique(c(src$ADMIN1Name, src$ADMIN2Name, src$adm1_name, src$adm2_name))])) stop("Village name in ", f, call. = FALSE)
 }

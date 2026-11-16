@@ -21,7 +21,7 @@ DIR_MODULES <- env_dir("WFP_MODULES_DIR", file.path(base, "WFP Resilience datase
 DIR_MERGED <- env_dir("WFP_MERGED_DIR", file.path(base, "2024/WFP/CBA - Chad/data"))
 # The merged file with the 17 modules added in November 2026 (do-files 16 to 20) and the cost module (do-file 21),
 # and the file before the 2026 modules.
-FINAL_FILE <- "WFP_Chad_2018-2023_20261111_v9.dta"
+FINAL_FILE <- "WFP_Chad_2018-2023_20261116_v10.dta"
 PREV_FILE <- "WFP_Chad_2018-2023_20261105_v2.dta"
 REPO <- ".."
 MIN_CELL <- 30
@@ -795,7 +795,8 @@ inputs <- bind_rows(
   bind_rows(lapply(c("12_WFP_Chad_CBA_data_preparation.do", "13_WFP_Chad_OriginalAssistenciesVariables.do", "14_WFP_Chad_fix_rCSIBorrow.do",
                      "15_WFP_Chad_fix_FCS_2020PDM.do", "16_WFP_Chad_add_new_modules.do", "17_WFP_Chad_add_more_modules.do",
                      "18_WFP_Chad_add_protection_debt.do", "19_WFP_Chad_add_cohesion_adaptation.do", "20_WFP_Chad_add_recovery_effects_markets.do",
-                     "21_WFP_Chad_add_costs.do", "22_WFP_Chad_add_crops_food_sources.do", "23_WFP_Chad_fix_coping_ABI.do", "23_WFP_Chad_fix_coping_ABI.R"),
+                     "21_WFP_Chad_add_costs.do", "22_WFP_Chad_add_crops_food_sources.do", "23_WFP_Chad_fix_coping_ABI.do", "23_WFP_Chad_fix_coping_ABI.R",
+                     "24_WFP_Chad_add_dropped_variables.do", "24_WFP_Chad_add_dropped_variables.R"),
                    function(f) hash_row(file.path(REPO, "merge", f), "Merge code"))),
   bind_rows(lapply(c("prepare_cost_data.R", "prepare_community_costs.R", "prepare_household_costs.R", "prepare_household_cost_module.R",
                      "household_unit_costs.csv", "exchange_rates.csv", "department_crosswalk.csv", "activity_categories.csv", "cost_variables.csv"),

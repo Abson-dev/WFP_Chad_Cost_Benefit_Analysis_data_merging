@@ -3,11 +3,13 @@
 
 OVM_COL <- c("Identical" = "#03924A", "Same values, different number of answers" = "#C9A227",
              "Values differ: recoded on purpose, or a defect" = "#C0392B", "Built in the merge (no raw column)" = "#5B7DA8",
-             "Not in the merged file" = "#9AA5B1", "Text: answers counted only" = "#C7CED6", "Date: answers counted only" = "#C7CED6",
+             "Merged under another name" = "#7FB3A0", "Left out on purpose" = "#B8A9C9",
+             "Not in the merged file" = "#E3002B", "Text: answers counted only" = "#C7CED6", "Date: answers counted only" = "#C7CED6",
              "No household answered in both" = "#636466")
 OVM_SHORT <- c("Identical" = "Identical", "Same values, different number of answers" = "Same values, other answers",
                "Values differ: recoded on purpose, or a defect" = "Values differ", "Built in the merge (no raw column)" = "Built in the merge",
-               "Not in the merged file" = "Not merged", "Text: answers counted only" = "Text", "Date: answers counted only" = "Date",
+               "Merged under another name" = "Other name", "Left out on purpose" = "Left out on purpose",
+               "Not in the merged file" = "Missing", "Text: answers counted only" = "Text", "Date: answers counted only" = "Date",
                "No household answered in both" = "No overlap")
 
 original_ui <- function(id, d) {
@@ -106,7 +108,7 @@ original_server <- function(id, d) {
       shiny::validate(shiny::need(nrow(x) > 0, "No variable matches the filters."))
       x <- data.frame(Round = rlab(x$round_id), Variable = x$variable, Group = x$family, `Raw column` = x$raw_column,
                       `Raw answers` = x$raw_answered, `Merged answers` = x$merged_answered, `Raw mean` = x$raw_mean, `Merged mean` = x$merged_mean,
-                      `% same` = x$pct_same, Status = x$status, check.names = FALSE)
+                      `% same` = x$pct_same, Status = x$status, Note = x$note, check.names = FALSE)
       reactable::reactable(
         x, searchable = TRUE, compact = TRUE, striped = TRUE, highlight = TRUE, defaultPageSize = 15, selection = "single", onClick = "select",
         rowStyle = list(cursor = "pointer"), defaultColDef = reactable::colDef(na = "—"),
@@ -119,7 +121,8 @@ original_server <- function(id, d) {
                        `Raw mean` = reactable::colDef(minWidth = 75, format = reactable::colFormat(digits = 2)),
                        `Merged mean` = reactable::colDef(minWidth = 80, format = reactable::colFormat(digits = 2)),
                        `% same` = reactable::colDef(minWidth = 70, format = reactable::colFormat(digits = 1)),
-                       Status = reactable::colDef(minWidth = 170, cell = status_cell)))
+                       Status = reactable::colDef(minWidth = 170, cell = status_cell),
+                       Note = reactable::colDef(minWidth = 220, style = list(fontSize = ".78em"))))
     })
     shiny::observe({
       i <- reactable::getReactableState("variables", "selected")
@@ -151,7 +154,7 @@ original_server <- function(id, d) {
                       `Raw mean` = x$raw_mean, `Merged mean` = x$merged_mean, `Raw median` = x$raw_median, `Merged median` = x$merged_median,
                       `Raw range` = ifelse(is.na(x$raw_min), NA, paste(x$raw_min, "to", x$raw_max)),
                       `Merged range` = ifelse(is.na(x$merged_min), NA, paste(x$merged_min, "to", x$merged_max)),
-                      `% same` = x$pct_same, Status = x$status, check.names = FALSE)
+                      `% same` = x$pct_same, Status = x$status, Note = x$note, check.names = FALSE)
       reactable::reactable(x, compact = TRUE, pagination = FALSE, striped = TRUE, defaultColDef = reactable::colDef(na = "—", minWidth = 80),
                            columns = list(Round = reactable::colDef(minWidth = 100, style = list(fontWeight = 600)),
                                           `Raw column` = reactable::colDef(minWidth = 150, style = list(fontFamily = "Consolas, monospace", fontSize = ".78em")),
