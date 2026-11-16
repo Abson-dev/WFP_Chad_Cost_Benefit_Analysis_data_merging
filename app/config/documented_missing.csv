@@ -1,0 +1,16 @@
+variable,rounds,raw_labels,reason
+FCSStapSRf,R01,^autre,The merged food source scale (WFP's 10 sources) has no 'Other': Rmd 04 sets 'Autre à préciser' to missing.
+FCSPulseSRf,R01,^autre,The merged food source scale (WFP's 10 sources) has no 'Other': Rmd 04 sets 'Autre à préciser' to missing.
+FCSDairySRf,R01,^autre,The merged food source scale (WFP's 10 sources) has no 'Other': Rmd 04 sets 'Autre à préciser' to missing.
+FCSPrSRf,R01,^autre,The merged food source scale (WFP's 10 sources) has no 'Other': Rmd 04 sets 'Autre à préciser' to missing.
+FCSVegSRf,R01,^autre,The merged food source scale (WFP's 10 sources) has no 'Other': Rmd 04 sets 'Autre à préciser' to missing.
+FCSFruitSRf,R01,^autre,The merged food source scale (WFP's 10 sources) has no 'Other': Rmd 04 sets 'Autre à préciser' to missing.
+FCSFatSRf,R01,^autre,The merged food source scale (WFP's 10 sources) has no 'Other': Rmd 04 sets 'Autre à préciser' to missing.
+FCSSugarSRf,R01,^autre,The merged food source scale (WFP's 10 sources) has no 'Other': Rmd 04 sets 'Autre à préciser' to missing.
+FCSCondSRf,R01,^autre,The merged food source scale (WFP's 10 sources) has no 'Other': Rmd 04 sets 'Autre à préciser' to missing.
+HHHMainActivity,R01,^pas autre$,"Code 15 'Pas autre' (no other activity) is not a main activity: Rmd 02 leaves it out, as do-file 25."
+HHHMainActivity,R02 R04 R05,^(agriculture|elevage|agriculture-elevage|petit commerce)$,"The 11-category list does not say whether farming or livestock is for consumption or for sale, nor whether small trade is in food: no detailed category. The answer is kept in HHHMainActivityGroup (do-file 25)."
+ShkImpFood_Theft,R06,,Asked only after the shock: Rmd 28 keeps the answer only where the household had the shock in the last 12 months.
+ShkRec1y_Death,R06,,Asked only after the shock: Rmd 28 keeps the answer only where the household had the shock in the last 12 months.
+ShkRec1y_Theft,R06,,Asked only after the shock: Rmd 28 keeps the answer only where the household had the shock in the last 12 months.
+ShkRecNow_Theft,R06,,Asked only after the shock: Rmd 28 keeps the answer only where the household had the shock in the last 12 months.

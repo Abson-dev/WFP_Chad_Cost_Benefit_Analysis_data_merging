@@ -158,13 +158,13 @@ testServer(crosswalk_server, args = list(d = d), {
 testServer(original_server, args = list(d = d), {
   all_s <- unique(d$ovm_variables$status)
   session$setInputs(round = "", workbook = "", status = all_s, variable = "")
-  ok("original all", { output$status_plot; output$indicators; output$variables; output$profile; output$profile_rounds })
+  ok("original all", { output$status_plot; output$indicators; output$lost; output$variables; output$profile; output$profile_rounds })
   ok("original status chart json", jsonlite::fromJSON(output$status_plot))
   session$setInputs(variable = "HHHSex", cat_round = "R01"); ok("original HHHSex categories", { output$profile; output$profile_cats })
   session$setInputs(round = "R10", workbook = "2026 modules", status = "Identical"); ok("original filtered", output$variables)
   ok("original csv", stopifnot(file.size(output$dl_csv) > 0))
   xl <- output$dl_xlsx
-  ok("original xlsx: six sheets", stopifnot(identical(openxlsx::getSheetNames(xl), c("Read me", "Rounds", "Summary", "Indicators", "Variables", "Categories"))))
+  ok("original xlsx: seven sheets", stopifnot(identical(openxlsx::getSheetNames(xl), c("Read me", "Rounds", "Summary", "Indicators", "Variables", "Categories", "Set to missing"))))
   ok("original xlsx: every variable-round", stopifnot(nrow(openxlsx::read.xlsx(xl, "Variables")) == nrow(d$ovm_variables)))
 })
 testServer(rounds_server, args = list(d = d), ok("rounds", { output$calendar; output$inventory; output$departments }))
@@ -205,8 +205,17 @@ ok("original: every exclusion has a reason, and is used", {
 ok("original: the 29 variables of step 24 reach the merged file", stopifnot(all(c("RESPAge", "RESPSex", "RESPConsent", "SCIEvolRessSociales",
    "EpargnePieds", "ABISexparticipant", "ExpFoodShareAnalysts", "DebutAssistance") %in% d$merged_columns$variable)))
 ok("original: respondent sex recoded to the HHHSex scale in 2023", stopifnot(any(oc$variable == "RESPSex" & oc$round_id == "R10" & oc$raw_code == 0 & oc$merged_code == 1)))
-ok("original: the checks are on the Validation page", stopifnot(sum(d$checks$group == "Original files") == 4,
+ok("original: the checks are on the Validation page", stopifnot(sum(d$checks$group == "Original files") == 6,
    d$checks$status[grepl("^FCS and rCSI from the raw items", d$checks$check)] == "pass"))
+ok("original: every labelled answer set to missing has a documented rule", stopifnot(nrow(d$ovm_lost) > 0, !any(grepl("^Not documented", d$ovm_lost$reason)),
+   d$checks$status[grepl("^No labelled raw answer becomes missing", d$checks$check)] == "pass"))
+ok("original: step 25 restores education and income source", {
+  stopifnot(!any(d$ovm_lost$variable == "HHHEdu"), !any(d$ovm_lost$variable == "HHSourceIncome"),
+            any(oc$variable == "HHHEdu" & oc$round_id == "R09" & oc$raw_code == 1 & oc$merged_code == 1),
+            any(oc$variable == "HHHEdu" & oc$round_id == "R10" & oc$raw_code == 4 & oc$merged_code == 3),
+            "HHHMainActivityGroup" %in% d$merged_columns$variable)
+})
+ok("original: do-file 25 changes no existing answer", stopifnot(d$checks$status[d$checks$check == "Do-file 25 only fills in lost answers"] == "pass"))
 ok("original: HHHSex recoded in R01 (1 Masculin -> 2)", stopifnot(any(oc$variable == "HHHSex" & oc$round_id == "R01" & oc$raw_code == 1 & oc$merged_code == 2)))
 
 section("Column content")
@@ -230,7 +239,7 @@ ok("attention: serious point on a round with a known defect", { rid <- d$flags$r
 ok("attention: uncertain coping codes of 2019 Annual are a point to watch", stopifnot(any(vapply(attention_points(d, "R02", "m"), function(p) p$level == "watch" && grepl("Livelihood coping", p$title), TRUE))))
 
 section("Figures against an independent recomputation from the merged file")
-merged_path <- file.path(Sys.getenv("WFP_MERGED_DIR", "C:/Users/AHema/OneDrive - CGIAR/Desktop/2024/WFP/CBA - Chad/data"), "WFP_Chad_2018-2023_20261116_v10.dta")
+merged_path <- file.path(Sys.getenv("WFP_MERGED_DIR", "C:/Users/AHema/OneDrive - CGIAR/Desktop/2024/WFP/CBA - Chad/data"), "WFP_Chad_2018-2023_20261116_v11.dta")
 if (file.exists(merged_path) && !demo_mode()) {
   x <- haven::zap_labels(haven::read_dta(merged_path))
   x$rid <- sprintf("R%02d", x$ROUND)

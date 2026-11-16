@@ -42,7 +42,8 @@ ovm_label <- function(code, vl) {
   if (is.na(m)) "" else clean_text(m)
 }
 
-ovm_rows <- list(); ovm_cats <- list()
+OVM_DK <- "ne sait pas|sait pas|refus|ne souhaite|je ne sais|don.t know|nsp"
+ovm_rows <- list(); ovm_cats <- list(); ovm_lost <- list()
 for (i in seq_len(nrow(cfg_rounds))) {
   ds <- cfg_rounds$dataset[i]; rid <- cfg_rounds$round_id[i]
   xr <- x[x$round_id == rid, ]; idx <- ovm_index[[ds]]
@@ -82,6 +83,23 @@ for (i in seq_len(nrow(cfg_rounds))) {
       compared = sum(k), same_value = same, pct_same = pct, status = status,
       note = if (is.null(ex)) NA_character_ else if (!is.na(ex$merged_as)) paste0("Merged as ", ex$merged_as, ". ", ex$reason) else ex$reason,
       stringsAsFactors = FALSE)
+
+    # Raw answers with a real label (not "don't know" or a refusal) that are missing in the merged file.
+    if (is.null(ex) && !is.null(raw_m) && !is_date && !is.null(mer) && !is.character(mer)) {
+      bm <- suppressWarnings(as.numeric(mer))
+      if (is.character(raw_m)) {
+        lost <- ovm_nonmiss(raw_m) & is.na(bm)
+        lab <- clean_text2(raw_m[lost]); code <- rep(NA_real_, sum(lost))
+      } else {
+        lost <- !is.na(a) & is.na(bm)
+        code <- a[lost]; lab <- vapply(code, ovm_label, "", vl = attr(raw_all, "labels", exact = TRUE))
+      }
+      real <- nzchar(lab) & !grepl(OVM_DK, lab, ignore.case = TRUE) & !code %in% c(888, 999, 8888, 9999)
+      if (any(real)) {
+        g <- count(data.frame(raw_code = code[real], raw_label = lab[real]), raw_code, raw_label, name = "households")
+        ovm_lost[[length(ovm_lost) + 1]] <- data.frame(round_id = rid, variable = v, g, stringsAsFactors = FALSE)
+      }
+    }
 
     # How each raw code became a merged code, for coded variables with few values.
     if (!is.null(a) && !is.null(b)) {
@@ -167,6 +185,40 @@ add_check("Original files", "Every workbook variable with a raw column is merged
 unused_ex <- setdiff(ovm_excluded$variable, ovm_variables$variable[ovm_variables$status %in% OVM_STATUS[c("excluded", "other_name")]])
 add_check("Original files", "Every entry of the exclusion list is still needed", pass_if(!length(unused_ex), "warn"),
           sprintf("%d unused", length(unused_ex)), "0", if (length(unused_ex)) paste("Now merged or unmapped:", paste(unused_ex, collapse = ", ")) else "")
+# Every labelled raw answer that is missing in the merged file must match a documented rule (variable, rounds, and a
+# pattern on the raw label; empty rounds or labels = any).
+ovm_documented <- readr::read_csv("config/documented_missing.csv", show_col_types = FALSE, col_types = readr::cols(.default = "c"))
+ovm_rule <- function(v, rid, lab) {
+  d <- ovm_documented
+  for (i in which(d$variable == v)) {
+    in_round <- is.na(d$rounds[i]) || rid %in% strsplit(d$rounds[i], " ")[[1]]
+    if (in_round && (is.na(d$raw_labels[i]) || grepl(d$raw_labels[i], lab, ignore.case = TRUE))) return(i)
+  }
+  NA_integer_
+}
+ovm_lost <- bind_rows(ovm_lost)
+if (!nrow(ovm_lost)) ovm_lost <- data.frame(round_id = character(), variable = character(), raw_code = numeric(), raw_label = character(), households = integer())
+rule <- mapply(ovm_rule, ovm_lost$variable, ovm_lost$round_id, ovm_lost$raw_label)
+ovm_lost$reason <- ifelse(is.na(rule), "Not documented: a defect until a rule explains it.", ovm_documented$reason[rule])
+unused_rules <- setdiff(seq_len(nrow(ovm_documented)), rule)
+n_lost_bad <- sum(ovm_lost$households[is.na(rule)])
+bad <- unique(paste(ovm_lost$variable, ovm_lost$round_id)[is.na(rule)])
+add_check("Original files", "No labelled raw answer becomes missing in the merged file without a documented rule",
+          pass_if(n_lost_bad == 0), sprintf("%s answers not documented", format(n_lost_bad, big.mark = ",")), "0",
+          if (n_lost_bad) paste("Variable-rounds:", paste(utils::head(bad, 15), collapse = ", ")) else
+            sprintf("%s labelled answers set to missing on purpose, in %d variable-rounds: app/config/documented_missing.csv.",
+                    format(sum(ovm_lost$households), big.mark = ","), nrow(unique(ovm_lost[c("variable", "round_id")]))))
+add_check("Original files", "Every documented missing-answer rule is still needed", pass_if(!length(unused_rules), "warn"),
+          sprintf("%d unused", length(unused_rules)), "0",
+          if (length(unused_rules)) paste("Unused:", paste(ovm_documented$variable[unused_rules], collapse = ", ")) else "")
+# Answers are counted by raw label; text answers are summarised to their label, which can hold a respondent's words:
+# only coded answers are written with their label, text answers with their count.
+ovm_lost_out <- ovm_lost |>
+  mutate(raw_label = ifelse(is.na(raw_code), "(text answer)", raw_label)) |>
+  group_by(round_id, variable, raw_code, raw_label, reason) |> summarise(households = sum(households), .groups = "drop") |>
+  mutate(households = ifelse(households < OVM_MIN_COUNT, NA, households)) |>
+  arrange(match(round_id, cfg_rounds$round_id), variable, raw_code)
+write_out(ovm_lost_out, "original_vs_merged_lost.csv")
 write_out(ovm_variables, "original_vs_merged_variables.csv")
 write_out(ovm_categories, "original_vs_merged_categories.csv")
 write_out(ovm_indicators, "original_vs_merged_indicators.csv")

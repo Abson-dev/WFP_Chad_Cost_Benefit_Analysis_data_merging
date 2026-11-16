@@ -5,7 +5,7 @@
 ![Shiny](https://img.shields.io/badge/dashboard-R%20Shiny-1F77B4)
 ![Data](https://img.shields.io/badge/survey%20data-not%20included-lightgrey)
 
-This repository builds the household dataset for the cost-benefit analysis (CBA) of WFP's resilience interventions in Chad. It merges **10 survey rounds** into one file of **17,255 households and 768 columns** (305 from the first harmonization, 390 from 19 modules added in November 2026, 44 cost variables per household, and 29 workbook variables added back in step 24; the 19 modules are: shocks, shock impact and recovery, assets and livestock, livelihoods, agriculture, crop production and sales, expenditure, disability, education, migration, protection and accountability, debt, social cohesion, climate adaptation, changes credited to the programme, markets, sources of the food eaten, and additions to earlier modules), adds the cost of WFP's assistance to each household, documents the problems found on the way, and checks the result in a dashboard.
+This repository builds the household dataset for the cost-benefit analysis (CBA) of WFP's resilience interventions in Chad. It merges **10 survey rounds** into one file of **17,255 households and 769 columns** (305 from the first harmonization, 390 from 19 modules added in November 2026, 44 cost variables per household, 29 workbook variables added back in step 24, and the grouped main activity of step 25; the 19 modules are: shocks, shock impact and recovery, assets and livestock, livelihoods, agriculture, crop production and sales, expenditure, disability, education, migration, protection and accountability, debt, social cohesion, climate adaptation, changes credited to the programme, markets, sources of the food eaten, and additions to earlier modules), adds the cost of WFP's assistance to each household, documents the problems found on the way, and checks the result in a dashboard.
 
 | Part | What it is | Where |
 |---|---|---|
@@ -20,7 +20,7 @@ This repository builds the household dataset for the cost-benefit analysis (CBA)
 
 *The dashboard's Overview page. The estimates in this screenshot are synthetic.*
 
-> **Read this before using the merged file.** An audit found defects in the merged file that change results in several rounds. The latest version is `WFP_Chad_2018-2023_20261116_v10.dta` (16 November 2026), which adds the costs per household, crop production and sales, and the sources of the food eaten to v5, corrects the coping and asset benefit answers (v9), and adds back 29 workbook variables that the harmonisation had dropped (v10); seven defects are fixed, the others are not yet. See [Known issues](#known-issues).
+> **Read this before using the merged file.** An audit found defects in the merged file that change results in several rounds. The latest version is `WFP_Chad_2018-2023_20261116_v11.dta` (16 November 2026), which adds the costs per household, crop production and sales, and the sources of the food eaten to v5, corrects the coping and asset benefit answers (v9), adds back 29 workbook variables that the harmonisation had dropped (v10), and restores the education, main activity and 2019 income source answers that the harmonisation had lost (v11); eight defects are fixed, the others are not yet. See [Known issues](#known-issues).
 
 ## Contents
 
@@ -69,7 +69,10 @@ flowchart LR
     d23 --> v9["Merged dataset v9"]
     v9 --> d24["Do-file 24<br/>29 dropped variables"]
     raw --> d24
-    d24 --> final["Merged dataset v10<br/>17,255 households, 768 columns"]
+    d24 --> v10["Merged dataset v10"]
+    v10 --> d25["Do-file 25<br/>lost education and activity answers"]
+    raw --> d25
+    d25 --> final["Merged dataset v11<br/>17,255 households, 769 columns"]
     final --> app["Dashboard<br/>aggregates and checks"]
     final --> dep["Dataverse package<br/>files by module"]
 ```
@@ -90,6 +93,7 @@ Each fix or extension writes a new file and leaves its input unchanged:
 | `WFP_Chad_2018-2023_20261110_v7.dta` | Do-file 21 | The same, with the first manual review of the village matches: 69 households take their own village's cost |
 | `WFP_Chad_2018-2023_20261111_v8.dta` | Do-file 22 | Crop production and sales (10 crops: area, harvest, sales, units, sales income, market gardening, losses) and the sources of the food eaten (own production or gifts, credit, by food group) |
 | `WFP_Chad_2018-2023_20261116_v10.dta` | Do-file 24 | 29 workbook variables that Rmds 02 to 11 and 20 dropped, taken again from the raw files: the respondent's age, sex, relationship to the head and consent, 7 savings and 11 social capital questions, 3 migration questions, the asset work participant's sex and the assets created, the analysts' food share, and the date assistance started. Sex on the `HHHSex` scale, consent 0/1, questions with several answers as text. A dashboard check now fails if a workbook variable is neither merged nor listed in `app/config/excluded_variables.csv` |
+| `WFP_Chad_2018-2023_20261116_v11.dta` | Do-file 25 | The answers that Rmd 02's label-text recodes lost, taken again from the raw files: the head's education (3,059: "Supérieur" in 7 rounds, three levels in 2023), main activity (124, 2019 Annual to 2021 PDM) and the 2019 income source (115). Only missing values are filled in. Adds `HHHMainActivityGroup`, the main activity in 9 groups comparable across rounds. A dashboard check now fails if a labelled raw answer becomes missing without a rule in `app/config/documented_missing.csv` |
 | `WFP_Chad_2018-2023_20261111_v9.dta` | Do-file 23 | Coping answers of R1, R3 and R10 and `LhCSIStress1` in 9 rounds, and the R8 asset benefit answers, taken again from the raw files; coping categories and ABI score recomputed (see [Known issues](#known-issues)) |
 
 ## Survey rounds
@@ -152,6 +156,17 @@ MAD and MDDW are left out: in R6 to R9 the household file combines several surve
 
 The merge itself holds up: all 17,270 raw rows are accounted for (14 duplicates and 1 refused interview removed), every module joins without unmatched records, and the score formulas are correct. The defects come earlier, from the mapping and recoding of some rounds.
 
+**Fixed in the merged file v11 (16 November 2026), by do-file 25.** Rmd 02 recodes the stacked rounds by exact label text, so every answer whose label it did not expect became missing. The answers are taken again from the raw files; no answer the file already had changes.
+
+| Rounds | Variable | Lost before v11 | Cause |
+|---|---|---:|---|
+| R9, R10 | `HHHEdu` | 3,012 heads: "Aucun", "1er cycle fondamentale", "2e cycle fondamentale" | 2023 labels not in the recode |
+| R1, R2, R4 to R8 | `HHHEdu` | 47 heads: every "Supérieur" | Relabelled "Superieur", without the accent |
+| R2, R4, R5 | `HHHMainActivity` | All but "Autre" (about 2,500 heads) | An 11-category list the recode did not know |
+| R2 | `HHSourceIncome` | 115 "Vente des produits maraîchers" | Matched with a trailing space |
+
+The 11-category activity list does not map one to one onto the 14 categories: "Agriculture", "Elevage", "Agriculture-Elevage" and "Petit commerce" stay missing in `HHHMainActivity` (2,427 heads) and are in the new `HHHMainActivityGroup`, which groups both lists into 9 categories. "1er" and "2e cycle fondamentale" count as Primaire, as Rmd 02 already did for 2021 and 2022; whether the second cycle is lower secondary is a question for WFP.
+
 **Fixed in the merged file v9 (11 November 2026), by do-file 23.** The answers are taken again from the raw files, and the scores recomputed with the rules of do-file 12 and Rmd 07. Files built before v9 keep the old values.
 
 | Round | Problem | Where it comes from | Before v9 | From v9 |
@@ -197,7 +212,7 @@ You need the source files, R, and Stata.
 1. **Set the folders.** The paths are written into the code, so change them on your computer: `dir_input_data` and `dir_output_data` at the top of each Rmd, and `global input_data` and `global output_data` in each do-file.
 2. **Build the modules.** Knit the Rmds in `harmonization/`, in order. They overwrite the module files in `dir_output_data`. They need `haven`, `labelled`, `tidyverse`, `Hmisc`, `gtsummary`, `readxl`, `foreign`, `sjPlot`, `sjmisc`, `sjlabelled`, `stringr`, `expss` and `plyr`.
 3. **Merge.** From the `merge/` folder, run `12_WFP_Chad_CBA_data_preparation.do`, then `13_WFP_Chad_OriginalAssistenciesVariables.do`. Do-file 12 also needs the Cadre Harmonisé workbook in its data folder, and writes `RCS_table.xlsx` to Stata's working directory. The workbook now holds the rCSI fix and do-file 12 the FCS fix, so do-files 14 and 15 are needed only to fix a file built before them.
-4. **Add the 2026 modules.** Knit Rmds 16 to 34, then run do-files `16_WFP_Chad_add_new_modules.do`, `17_WFP_Chad_add_more_modules.do`, `18_WFP_Chad_add_protection_debt.do`, `19_WFP_Chad_add_cohesion_adaptation.do` `20_WFP_Chad_add_recovery_effects_markets.do`, then, after the costs (`21_WFP_Chad_add_costs.do`, see `costs/`), `22_WFP_Chad_add_crops_food_sources.do`, then `Rscript merge/23_WFP_Chad_fix_coping_ABI.R` and `23_WFP_Chad_fix_coping_ABI.do`, and last `Rscript merge/24_WFP_Chad_add_dropped_variables.R` and `24_WFP_Chad_add_dropped_variables.do`. They read `Chad_Harmonization_extension.xlsx` from the input folder, and save new files without `replace`: delete or rename an existing output first.
+4. **Add the 2026 modules.** Knit Rmds 16 to 34, then run do-files `16_WFP_Chad_add_new_modules.do`, `17_WFP_Chad_add_more_modules.do`, `18_WFP_Chad_add_protection_debt.do`, `19_WFP_Chad_add_cohesion_adaptation.do` `20_WFP_Chad_add_recovery_effects_markets.do`, then, after the costs (`21_WFP_Chad_add_costs.do`, see `costs/`), `22_WFP_Chad_add_crops_food_sources.do`, then `Rscript merge/23_WFP_Chad_fix_coping_ABI.R` and `23_WFP_Chad_fix_coping_ABI.do`, then `Rscript merge/24_WFP_Chad_add_dropped_variables.R` and `24_WFP_Chad_add_dropped_variables.do`, and last `Rscript merge/25_WFP_Chad_fix_education_activity.R` and `25_WFP_Chad_fix_education_activity.do`. They read `Chad_Harmonization_extension.xlsx` from the input folder, and save new files without `replace`: delete or rename an existing output first.
 5. **Check.** Refresh the dashboard (below): it recomputes all checks from the new files. Its *Original vs merged* page compares every variable with WFP's raw files, round by round, and downloads as an Excel workbook.
 6. **Package.** From the repository's root, `Rscript deposit/prepare_dataverse_package.R` builds the Dataverse package next to the merged file.
 

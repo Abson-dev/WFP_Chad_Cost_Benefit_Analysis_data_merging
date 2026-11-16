@@ -40,6 +40,10 @@ original_ui <- function(id, d) {
                   bslib::card_body(padding = 0, reactable::reactableOutput(ns("indicators"))),
                   bslib::card_footer(class = "table-note", "FCS and rCSI computed from the raw items through the workbook's mapping, against the merged file."))
     ),
+    bslib::card(full_screen = TRUE,
+                bslib::card_header(sprintf("Answers set to missing on purpose (%s)", fmt_int(sum(d$ovm_lost$households, na.rm = TRUE)))),
+                bslib::card_body(padding = 0, reactable::reactableOutput(ns("lost"))),
+                bslib::card_footer(class = "table-note", "Raw answers with a real label (not \"don't know\" or a refusal) that are missing in the merged file, and the rule that explains it. An answer without a rule fails a check on the Validation page. Blank: under 5 households.")),
     bslib::layout_sidebar(
       fillable = FALSE,
       sidebar = bslib::sidebar(
@@ -100,6 +104,20 @@ original_server <- function(id, d) {
                                           Merged = reactable::colDef(minWidth = 70, format = reactable::colFormat(digits = 1)),
                                           Difference = reactable::colDef(minWidth = 80, format = reactable::colFormat(digits = 2)),
                                           Note = reactable::colDef(minWidth = 260, style = list(fontSize = ".8em"))))
+    })
+
+    output$lost <- reactable::renderReactable({
+      x <- d$ovm_lost
+      shiny::validate(shiny::need(nrow(x) > 0, "No labelled answer is set to missing."))
+      x <- data.frame(Round = rlab(x$round_id), Variable = x$variable, `Raw code` = x$raw_code, `Raw label` = x$raw_label,
+                      Households = x$households, Reason = x$reason, check.names = FALSE)
+      reactable::reactable(x, compact = TRUE, striped = TRUE, defaultPageSize = 8, defaultColDef = reactable::colDef(na = "—"),
+                           rowStyle = function(i) if (grepl("^Not documented", x$Reason[i])) list(background = "#FBEBEB"),
+                           columns = list(Round = reactable::colDef(minWidth = 100),
+                                          Variable = reactable::colDef(minWidth = 140, style = list(fontFamily = "Consolas, monospace", fontSize = ".82em", fontWeight = 600)),
+                                          `Raw code` = reactable::colDef(minWidth = 60), `Raw label` = reactable::colDef(minWidth = 180),
+                                          Households = reactable::colDef(minWidth = 80, format = reactable::colFormat(separators = TRUE)),
+                                          Reason = reactable::colDef(minWidth = 360, style = list(fontSize = ".8em"))))
     })
 
     status_cell <- function(s) pill(OVM_SHORT[[s]], OVM_COL[[s]], if (OVM_COL[[s]] %in% c("#C7CED6", "#C9A227")) "#1F2933" else "#fff")

@@ -64,6 +64,9 @@ f <- 1 + stats::rnorm(nrow(oi), 0, .12)
 for (k in c("raw_value", "merged_value", "difference")) oi[[k]] <- round(oi[[k]] * f, 3)
 oi$note <- ifelse(oi$note == "Same.", oi$note, "Illustration: note hidden in the synthetic version.")
 write(oi, "original_vs_merged_indicators.csv")
+ol <- read("original_vs_merged_lost.csv")
+ol$households <- round(jitter_rel(ol$households, .25))
+write(ol, "original_vs_merged_lost.csv")
 
 # Text with figures: replaced, so that no real estimate leaves in a screenshot.
 ck <- read("checks.csv")

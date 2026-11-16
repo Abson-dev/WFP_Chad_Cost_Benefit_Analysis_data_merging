@@ -25,7 +25,8 @@ original_workbook <- function(d, path) {
     Summary = ovm_summary(d),
     Indicators = lab(d$ovm_indicators),
     Variables = lab(d$ovm_variables),
-    Categories = lab(d$ovm_categories)
+    Categories = lab(d$ovm_categories),
+    `Set to missing` = lab(d$ovm_lost)
   )
   wb <- openxlsx::createWorkbook()
   openxlsx::modifyBaseFont(wb, fontSize = 10, fontName = "Calibri")
@@ -44,6 +45,7 @@ original_workbook <- function(d, path) {
     "  Indicators: mean FCS, poor + borderline FCS and mean rCSI computed from the raw items (through the workbook's mapping) and in the merged file, with the reason for any difference.",
     "  Variables: one row per variable and round: answers in the raw file and in the merged file, mean, median, min and max on both sides (raw codes as they are), and the share of households with the same value.",
     "  Categories: for coded variables (40 values or fewer), how each raw code became a merged code: households per pair, totals per code, and whether the code was kept.",
+    "  Set to missing: raw answers with a real label (not 'don't know' or a refusal) that are missing in the merged file, with the documented rule (app/config/documented_missing.csv). Any answer without a rule fails a check on the Validation page.",
     "",
     "Status of a variable",
     "  Identical: every household has the same value, and the same households answered.",

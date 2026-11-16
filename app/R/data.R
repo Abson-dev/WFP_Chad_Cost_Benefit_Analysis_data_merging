@@ -75,6 +75,7 @@ load_app_data <- function(dir = app_data_dir()) {
     ovm_variables = rd("original_vs_merged_variables.csv", col_types = readr::cols(raw_column = "c", .default = readr::col_guess())),
     ovm_categories = rd("original_vs_merged_categories.csv", col_types = readr::cols(raw_label = "c", merged_label = "c", .default = readr::col_guess())),
     ovm_indicators = rd("original_vs_merged_indicators.csv"),
+    ovm_lost = rd("original_vs_merged_lost.csv", col_types = readr::cols(raw_label = "c", reason = "c", .default = readr::col_guess())),
     rcsi = rd("rcsi_comparison.csv"),
     lcs_items = rd("lcs_items.csv"),
     assistance = rd("assistance_by_round.csv"),
